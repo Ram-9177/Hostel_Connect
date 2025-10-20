@@ -46,9 +46,13 @@ class _GatePassPageState extends State<GatePassPage> {
     return HResponsive.builder(builder: (ctx, r) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(HTeluguTheme.getTeluguEnglishText('gate_pass', 'Gate Pass')),
+          title: Text(HTeluguTheme.getTeluguLabel('outpass', englishFallback: 'Gate Pass')),
           backgroundColor: HTeluguTheme.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: HTeluguTheme.onPrimary,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
         body: Stack(
           children: [

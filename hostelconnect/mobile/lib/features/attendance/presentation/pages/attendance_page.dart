@@ -18,9 +18,13 @@ class _AttendancePageState extends State<AttendancePage> {
     return HResponsive.builder(builder: (ctx, r) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(HTeluguTheme.getTeluguEnglishText('attendance_scanner', 'Attendance Scanner')),
+          title: Text(HTeluguTheme.getTeluguLabel('present', englishFallback: 'Attendance')),
           backgroundColor: HTeluguTheme.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: HTeluguTheme.onPrimary,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           actions: [
             IconButton(
               icon: Icon(_isKioskMode ? Icons.phone_android : Icons.desktop_windows),

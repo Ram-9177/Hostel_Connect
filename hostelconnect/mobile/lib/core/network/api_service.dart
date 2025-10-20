@@ -334,25 +334,15 @@ class ApiService {
     );
   }
 
-  // Device registration for push notifications
-  static Future<Map<String, dynamic>> registerDevice({
-    required String deviceToken,
-    required String deviceId,
-    required String platform,
-  }) async {
-    const endpoint = '/devices/register';
+  // Health check endpoint
+  static Future<Map<String, dynamic>> getHealth() async {
+    const endpoint = '/health';
     return _makeRequest(
-      () => http.post(
+      () => http.get(
         Uri.parse('${NetworkConfig.apiUrl}$endpoint'),
         headers: _defaultHeaders,
-        body: jsonEncode({
-          'deviceToken': deviceToken,
-          'deviceId': deviceId,
-          'platform': platform,
-        }),
       ),
       (data) => data,
       endpoint,
     );
   }
-}

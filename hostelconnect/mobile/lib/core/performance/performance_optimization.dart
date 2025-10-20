@@ -1,235 +1,372 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hostelconnect/core/responsive.dart';
-import 'package:hostelconnect/core/state/app_state.dart';
-import 'package:hostelconnect/shared/widgets/ui/professional_components.dart';
-import 'package:hostelconnect/shared/theme/telugu_theme.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import '../storage/secure_storage.dart';
+import '../network/api_service.dart';
 
-class PerformanceOptimizedPage extends ConsumerStatefulWidget {
-  final Widget child;
-  final String pageName;
-  final bool enableCaching;
-  final Duration cacheDuration;
-  final VoidCallback? onRefresh;
-
-  const PerformanceOptimizedPage({
-    super.key,
-    required this.child,
-    required this.pageName,
-    this.enableCaching = true,
-    this.cacheDuration = const Duration(minutes: 5),
-    this.onRefresh,
-  });
-
-  @override
-  ConsumerState<PerformanceOptimizedPage> createState() => _PerformanceOptimizedPageState();
-}
-
-class _PerformanceOptimizedPageState extends ConsumerState<PerformanceOptimizedPage>
-    with AutomaticKeepAliveClientMixin {
+// Performance monitoring
+class PerformanceMonitor {
+  static final Map<String, DateTime> _startTimes = {};
+  static final List<PerformanceMetric> _metrics = [];
   
-  DateTime? _lastCacheTime;
-  bool _isRefreshing = false;
-
-  @override
-  bool get wantKeepAlive => widget.enableCaching;
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    
-    return RefreshIndicator(
-      onRefresh: _handleRefresh,
-      child: widget.child,
-    );
+  static void startTimer(String operation) {
+    _startTimes[operation] = DateTime.now();
   }
-
-  Future<void> _handleRefresh() async {
-    if (_isRefreshing) return;
-    
-    setState(() {
-      _isRefreshing = true;
-    });
-
-    try {
-      widget.onRefresh?.call();
-      _lastCacheTime = DateTime.now();
-    } finally {
-      setState(() {
-        _isRefreshing = false;
-      });
+  
+  static void endTimer(String operation) {
+    final startTime = _startTimes.remove(operation);
+    if (startTime != null) {
+      final duration = DateTime.now().difference(startTime);
+      _metrics.add(PerformanceMetric(
+        operation: operation,
+        duration: duration,
+        timestamp: DateTime.now(),
+      ));
+      
+      if (kDebugMode) {
+        print('Performance: $operation took ${duration.inMilliseconds}ms');
+      }
     }
   }
-
-  bool get _shouldRefresh {
-    if (!widget.enableCaching || _lastCacheTime == null) return true;
-    return DateTime.now().difference(_lastCacheTime!) > widget.cacheDuration;
-  }
+  
+  static List<PerformanceMetric> getMetrics() => List.from(_metrics);
+  static void clearMetrics() => _metrics.clear();
 }
 
-class LazyLoadingList extends StatefulWidget {
-  final List<Widget> children;
-  final int itemsPerPage;
-  final Widget? loadingIndicator;
-  final VoidCallback? onLoadMore;
-
-  const LazyLoadingList({
-    super.key,
-    required this.children,
-    this.itemsPerPage = 10,
-    this.loadingIndicator,
-    this.onLoadMore,
+class PerformanceMetric {
+  final String operation;
+  final Duration duration;
+  final DateTime timestamp;
+  
+  PerformanceMetric({
+    required this.operation,
+    required this.duration,
+    required this.timestamp,
   });
-
-  @override
-  State<LazyLoadingList> createState() => _LazyLoadingListState();
 }
 
-class _LazyLoadingListState extends State<LazyLoadingList> {
-  late List<Widget> _displayedItems;
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _displayedItems = widget.children.take(widget.itemsPerPage).toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ..._displayedItems,
-        if (_displayedItems.length < widget.children.length)
-          _buildLoadMoreButton(),
-      ],
-    );
-  }
-
-  Widget _buildLoadMoreButton() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: widget.loadingIndicator ?? 
-        HProfessionalButton(
-          text: 'Load More',
-          variant: HProfessionalButtonVariant.secondary,
-          onPressed: _loadMore,
-        ),
-    );
-  }
-
-  void _loadMore() {
-    if (_isLoading) return;
+// Offline queue management
+class OfflineQueue {
+  static const String _queueKey = 'offline_queue';
+  static const String _maxQueueSize = 'max_queue_size';
+  
+  static Future<void> addToQueue(OfflineAction action) async {
+    final queue = await getQueue();
+    queue.add(action);
     
-    setState(() {
-      _isLoading = true;
-    });
+    // Limit queue size to prevent memory issues
+    if (queue.length > 100) {
+      queue.removeRange(0, queue.length - 100);
+    }
+    
+    await _saveQueue(queue);
+  }
+  
+  static Future<List<OfflineAction>> getQueue() async {
+    try {
+      final queueData = await SecureTokenStorage.getStoredData(_queueKey);
+      if (queueData != null) {
+        final List<dynamic> jsonList = jsonDecode(queueData);
+        return jsonList.map((json) => OfflineAction.fromJson(json)).toList();
+      }
+    } catch (e) {
+      print('Error loading offline queue: $e');
+    }
+    return [];
+  }
+  
+  static Future<void> _saveQueue(List<OfflineAction> queue) async {
+    try {
+      final jsonList = queue.map((action) => action.toJson()).toList();
+      await SecureTokenStorage.storeData(_queueKey, jsonEncode(jsonList));
+    } catch (e) {
+      print('Error saving offline queue: $e');
+    }
+  }
+  
+  static Future<void> processQueue() async {
+    final hasInternet = await InternetConnectionChecker().hasConnection;
+    if (!hasInternet) return;
+    
+    final queue = await getQueue();
+    final List<OfflineAction> failedActions = [];
+    
+    for (final action in queue) {
+      try {
+        await _executeAction(action);
+      } catch (e) {
+        print('Failed to execute offline action: $e');
+        failedActions.add(action);
+      }
+    }
+    
+    // Keep only failed actions
+    await _saveQueue(failedActions);
+  }
+  
+  static Future<void> _executeAction(OfflineAction action) async {
+    switch (action.type) {
+      case 'scan_attendance':
+        await ApiService.recordAttendance(
+          action.data['token'],
+          action.data['sessionId'],
+          action.data['studentId'],
+        );
+        break;
+      case 'mark_notice_read':
+        await ApiService.markNoticeAsRead(action.data['noticeId']);
+        break;
+      case 'meal_intent':
+        await ApiService.setMealIntent(
+          action.data['token'],
+          action.data['mealId'],
+          action.data['intendsToEat'],
+        );
+        break;
+      default:
+        throw Exception('Unknown action type: ${action.type}');
+    }
+  }
+  
+  static Future<void> clearQueue() async {
+    await SecureTokenStorage.deleteData(_queueKey);
+  }
+}
 
-    // Simulate loading delay
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() {
-          final startIndex = _displayedItems.length;
-          final endIndex = (startIndex + widget.itemsPerPage).clamp(0, widget.children.length);
-          _displayedItems.addAll(widget.children.sublist(startIndex, endIndex));
-          _isLoading = false;
-        });
-        widget.onLoadMore?.call();
+class OfflineAction {
+  final String type;
+  final Map<String, dynamic> data;
+  final DateTime timestamp;
+  final int retryCount;
+  
+  OfflineAction({
+    required this.type,
+    required this.data,
+    required this.timestamp,
+    this.retryCount = 0,
+  });
+  
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'data': data,
+    'timestamp': timestamp.toIso8601String(),
+    'retryCount': retryCount,
+  };
+  
+  factory OfflineAction.fromJson(Map<String, dynamic> json) => OfflineAction(
+    type: json['type'],
+    data: Map<String, dynamic>.from(json['data']),
+    timestamp: DateTime.parse(json['timestamp']),
+    retryCount: json['retryCount'] ?? 0,
+  );
+}
+
+// Error handling and recovery
+class ErrorHandler {
+  static final List<AppError> _errors = [];
+  static const int maxErrors = 50;
+  
+  static void logError(String message, {
+    String? details,
+    String? stackTrace,
+    Map<String, dynamic>? context,
+  }) {
+    final error = AppError(
+      message: message,
+      details: details,
+      stackTrace: stackTrace,
+      context: context,
+      timestamp: DateTime.now(),
+    );
+    
+    _errors.add(error);
+    
+    // Keep only recent errors
+    if (_errors.length > maxErrors) {
+      _errors.removeRange(0, _errors.length - maxErrors);
+    }
+    
+    if (kDebugMode) {
+      print('Error logged: $message');
+      if (details != null) print('Details: $details');
+    }
+  }
+  
+  static List<AppError> getErrors() => List.from(_errors);
+  static void clearErrors() => _errors.clear();
+  
+  static Future<void> retrySafeActions() async {
+    final safeActions = _errors.where((error) => 
+      error.context?['isRetryable'] == true
+    ).toList();
+    
+    for (final error in safeActions) {
+      try {
+        await _retryAction(error);
+        _errors.remove(error);
+      } catch (e) {
+        print('Retry failed for error: ${error.message}');
+      }
+    }
+  }
+  
+  static Future<void> _retryAction(AppError error) async {
+    // Implement retry logic based on error context
+    final actionType = error.context?['actionType'] as String?;
+    
+    switch (actionType) {
+      case 'api_call':
+        // Retry API calls
+        break;
+      case 'offline_sync':
+        // Retry offline sync
+        await OfflineQueue.processQueue();
+        break;
+      default:
+        // Generic retry
+        break;
+    }
+  }
+}
+
+class AppError {
+  final String message;
+  final String? details;
+  final String? stackTrace;
+  final Map<String, dynamic>? context;
+  final DateTime timestamp;
+  
+  AppError({
+    required this.message,
+    this.details,
+    this.stackTrace,
+    this.context,
+    required this.timestamp,
+  });
+}
+
+// Health monitoring
+class HealthMonitor {
+  static DateTime? _lastApiCheck;
+  static bool _isHealthy = true;
+  static String? _lastError;
+  
+  static Future<bool> checkApiHealth() async {
+    try {
+      PerformanceMonitor.startTimer('api_health_check');
+      
+      final response = await ApiService.getHealth();
+      _isHealthy = response['success'] == true;
+      _lastApiCheck = DateTime.now();
+      _lastError = null;
+      
+      PerformanceMonitor.endTimer('api_health_check');
+      return _isHealthy;
+    } catch (e) {
+      _isHealthy = false;
+      _lastError = e.toString();
+      _lastApiCheck = DateTime.now();
+      
+      ErrorHandler.logError(
+        'API health check failed',
+        details: e.toString(),
+        context: {'isRetryable': true, 'actionType': 'api_call'},
+      );
+      
+      PerformanceMonitor.endTimer('api_health_check');
+      return false;
+    }
+  }
+  
+  static bool get isHealthy => _isHealthy;
+  static String? get lastError => _lastError;
+  static DateTime? get lastCheck => _lastApiCheck;
+  
+  static Duration? get timeSinceLastCheck {
+    if (_lastApiCheck == null) return null;
+    return DateTime.now().difference(_lastApiCheck!);
+  }
+  
+  static bool get needsHealthCheck {
+    if (_lastApiCheck == null) return true;
+    return DateTime.now().difference(_lastApiCheck!).inMinutes > 5;
+  }
+}
+
+// Connectivity monitoring
+class ConnectivityMonitor {
+  static StreamSubscription<List<ConnectivityResult>>? _subscription;
+  static bool _isConnected = true;
+  static List<ConnectivityResult> _connectionTypes = [];
+  
+  static void startMonitoring() {
+    _subscription = Connectivity().onConnectivityChanged.listen((results) {
+      _connectionTypes = results;
+      _isConnected = results.isNotEmpty && 
+        !results.contains(ConnectivityResult.none);
+      
+      if (_isConnected) {
+        // Process offline queue when connection is restored
+        OfflineQueue.processQueue();
+        // Retry failed actions
+        ErrorHandler.retrySafeActions();
       }
     });
   }
-}
-
-class ImageCacheManager {
-  static final Map<String, ImageProvider> _cache = {};
-  static const int _maxCacheSize = 50;
-
-  static ImageProvider getCachedImage(String url) {
-    if (_cache.containsKey(url)) {
-      return _cache[url]!;
-    }
-
-    final imageProvider = NetworkImage(url);
-    _cacheImage(url, imageProvider);
-    return imageProvider;
+  
+  static void stopMonitoring() {
+    _subscription?.cancel();
+    _subscription = null;
   }
-
-  static void _cacheImage(String url, ImageProvider imageProvider) {
-    if (_cache.length >= _maxCacheSize) {
-      // Remove oldest entry
-      final firstKey = _cache.keys.first;
-      _cache.remove(firstKey);
+  
+  static bool get isConnected => _isConnected;
+  static List<ConnectivityResult> get connectionTypes => _connectionTypes;
+  
+  static String get connectionTypeString {
+    if (_connectionTypes.contains(ConnectivityResult.wifi)) {
+      return 'WiFi';
+    } else if (_connectionTypes.contains(ConnectivityResult.mobile)) {
+      return 'Mobile';
+    } else if (_connectionTypes.contains(ConnectivityResult.ethernet)) {
+      return 'Ethernet';
+    } else {
+      return 'None';
     }
-    _cache[url] = imageProvider;
-  }
-
-  static void clearCache() {
-    _cache.clear();
   }
 }
 
-class OptimizedNetworkImage extends StatelessWidget {
-  final String imageUrl;
-  final Widget? placeholder;
-  final Widget? errorWidget;
-  final BoxFit fit;
-  final double? width;
-  final double? height;
-
-  const OptimizedNetworkImage({
-    super.key,
-    required this.imageUrl,
-    this.placeholder,
-    this.errorWidget,
-    this.fit = BoxFit.cover,
-    this.width,
-    this.height,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Image(
-      image: ImageCacheManager.getCachedImage(imageUrl),
-      fit: fit,
-      width: width,
-      height: height,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return placeholder ?? const HProfessionalLoading();
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return errorWidget ?? const Icon(Icons.error);
-      },
-    );
+// MV (Materialized View) freshness monitoring
+class MVFreshnessMonitor {
+  static final Map<String, DateTime> _lastUpdates = {};
+  static const Duration maxStaleness = Duration(minutes: 30);
+  
+  static void markUpdated(String mvName) {
+    _lastUpdates[mvName] = DateTime.now();
   }
-}
-
-class PerformanceMonitor {
-  static final Map<String, DateTime> _pageLoadTimes = {};
-  static final Map<String, Duration> _pageLoadDurations = {};
-
-  static void startPageLoad(String pageName) {
-    _pageLoadTimes[pageName] = DateTime.now();
+  
+  static bool isStale(String mvName) {
+    final lastUpdate = _lastUpdates[mvName];
+    if (lastUpdate == null) return true;
+    
+    return DateTime.now().difference(lastUpdate) > maxStaleness;
   }
-
-  static void endPageLoad(String pageName) {
-    final startTime = _pageLoadTimes[pageName];
-    if (startTime != null) {
-      _pageLoadDurations[pageName] = DateTime.now().difference(startTime);
-      _pageLoadTimes.remove(pageName);
+  
+  static Duration? getStaleness(String mvName) {
+    final lastUpdate = _lastUpdates[mvName];
+    if (lastUpdate == null) return null;
+    
+    return DateTime.now().difference(lastUpdate);
+  }
+  
+  static Map<String, Duration> getAllStaleness() {
+    final Map<String, Duration> staleness = {};
+    
+    for (final entry in _lastUpdates.entries) {
+      staleness[entry.key] = DateTime.now().difference(entry.value);
     }
-  }
-
-  static Duration? getPageLoadDuration(String pageName) {
-    return _pageLoadDurations[pageName];
-  }
-
-  static Map<String, Duration> getAllPageLoadDurations() {
-    return Map.from(_pageLoadDurations);
-  }
-
-  static void clearMetrics() {
-    _pageLoadTimes.clear();
-    _pageLoadDurations.clear();
+    
+    return staleness;
   }
 }

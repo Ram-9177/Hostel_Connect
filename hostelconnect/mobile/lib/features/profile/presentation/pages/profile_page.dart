@@ -68,9 +68,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     return HResponsive.builder(builder: (ctx, r) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(HTeluguTheme.getTeluguEnglishText('profile', 'Profile')),
+          title: const Text('Profile'),
           backgroundColor: HTeluguTheme.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: HTeluguTheme.onPrimary,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           elevation: 0,
         ),
         body: FadeTransition(

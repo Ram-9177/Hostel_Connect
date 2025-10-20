@@ -28,9 +28,13 @@ class _MealsPageState extends State<MealsPage> {
     return HResponsive.builder(builder: (ctx, r) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(HTeluguTheme.getTeluguEnglishText('meal_management', 'Meal Management')),
+          title: Text(HTeluguTheme.getTeluguLabel('dinner', englishFallback: 'Meals')),
           backgroundColor: HTeluguTheme.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: HTeluguTheme.onPrimary,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.history),
