@@ -5,8 +5,8 @@ import { NoticesService } from './notices.service';
 
 @ApiTags('Notices')
 @Controller('notices')
-@UseGuards(AuthGuard('jwt'))
-@ApiBearerAuth()
+// @UseGuards(AuthGuard('jwt'))
+// @ApiBearerAuth()
 export class NoticesController {
   constructor(private readonly noticesService: NoticesService) {}
 

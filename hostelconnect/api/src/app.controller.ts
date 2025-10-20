@@ -20,4 +20,11 @@ export class AppController {
   getHealth() {
     return this.appService.getHealth();
   }
+
+  @Get('test-notices')
+  @ApiOperation({ summary: 'Test notices endpoint' })
+  @ApiResponse({ status: 200, description: 'Test endpoint working' })
+  testNotices() {
+    return { message: 'Test notices endpoint working' };
+  }
 }

@@ -23,6 +23,9 @@ let AppController = class AppController {
     getHealth() {
         return this.appService.getHealth();
     }
+    testNotices() {
+        return { message: 'Test notices endpoint working' };
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -41,6 +44,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AppController.prototype, "getHealth", null);
+__decorate([
+    (0, common_1.Get)('test-notices'),
+    (0, swagger_1.ApiOperation)({ summary: 'Test notices endpoint' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Test endpoint working' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "testNotices", null);
 exports.AppController = AppController = __decorate([
     (0, swagger_1.ApiTags)('Health'),
     (0, common_1.Controller)(),

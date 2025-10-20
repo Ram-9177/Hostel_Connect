@@ -12,6 +12,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { AdsModule } from './ads/ads.module';
+import { NoticesModule } from './notices/notices.module';
 
 // Database configuration
 import { dataSourceOptions } from './database/data-source';
@@ -51,6 +52,7 @@ import { dataSourceOptions } from './database/data-source';
     AuthModule,
     UsersModule,
     AdsModule,
+    NoticesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
