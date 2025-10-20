@@ -138,4 +138,58 @@ export class AuthService {
       where: { id: userId, isActive: true },
     });
   }
+
+  async getProfile(userId: string): Promise<any> {
+    const student = await this.studentRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!student) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return {
+      user: {
+        id: student.id,
+        studentId: student.studentId,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        email: student.email,
+        role: student.role,
+        hostelId: student.hostelId,
+        roomId: student.roomId,
+      },
+    };
+  }
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const student = await this.studentRepository.findOne({
+      where: { email },
+    });
+
+    if (!student) {
+      // Don't reveal if email exists or not for security
+      return { message: 'If the email exists, password reset instructions have been sent.' };
+    }
+
+    // In a real application, you would:
+    // 1. Generate a secure reset token
+    // 2. Store it in the database with expiration
+    // 3. Send an email with the reset link
+    
+    // For demo purposes, we'll just return a success message
+    return { message: 'Password reset instructions have been sent to your email.' };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    // In a real application, you would:
+    // 1. Validate the reset token
+    // 2. Check if it's not expired
+    // 3. Hash the new password
+    // 4. Update the user's password
+    // 5. Invalidate the reset token
+    
+    // For demo purposes, we'll just return a success message
+    return { message: 'Password has been reset successfully.' };
+  }
 }

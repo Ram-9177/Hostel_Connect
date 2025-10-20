@@ -12,4 +12,11 @@ export declare class AuthService {
     }>;
     private generateTokens;
     validateUser(userId: string): Promise<Student | null>;
+    getProfile(userId: string): Promise<any>;
+    forgotPassword(email: string): Promise<{
+        message: string;
+    }>;
+    resetPassword(token: string, newPassword: string): Promise<{
+        message: string;
+    }>;
 }

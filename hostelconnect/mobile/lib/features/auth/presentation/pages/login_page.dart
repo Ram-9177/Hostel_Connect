@@ -187,26 +187,26 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                 child: HProfessionalCard(
                                   backgroundColor: Colors.white.withOpacity(0.95),
                                   borderRadius: BorderRadius.circular(24),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: Column(
+          child: Form(
+            key: _formKey,
+            child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         // Header
                                         Container(
                                           padding: const EdgeInsets.all(24),
                                           child: Column(
-                                            children: [
-                                              Text(
-                                                AppConstants.appName,
+              children: [
+                Text(
+                  AppConstants.appName,
                                                 style: TextStyle(
                                                   fontSize: r.isXS ? 24 : 28,
-                                                  fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.bold,
                                                   color: HTokens.primary,
-                                                ),
-                                              ),
+                  ),
+                ),
                                               SizedBox(height: HTokens.sm),
-                                              Text(
+                Text(
                                                 'Welcome back! Sign in to continue',
                                                 style: TextStyle(
                                                   fontSize: r.isXS ? 14 : 16,
@@ -227,39 +227,39 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                               HProfessionalInput(
                                                 label: 'Email Address',
                                                 hint: 'Enter your email',
-                                                controller: _emailController,
-                                                keyboardType: TextInputType.emailAddress,
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                                                 prefixIcon: Icons.email_outlined,
-                                                validator: (value) {
-                                                  if (value == null || value.isEmpty) {
-                                                    return 'Please enter your email';
-                                                  }
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
                                                   if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                                                       .hasMatch(value)) {
-                                                    return 'Please enter a valid email';
-                                                  }
-                                                  return null;
-                                                },
-                                              ),
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
                                               
                                               SizedBox(height: HTokens.lg),
 
                                               HProfessionalInput(
                                                 label: 'Password',
                                                 hint: 'Enter your password',
-                                                controller: _passwordController,
-                                                obscureText: true,
+                  controller: _passwordController,
+                  obscureText: true,
                                                 prefixIcon: Icons.lock_outline,
-                                                validator: (value) {
-                                                  if (value == null || value.isEmpty) {
-                                                    return 'Please enter your password';
-                                                  }
-                                                  if (value.length < 6) {
-                                                    return 'Password must be at least 6 characters';
-                                                  }
-                                                  return null;
-                                                },
-                                              ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
+                ),
                                               
                                               SizedBox(height: HTokens.sm),
                                               
@@ -286,9 +286,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                               // Login Button
                                               HProfessionalButton(
                                                 text: 'Sign In',
-                                                onPressed: appState.isLoading 
-                                                    ? null 
-                                                    : () => _handleLogin(appStateNotifier),
+                                                onPressed: appState.isLoading
+                                                    ? null
+                                                    : () => _handleLogin(ref.read(appStateProvider.notifier)),
                                                 isLoading: appState.isLoading,
                                                 isFullWidth: true,
                                                 size: HProfessionalButtonSize.large,
@@ -308,7 +308,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       ),
                     ),
                     TextButton(
-                      onPressed: () => _showRegisterDialog(context, appStateNotifier),
+                      onPressed: () => _showRegisterDialog(context, ref.read(appStateProvider.notifier)),
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
@@ -506,17 +506,19 @@ class _LoginPageState extends ConsumerState<LoginPage>
   }
 
   void _showForgotPasswordDialog() {
+    final emailController = TextEditingController();
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Reset Password'),
+        title: const Text('Reset Password'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Enter your email address to receive password reset instructions.'),
-            SizedBox(height: HTokens.md),
+            const Text('Enter your email address to receive password reset instructions.'),
+            const SizedBox(height: 16),
             HProfessionalInput(
-              controller: TextEditingController(),
+              controller: emailController,
               label: 'Email Address',
               keyboardType: TextInputType.emailAddress,
               validator: (value) {
@@ -534,17 +536,35 @@ class _LoginPageState extends ConsumerState<LoginPage>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           HProfessionalButton(
-            onPressed: () {
-              // TODO: Implement password reset
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Password reset instructions sent to your email!'),
-                ),
-              );
-              Navigator.pop(context);
+            onPressed: () async {
+              if (emailController.text.isNotEmpty) {
+                try {
+                  // Call the forgot password API
+                  final response = await ApiService.forgotPassword(emailController.text.trim());
+                  
+                  if (mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(response['message'] ?? 'Password reset instructions sent!'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error: ${e.toString()}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              }
             },
             text: 'Send Reset Link',
             variant: HProfessionalButtonVariant.primary,

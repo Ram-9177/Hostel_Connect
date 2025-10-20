@@ -116,6 +116,38 @@ let AuthService = class AuthService {
             where: { id: userId, isActive: true },
         });
     }
+    async getProfile(userId) {
+        const student = await this.studentRepository.findOne({
+            where: { id: userId },
+        });
+        if (!student) {
+            throw new common_1.UnauthorizedException('User not found');
+        }
+        return {
+            user: {
+                id: student.id,
+                studentId: student.studentId,
+                firstName: student.firstName,
+                lastName: student.lastName,
+                email: student.email,
+                role: student.role,
+                hostelId: student.hostelId,
+                roomId: student.roomId,
+            },
+        };
+    }
+    async forgotPassword(email) {
+        const student = await this.studentRepository.findOne({
+            where: { email },
+        });
+        if (!student) {
+            return { message: 'If the email exists, password reset instructions have been sent.' };
+        }
+        return { message: 'Password reset instructions have been sent to your email.' };
+    }
+    async resetPassword(token, newPassword) {
+        return { message: 'Password has been reset successfully.' };
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

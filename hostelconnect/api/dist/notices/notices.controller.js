@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NoticesController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const passport_1 = require("@nestjs/passport");
 const notices_service_1 = require("./notices.service");
 let NoticesController = class NoticesController {
     constructor(noticesService) {
@@ -48,6 +49,8 @@ __decorate([
 exports.NoticesController = NoticesController = __decorate([
     (0, swagger_1.ApiTags)('Notices'),
     (0, common_1.Controller)('notices'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [notices_service_1.NoticesService])
 ], NoticesController);
 //# sourceMappingURL=notices.controller.js.map
