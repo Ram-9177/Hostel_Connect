@@ -1,0 +1,17 @@
+# Global code owners
+* @ram
+
+# API specific
+/api/ @ram
+
+# Mobile specific
+/mobile/ @ram
+
+# Documentation
+/docs/ @ram
+
+# Infrastructure
+/infra/ @ram
+
+# GitHub workflows
+/.github/ @ram

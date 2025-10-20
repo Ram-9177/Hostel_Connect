@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+    working_dir: /workspace
+    command: sleep infinity
+    environment:
+      - NODE_ENV=development
+      - FLUTTER_ROOT=/opt/flutter
+    networks:
+      - devcontainer
+
+networks:
+  devcontainer:
+    driver: bridge

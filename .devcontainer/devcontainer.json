@@ -1,0 +1,45 @@
+{
+  "name": "HostelConnect Development",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dart-code.dart-code",
+        "dart-code.flutter",
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+        "github.vscode-pull-request-github",
+        "ms-vscode.vscode-github-actions"
+      ],
+      "settings": {
+        "dart.flutterSdkPath": "/opt/flutter",
+        "dart.lineLength": 80,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll": true
+        },
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/.git": true,
+          "**/.DS_Store": true,
+          "**/Thumbs.db": true
+        }
+      }
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "remoteUser": "node"
+}

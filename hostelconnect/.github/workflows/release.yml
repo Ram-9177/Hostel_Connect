@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: api/package-lock.json
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+        channel: 'stable'
+        cache: true
+    
+    - name: Install API dependencies
+      working-directory: ./api
+      run: npm ci
+    
+    - name: Install Mobile dependencies
+      working-directory: ./mobile
+      run: flutter pub get
+    
+    - name: Build API
+      working-directory: ./api
+      run: npm run build
+    
+    - name: Build Mobile APK
+      working-directory: ./mobile
+      run: flutter build apk --release
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          api/dist/**
+          mobile/build/app/outputs/flutter-apk/app-release.apk
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

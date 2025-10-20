@@ -1,0 +1,194 @@
+name: HostelConnect CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'hostelconnect/api/**'
+      - 'hostelconnect/mobile/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'hostelconnect/api/**'
+      - 'hostelconnect/mobile/**'
+
+env:
+  NODE_VERSION: '20'
+  FLUTTER_VERSION: '3.16.0'
+
+jobs:
+  # API Tests
+  api-tests:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'hostelconnect/api/') || contains(github.event.head_commit.added, 'hostelconnect/api/')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: hostelconnect/api/package-lock.json
+          
+      - name: Install API dependencies
+        working-directory: hostelconnect/api
+        run: npm ci
+        
+      - name: Run API tests
+        working-directory: hostelconnect/api
+        run: npm test
+        
+      - name: Run API linting
+        working-directory: hostelconnect/api
+        run: npm run lint
+        
+      - name: Build API
+        working-directory: hostelconnect/api
+        run: npm run build
+
+  # Mobile Tests
+  mobile-tests:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'hostelconnect/mobile/') || contains(github.event.head_commit.added, 'hostelconnect/mobile/')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+          
+      - name: Install Flutter dependencies
+        working-directory: hostelconnect/mobile
+        run: flutter pub get
+        
+      - name: Run Flutter tests
+        working-directory: hostelconnect/mobile
+        run: flutter test
+        
+      - name: Run Flutter analyze
+        working-directory: hostelconnect/mobile
+        run: flutter analyze --no-fatal-infos
+        
+      - name: Build Android APK
+        working-directory: hostelconnect/mobile
+        run: flutter build apk --release
+
+  # Security Scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, dart
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: hostelconnect/api/package-lock.json
+          
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+          
+      - name: Install dependencies
+        run: |
+          cd hostelconnect/api && npm ci
+          cd ../mobile && flutter pub get
+          
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  # Deploy to Staging (using GitHub Education credits)
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [api-tests, mobile-tests, security-scan]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment: staging
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: hostelconnect/api/package-lock.json
+          
+      - name: Build API
+        working-directory: hostelconnect/api
+        run: npm run build
+        
+      - name: Deploy API to Railway
+        uses: railway-deploy/railway-deploy@v1
+        with:
+          railway-token: ${{ secrets.RAILWAY_TOKEN }}
+          service: hostelconnect-api
+          working-directory: hostelconnect/api
+          
+      - name: Deploy Mobile to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: hostelconnect/mobile/build/app/outputs/flutter-apk/app-release.apk
+
+  # Deploy to Production
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [api-tests, mobile-tests, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: hostelconnect/api/package-lock.json
+          
+      - name: Build API
+        working-directory: hostelconnect/api
+        run: npm run build
+        
+      - name: Deploy API to Production
+        uses: railway-deploy/railway-deploy@v1
+        with:
+          railway-token: ${{ secrets.RAILWAY_TOKEN }}
+          service: hostelconnect-api-prod
+          working-directory: hostelconnect/api
+          
+      - name: Deploy Mobile to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+          packageName: com.example.hostelconnect
+          releaseFiles: hostelconnect/mobile/build/app/outputs/flutter-apk/app-release.apk
+          track: production
+          status: completed

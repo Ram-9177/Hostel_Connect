@@ -1,0 +1,173 @@
+{
+  "ads": [
+    {
+      "id": "ad-001",
+      "type": "INTERSTITIAL",
+      "title": "Gate Pass Unlock Ad",
+      "description": "20-second interstitial ad for gate pass unlock",
+      "assetUrl": "https://example.com/ads/gate-pass-interstitial.mp4",
+      "durationS": 20,
+      "module": "gatepass",
+      "active": true,
+      "createdAt": "2024-01-15T10:00:00Z",
+      "metadata": {
+        "format": "video",
+        "resolution": "1080x1920",
+        "fileSize": "2.5MB",
+        "compression": "H.264",
+        "audio": true,
+        "skipAfter": 5
+      }
+    },
+    {
+      "id": "ad-002",
+      "type": "BANNER",
+      "title": "Meals Module Banner",
+      "description": "Banner ad for meals module",
+      "assetUrl": "https://example.com/ads/meals-banner.jpg",
+      "durationS": 0,
+      "module": "meals",
+      "active": true,
+      "createdAt": "2024-01-15T10:00:00Z",
+      "metadata": {
+        "format": "image",
+        "resolution": "320x50",
+        "fileSize": "15KB",
+        "compression": "JPEG",
+        "clickable": true
+      }
+    },
+    {
+      "id": "ad-003",
+      "type": "MINICARD",
+      "title": "Room Management Card",
+      "description": "Mini card ad for room management",
+      "assetUrl": "https://example.com/ads/room-minicard.png",
+      "durationS": 0,
+      "module": "rooms",
+      "active": true,
+      "createdAt": "2024-01-15T10:00:00Z",
+      "metadata": {
+        "format": "image",
+        "resolution": "150x100",
+        "fileSize": "8KB",
+        "compression": "PNG",
+        "clickable": true
+      }
+    },
+    {
+      "id": "ad-004",
+      "type": "INTERSTITIAL",
+      "title": "Attendance Module Ad",
+      "description": "15-second interstitial ad for attendance module",
+      "assetUrl": "https://example.com/ads/attendance-interstitial.mp4",
+      "durationS": 15,
+      "module": "attendance",
+      "active": true,
+      "createdAt": "2024-01-15T10:00:00Z",
+      "metadata": {
+        "format": "video",
+        "resolution": "1080x1920",
+        "fileSize": "1.8MB",
+        "compression": "H.264",
+        "audio": false,
+        "skipAfter": 3
+      }
+    },
+    {
+      "id": "ad-005",
+      "type": "BANNER",
+      "title": "Notices Module Banner",
+      "description": "Banner ad for notices module",
+      "assetUrl": "https://example.com/ads/notices-banner.jpg",
+      "durationS": 0,
+      "module": "notices",
+      "active": true,
+      "createdAt": "2024-01-15T10:00:00Z",
+      "metadata": {
+        "format": "image",
+        "resolution": "320x50",
+        "fileSize": "12KB",
+        "compression": "JPEG",
+        "clickable": true
+      }
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "campaign-001",
+      "name": "Gate Pass Premium",
+      "description": "Premium gate pass unlock campaign",
+      "startDate": "2024-01-15T00:00:00Z",
+      "endDate": "2024-12-31T23:59:59Z",
+      "budget": 10000,
+      "targetModules": ["gatepass"],
+      "adIds": ["ad-001"],
+      "active": true
+    },
+    {
+      "id": "campaign-002",
+      "name": "Module Awareness",
+      "description": "General module awareness campaign",
+      "startDate": "2024-01-15T00:00:00Z",
+      "endDate": "2024-12-31T23:59:59Z",
+      "budget": 5000,
+      "targetModules": ["meals", "rooms", "attendance", "notices"],
+      "adIds": ["ad-002", "ad-003", "ad-004", "ad-005"],
+      "active": true
+    }
+  ],
+  "analytics": {
+    "totalAds": 5,
+    "activeAds": 5,
+    "totalCampaigns": 2,
+    "activeCampaigns": 2,
+    "totalBudget": 15000,
+    "modules": [
+      {
+        "module": "gatepass",
+        "adCount": 1,
+        "totalViews": 0,
+        "totalClicks": 0,
+        "revenue": 0
+      },
+      {
+        "module": "meals",
+        "adCount": 1,
+        "totalViews": 0,
+        "totalClicks": 0,
+        "revenue": 0
+      },
+      {
+        "module": "rooms",
+        "adCount": 1,
+        "totalViews": 0,
+        "totalClicks": 0,
+        "revenue": 0
+      },
+      {
+        "module": "attendance",
+        "adCount": 1,
+        "totalViews": 0,
+        "totalClicks": 0,
+        "revenue": 0
+      },
+      {
+        "module": "notices",
+        "adCount": 1,
+        "totalViews": 0,
+        "totalClicks": 0,
+        "revenue": 0
+      }
+    ]
+  },
+  "settings": {
+    "defaultAdDuration": 20,
+    "maxAdDuration": 30,
+    "minAdDuration": 5,
+    "skipThreshold": 5,
+    "retryAttempts": 3,
+    "cacheTimeout": 3600,
+    "analyticsRetention": 90
+  }
+}
