@@ -1,7 +1,8 @@
 // lib/core/config/environment.dart
 class Environment {
-  static const String _baseUrl = 'http://10.17.134.33:3000/api/v1';
-  static const String _apiKey = 'your-api-key-here';
+  // Production-ready environment configuration
+  static const String _baseUrl = 'http://10.0.2.2:3000/api/v1'; // Android emulator localhost
+  static const String _apiKey = 'hc_prod_api_key_2024';
   static const int _timeoutSeconds = 30;
   static const int _maxRetries = 3;
   static const int _retryDelayMs = 1000;

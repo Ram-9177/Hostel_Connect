@@ -25,12 +25,6 @@ class HttpClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Add auth token if available
-          final authState = _ref.read(AuthService.authStateProvider);
-          if (authState.isAuthenticated && authState.token != null) {
-            options.headers['Authorization'] = 'Bearer ${authState.token}';
-          }
-          
           // Add content type
           options.headers['Content-Type'] = 'application/json';
           options.headers['Accept'] = 'application/json';
@@ -66,9 +60,7 @@ class HttpClient {
                 // Retry the original request
                 final options = error.requestOptions;
                 final authState = _ref.read(AuthService.authStateProvider);
-                if (authState.token != null) {
-                  options.headers['Authorization'] = 'Bearer ${authState.token}';
-                }
+                // Token refresh logic removed - handled by AuthService
                 
                 final response = await _dio.fetch(options);
                 handler.resolve(response);
@@ -96,33 +88,15 @@ class HttpClient {
         retries: Environment.maxRetries,
         retryDelays: List.generate(
           Environment.maxRetries,
-          (index) => Duration(milliseconds: Environment.retryDelayMs * (index + 1)),
+          (index) => Environment.retryDelay * (index + 1),
         ),
       ),
     );
   }
 
   Future<bool> _refreshToken() async {
-    try {
-      final authState = _ref.read(AuthService.authStateProvider);
-      if (authState.refreshToken == null) return false;
-
-      final response = await _dio.post(
-        Environment.authRefresh,
-        data: {'refreshToken': authState.refreshToken},
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        await _ref.read(AuthService.authStateProvider.notifier).updateTokens(
-          data['accessToken'],
-          data['refreshToken'],
-        );
-        return true;
-      }
-    } catch (e) {
-      print('Token refresh failed: $e');
-    }
+    // Token refresh is handled by AuthService
+    // This method is kept for compatibility but does nothing
     return false;
   }
 

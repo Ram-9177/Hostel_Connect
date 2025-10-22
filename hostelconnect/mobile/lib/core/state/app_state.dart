@@ -1,7 +1,7 @@
 // lib/core/state/app_state.dart - FIXED IMPORTS
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/user.dart';
+import '../auth/auth_service.dart';
 
 /// App state model
 class AppState {

@@ -386,6 +386,10 @@ class User {
   final String hostelId;
   final String firstName;
   final String lastName;
+  final String? phone;
+  final bool isActive;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final String? roomId;
   final String? bedNumber;
 
@@ -396,6 +400,10 @@ class User {
     required this.hostelId,
     required this.firstName,
     required this.lastName,
+    this.phone,
+    this.isActive = true,
+    this.createdAt,
+    this.updatedAt,
     this.roomId,
     this.bedNumber,
   });

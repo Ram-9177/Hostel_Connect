@@ -1,84 +1,150 @@
+// lib/shared/theme/app_theme.dart
 import 'package:flutter/material.dart';
-import '../../core/responsive.dart';
 
 class AppTheme {
+  // Production-ready color palette
+  static const Color background = Color(0xFFF5F7FA);
+  static const Color cardBackground = Color(0xFFFFFFFF);
+  static const Color primary = Color(0xFF1E88E5);
+  static const Color primaryDark = Color(0xFF1565C0);
+  static const Color accent = Color(0xFFFFB300);
+  static const Color textPrimary = Color(0xFF111827);
+  static const Color textSecondary = Color(0xFF6B7280);
+  static const Color success = Color(0xFF16A34A);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color error = Color(0xFFDC2626);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color onSurface = Color(0xFF111827);
+
+  // Typography
+  static const TextStyle headlineLarge = TextStyle(
+    fontSize: 32,
+    fontWeight: FontWeight.bold,
+    color: textPrimary,
+    height: 1.2,
+  );
+
+  static const TextStyle titleLarge = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
+    color: textPrimary,
+    height: 1.3,
+  );
+
+  static const TextStyle titleMedium = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color: textPrimary,
+    height: 1.4,
+  );
+
+  static const TextStyle titleSmall = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: textPrimary,
+    height: 1.4,
+  );
+
+  static const TextStyle bodyLarge = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+    color: textPrimary,
+    height: 1.5,
+  );
+
+  static const TextStyle bodyMedium = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    color: textPrimary,
+    height: 1.5,
+  );
+
+  static const TextStyle bodySmall = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.normal,
+    color: textSecondary,
+    height: 1.4,
+  );
+
+  // Light Theme
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: HTokens.primary,
-        brightness: Brightness.light,
+      colorScheme: const ColorScheme.light(
+        primary: primary,
+        primaryContainer: primaryDark,
+        secondary: accent,
+        surface: surface,
+        background: background,
+        error: error,
+        onPrimary: Colors.white,
+        onSecondary: Colors.black,
+        onSurface: onSurface,
+        onBackground: textPrimary,
+        onError: Colors.white,
       ),
-      fontFamily: 'Inter',
-      appBarTheme: AppBarTheme(
-        backgroundColor: HTokens.primary,
+      scaffoldBackgroundColor: background,
+      cardColor: cardBackground,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: primary,
         foregroundColor: Colors.white,
-        centerTitle: true,
         elevation: 0,
-      ),
-      cardTheme: CardThemeData(
-        elevation: 1,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(HTokens.cardRadius),
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: HTokens.primary,
+          backgroundColor: primary,
           foregroundColor: Colors.white,
-          minimumSize: Size(44, 44), // Accessibility
-          padding: EdgeInsets.symmetric(horizontal: HTokens.xl, vertical: HTokens.md),
+          elevation: 2,
+          shadowColor: primary.withOpacity(0.3),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(HTokens.cardRadius),
+            borderRadius: BorderRadius.circular(12),
           ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(HTokens.cardRadius),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: HTokens.lg, vertical: HTokens.md),
-      ),
-    );
-  }
-
-  static ThemeData get darkTheme {
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: HTokens.primary,
-        brightness: Brightness.dark,
-      ),
-      fontFamily: 'Inter',
-      appBarTheme: AppBarTheme(
-        backgroundColor: Colors.grey[900],
-        foregroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 0,
       ),
       cardTheme: CardThemeData(
-        elevation: 1,
-        color: Colors.grey[800],
+        color: cardBackground,
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.1),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(HTokens.cardRadius),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: HTokens.primary,
-          foregroundColor: Colors.white,
-          minimumSize: Size(44, 44), // Accessibility
-          padding: EdgeInsets.symmetric(horizontal: HTokens.xl, vertical: HTokens.md),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(HTokens.cardRadius),
-          ),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: background,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(HTokens.cardRadius),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: textSecondary.withOpacity(0.3)),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: HTokens.lg, vertical: HTokens.md),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: textSecondary.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: error),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      ),
+      textTheme: const TextTheme(
+        headlineLarge: headlineLarge,
+        titleLarge: titleLarge,
+        titleMedium: titleMedium,
+        titleSmall: titleSmall,
+        bodyLarge: bodyLarge,
+        bodyMedium: bodyMedium,
+        bodySmall: bodySmall,
       ),
     );
   }

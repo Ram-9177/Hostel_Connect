@@ -1,0 +1,217 @@
+name: Deploy HostelConnect to Azure
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  AZURE_WEBAPP_NAME: hostelconnect-api
+  NODE_VERSION: '18.x'
+  FLUTTER_VERSION: '3.16.0'
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: hostelconnect/api/package-lock.json
+        
+    - name: Install API dependencies
+      run: |
+        cd hostelconnect/api
+        npm ci
+        
+    - name: Run API tests
+      run: |
+        cd hostelconnect/api
+        npm test
+        
+    - name: Build API
+      run: |
+        cd hostelconnect/api
+        npm run build
+        
+    - name: Upload API build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-dist
+        path: hostelconnect/api/dist/
+        retention-days: 1
+
+  test-mobile:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: 'stable'
+        
+    - name: Install Flutter dependencies
+      run: |
+        cd hostelconnect/mobile
+        flutter pub get
+        
+    - name: Run Flutter tests
+      run: |
+        cd hostelconnect/mobile
+        flutter test
+        
+    - name: Build Flutter APK
+      run: |
+        cd hostelconnect/mobile
+        flutter build apk --release
+        
+    - name: Upload Flutter APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: mobile-apk
+        path: hostelconnect/mobile/build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+
+  deploy-api:
+    needs: [test-api]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download API build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: api-dist
+        path: hostelconnect/api/dist/
+        
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: Deploy to Azure App Service
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+        package: hostelconnect/api/dist
+        
+    - name: Run Database Migrations
+      run: |
+        cd hostelconnect/api
+        npm install -g @nestjs/cli
+        npm run migration:run
+        
+    - name: Seed Database
+      run: |
+        cd hostelconnect/api
+        npm run seed:run
+        
+    - name: Health Check
+      run: |
+        sleep 30
+        curl -f https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net/api/v1/health || exit 1
+
+  deploy-mobile:
+    needs: [test-mobile]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download Flutter APK
+      uses: actions/download-artifact@v4
+      with:
+        name: mobile-apk
+        path: ./apk/
+        
+    - name: Upload to Firebase App Distribution
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      with:
+        appId: ${{ secrets.FIREBASE_APP_ID }}
+        token: ${{ secrets.FIREBASE_TOKEN }}
+        groups: testers
+        file: ./apk/app-release.apk
+        releaseNotes: "HostelConnect Mobile App - Build ${{ github.run_number }}"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  performance-test:
+    needs: [deploy-api]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: Install Artillery
+      run: npm install -g artillery
+      
+    - name: Run Performance Tests
+      run: |
+        artillery run hostelconnect/api/test/performance/load-test.yml
+      env:
+        API_URL: https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net
+
+  notify:
+    needs: [deploy-api, deploy-mobile]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Notify Slack
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      if: always()
+      
+    - name: Notify Teams
+      uses: skitionek/notify-microsoft-teams@master
+      with:
+        webhook_url: ${{ secrets.TEAMS_WEBHOOK }}
+        status: ${{ job.status }}
+        title: "HostelConnect Deployment"
+        summary: "Deployment completed with status: ${{ job.status }}"
+      if: always()
