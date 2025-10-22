@@ -1,4 +1,4 @@
-// lib/main.dart - Production-ready HostelConnect
+// lib/main.dart - Simplified Working Version
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,19 +7,6 @@ import 'package:hostelconnect/core/api/auth_api_service.dart';
 import 'package:hostelconnect/core/state/app_state.dart';
 import 'package:hostelconnect/core/network/http_client.dart';
 import 'package:hostelconnect/shared/theme/app_theme.dart';
-// Feature page imports
-import 'package:hostelconnect/features/gate_pass/presentation/pages/gate_pass_request_page.dart';
-import 'package:hostelconnect/features/gate_pass/presentation/pages/gate_scanner_page.dart';
-import 'package:hostelconnect/features/attendance/presentation/pages/attendance_page.dart';
-import 'package:hostelconnect/features/attendance/presentation/pages/attendance_management_page.dart';
-import 'package:hostelconnect/features/meals/presentation/pages/meals_page.dart';
-import 'package:hostelconnect/features/dashboards/presentation/pages/chef_board_page.dart';
-import 'package:hostelconnect/features/rooms/presentation/pages/student_room_page.dart';
-import 'package:hostelconnect/features/room_management/presentation/pages/room_allotment_page.dart';
-import 'package:hostelconnect/features/notices/presentation/pages/notices_page.dart';
-import 'package:hostelconnect/features/notices/presentation/pages/broadcast_notice_page.dart';
-import 'package:hostelconnect/features/reports/presentation/pages/reports_page.dart';
-import 'package:hostelconnect/features/profile/presentation/pages/profile_page.dart';
 
 void main() {
   runApp(
@@ -87,61 +74,6 @@ class HostelConnectApp extends ConsumerWidget {
         GoRoute(
           path: '/access-denied',
           builder: (context, state) => const AccessDeniedPage(),
-        ),
-        // Gate Pass Routes
-        GoRoute(
-          path: '/gate-pass-request',
-          builder: (context, state) => const GatePassRequestPage(),
-        ),
-        GoRoute(
-          path: '/gate-scanner',
-          builder: (context, state) => const GateScannerPage(),
-        ),
-        // Attendance Routes
-        GoRoute(
-          path: '/attendance',
-          builder: (context, state) => const AttendancePage(),
-        ),
-        GoRoute(
-          path: '/attendance-management',
-          builder: (context, state) => const AttendanceManagementPage(hostelId: 'demo-hostel-001'),
-        ),
-        // Meals Routes
-        GoRoute(
-          path: '/meals',
-          builder: (context, state) => const MealsPage(),
-        ),
-        GoRoute(
-          path: '/chef-board',
-          builder: (context, state) => const ChefBoardPage(),
-        ),
-        // Rooms Routes
-        GoRoute(
-          path: '/rooms',
-          builder: (context, state) => const StudentRoomPage(),
-        ),
-        GoRoute(
-          path: '/room-allotment',
-          builder: (context, state) => const RoomAllotmentPage(),
-        ),
-        // Notices Routes
-        GoRoute(
-          path: '/notices',
-          builder: (context, state) => const NoticesPage(),
-        ),
-        GoRoute(
-          path: '/broadcast-notice',
-          builder: (context, state) => const BroadcastNoticePage(),
-        ),
-        // Reports Routes
-        GoRoute(
-          path: '/reports',
-          builder: (context, state) => const ReportsPage(),
-        ),
-        // Profile Route
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => const ProfilePage(),
         ),
       ],
     );
@@ -355,7 +287,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-          child: CircularProgressIndicator(
+                                child: CircularProgressIndicator(
                                   color: Colors.white,
                                   strokeWidth: 2,
                                 ),
@@ -533,42 +465,42 @@ class StudentHomePage extends ConsumerWidget {
                   'Request Gate Pass',
                   Icons.exit_to_app,
                   AppTheme.warning,
-                  () => context.go('/gate-pass-request'),
+                  () => _showFeatureDialog(context, 'Gate Pass Request', 'Request gate passes for leaving the hostel.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'View Attendance',
                   Icons.calendar_today,
                   AppTheme.primary,
-                  () => context.go('/attendance'),
+                  () => _showFeatureDialog(context, 'Attendance Tracking', 'View your attendance records and statistics.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Meal Management',
                   Icons.fastfood,
                   AppTheme.success,
-                  () => context.go('/meals'),
+                  () => _showFeatureDialog(context, 'Meal Management', 'Manage your meal preferences and opt-in/out.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Room Information',
                   Icons.bed,
                   AppTheme.accent,
-                  () => context.go('/rooms'),
+                  () => _showFeatureDialog(context, 'Room Information', 'View your room and bed assignment details.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Notices & Updates',
                   Icons.announcement,
                   AppTheme.primary,
-                  () => context.go('/notices'),
+                  () => _showFeatureDialog(context, 'Notices', 'Read hostel notices and announcements.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Profile',
                   Icons.person,
                   AppTheme.primary,
-                  () => context.go('/profile'),
+                  () => _showFeatureDialog(context, 'Profile', 'Manage your profile and account settings.'),
                 ),
               ],
             ),
@@ -792,42 +724,42 @@ class WardenHomePage extends ConsumerWidget {
                   'Gate Pass Scanner',
                   Icons.qr_code_scanner,
                   AppTheme.warning,
-                  () => context.go('/gate-scanner'),
+                  () => _showFeatureDialog(context, 'QR Scanner', 'Scan QR codes for gate pass validation.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Student Management',
                   Icons.group,
                   AppTheme.primary,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'Student Management', 'Manage student records and information.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Attendance Management',
                   Icons.check_circle_outline,
                   AppTheme.success,
-                  () => context.go('/attendance-management'),
+                  () => _showFeatureDialog(context, 'Attendance Management', 'Track and manage student attendance.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Room Allocation',
                   Icons.bed,
                   AppTheme.accent,
-                  () => context.go('/room-allotment'),
+                  () => _showFeatureDialog(context, 'Room Allocation', 'Allocate and manage room assignments.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Reports & Analytics',
                   Icons.bar_chart,
                   AppTheme.primary,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'Reports', 'Generate reports and analytics.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Broadcast Notice',
                   Icons.announcement,
                   AppTheme.primary,
-                  () => context.go('/broadcast-notice'),
+                  () => _showFeatureDialog(context, 'Broadcast Notice', 'Send notices to students.'),
                 ),
               ],
             ),
@@ -1051,42 +983,42 @@ class ChefHomePage extends ConsumerWidget {
                   'Menu Management',
                   Icons.restaurant_menu,
                   AppTheme.success,
-                  () => context.go('/chef-board'),
+                  () => _showFeatureDialog(context, 'Menu Management', 'Plan and manage daily menus.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Meal Preparation',
                   Icons.food_bank,
                   AppTheme.accent,
-                  () => context.go('/chef-board'),
+                  () => _showFeatureDialog(context, 'Meal Preparation', 'Track meal preparation and serving.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Inventory Management',
                   Icons.inventory,
                   AppTheme.primary,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'Inventory', 'Manage kitchen inventory and supplies.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Meal Feedback',
                   Icons.feedback,
                   AppTheme.primary,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'Meal Feedback', 'View student feedback on meals.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Dietary Requests',
                   Icons.healing,
                   AppTheme.success,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'Dietary Requests', 'Handle special dietary requirements.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Kitchen Reports',
                   Icons.analytics,
                   AppTheme.primary,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'Kitchen Reports', 'Generate kitchen performance reports.'),
                 ),
               ],
             ),
@@ -1310,50 +1242,50 @@ class AdminHomePage extends ConsumerWidget {
                   'Admin Dashboard',
                   Icons.dashboard,
                   AppTheme.primary,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'Admin Dashboard', 'System administration dashboard.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'User Management',
                   Icons.people,
                   AppTheme.success,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'User Management', 'Manage users and permissions.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'System Settings',
                   Icons.settings,
                   AppTheme.accent,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'System Settings', 'Configure system settings.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Reports & Analytics',
                   Icons.bar_chart,
                   AppTheme.primary,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'Reports & Analytics', 'Generate system reports.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Hostel Management',
                   Icons.home_work,
                   AppTheme.accent,
-                  () => context.go('/room-allotment'),
+                  () => _showFeatureDialog(context, 'Hostel Management', 'Manage hostel operations.'),
                 ),
                 _buildFeatureCard(
                   context,
                   'Security & Access',
                   Icons.security,
                   AppTheme.error,
-                  () => context.go('/reports'),
+                  () => _showFeatureDialog(context, 'Security & Access', 'Manage security settings.'),
                 ),
               ],
             ),
           ],
-          ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
   Widget _buildStatCard(String title, String value, Color color, IconData icon) {
     return Container(

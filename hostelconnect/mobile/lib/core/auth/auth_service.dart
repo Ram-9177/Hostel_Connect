@@ -411,13 +411,17 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id']?.toString() ?? '',
-      email: json['email'] ?? '',
-      role: json['role'] ?? 'student',
-      hostelId: json['hostelId'] ?? json['hostel_id'] ?? '',
-      firstName: json['firstName'] ?? json['first_name'] ?? '',
-      lastName: json['lastName'] ?? json['last_name'] ?? '',
-      roomId: json['roomId'] ?? json['room_id'],
-      bedNumber: json['bedNumber'] ?? json['bed_number'],
+      email: json['email']?.toString() ?? '',
+      role: json['role']?.toString() ?? 'student',
+      hostelId: json['hostelId']?.toString() ?? json['hostel_id']?.toString() ?? '',
+      firstName: json['firstName']?.toString() ?? json['first_name']?.toString() ?? '',
+      lastName: json['lastName']?.toString() ?? json['last_name']?.toString() ?? '',
+      phone: json['phone']?.toString(),
+      isActive: json['isActive'] ?? json['is_active'] ?? true,
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'].toString()) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'].toString()) : null,
+      roomId: json['roomId']?.toString() ?? json['room_id']?.toString(),
+      bedNumber: json['bedNumber']?.toString() ?? json['bed_number']?.toString(),
     );
   }
 
