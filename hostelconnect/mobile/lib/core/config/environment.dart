@@ -1,6 +1,6 @@
 // lib/core/config/environment.dart
 class Environment {
-  static const String _baseUrl = 'http://10.0.2.2:3000/api/v1';
+  static const String _baseUrl = 'http://10.17.134.33:8080/api/v1';
   static const String _apiKey = 'your-api-key-here';
   static const int _timeoutSeconds = 30;
   static const int _maxRetries = 3;

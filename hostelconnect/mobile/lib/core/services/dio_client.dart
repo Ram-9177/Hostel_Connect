@@ -8,7 +8,7 @@ class DioClient {
   
   static Dio get instance {
     _instance ??= Dio(BaseOptions(
-      baseUrl: 'http://10.0.2.2:3000/api/v1', // Android emulator localhost
+      baseUrl: 'http://10.17.134.33:8080/api/v1', // Host machine IP
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       headers: {
