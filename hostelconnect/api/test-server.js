@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-const PORT = 8080;
+const PORT = 3000;
 const HOST = '0.0.0.0';
 
 // Middleware
@@ -42,12 +42,26 @@ app.post('/api/v1/auth/login', (req, res) => {
   if (demoUsers[email] && demoUsers[email].password === password) {
     res.json({
       success: true,
-      token: 'demo-token-' + Date.now(),
       user: {
-        email,
+        id: 'demo-user-' + Date.now(),
+        email: email,
+        firstName: email.split('@')[0],
+        lastName: 'User',
         role: demoUsers[email].role,
-        id: 'demo-user-' + Date.now()
-      }
+        phone: '9876543210',
+        studentId: 'STU001',
+        hostelId: 'hostel-1',
+        roomId: 'room-101',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      tokens: {
+        accessToken: 'demo-access-token-' + Date.now(),
+        refreshToken: 'demo-refresh-token-' + Date.now(),
+        expiresIn: 3600
+      },
+      deviceId: 'device-' + Date.now()
     });
   } else {
     res.status(401).json({

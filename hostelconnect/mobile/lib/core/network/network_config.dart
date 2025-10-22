@@ -4,7 +4,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 class NetworkConfig {
-  static const String _baseUrl = 'http://10.0.2.2:8080';
+  static const String _baseUrl = 'http://10.0.2.2:3000';
   static const String _apiVersion = '/api/v1';
   
   static String get baseUrl => _baseUrl;
