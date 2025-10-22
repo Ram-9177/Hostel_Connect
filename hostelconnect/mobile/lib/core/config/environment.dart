@@ -2,12 +2,10 @@
 class Environment {
   // Production-ready environment configuration
   static const String _baseUrl = 'http://10.0.2.2:3000/api/v1'; // Android emulator localhost
-  static const bool enableLogging = true; // Enable debug logging
   static const String _apiKey = 'hc_prod_api_key_2024';
   static const int _timeoutSeconds = 30;
   static const int _maxRetries = 3;
   static const int _retryDelayMs = 1000;
-  static const int retryDelay = 1000; // For compatibility
 
   // API Configuration
   static String get baseUrl => _baseUrl;

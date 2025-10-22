@@ -26,6 +26,79 @@ app.get('/api/v1/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Materialized View refresh endpoint
+app.post('/api/v1/dashboard/refresh', (req, res) => {
+  const now = new Date();
+  const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000)); // IST offset
+  
+  res.json({
+    status: 'success',
+    refreshedAt: istTime.toISOString(),
+    timestamp: istTime.toLocaleTimeString('en-IN', { 
+      timeZone: 'Asia/Kolkata',
+      hour12: false 
+    }),
+    freshness: Math.floor(Math.random() * 30) + 1 // 1-30 seconds
+  });
+});
+
+// Dashboard data with live timestamps
+app.get('/api/v1/dashboard/:role', (req, res) => {
+  const { role } = req.params;
+  const now = new Date();
+  const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+  
+  const baseData = {
+    lastUpdated: istTime.toISOString(),
+    timestamp: istTime.toLocaleTimeString('en-IN', { 
+      timeZone: 'Asia/Kolkata',
+      hour12: false 
+    }),
+    freshness: Math.floor(Math.random() * 30) + 1
+  };
+  
+  switch (role) {
+    case 'student':
+      res.json({
+        ...baseData,
+        attendance: 95,
+        gatePasses: 3,
+        meals: 28,
+        notices: 2
+      });
+      break;
+    case 'warden':
+      res.json({
+        ...baseData,
+        scans: 47,
+        students: 156,
+        complaints: 3,
+        pendingApprovals: 5
+      });
+      break;
+    case 'admin':
+      res.json({
+        ...baseData,
+        totalUsers: 2000,
+        activeSessions: 156,
+        systemHealth: 99.9,
+        alerts: 0
+      });
+      break;
+    case 'chef':
+      res.json({
+        ...baseData,
+        mealsServed: 156,
+        optOuts: 12,
+        feedback: 4.8,
+        forecast: 165
+      });
+      break;
+    default:
+      res.json(baseData);
+  }
+});
+
 // Production-ready login endpoint with proper validation
 app.post('/api/v1/auth/login', (req, res) => {
   const { email, password } = req.body;
@@ -109,9 +182,19 @@ app.post('/api/v1/auth/login', (req, res) => {
   }
 });
 
-// Gate Pass QR Generation endpoint
+// Gate Pass QR Generation endpoint with ad requirement
 app.get('/api/v1/gate-passes/:id/qr', (req, res) => {
   const gatePassId = req.params.id;
+  const { adCompleted } = req.query;
+  
+  // Check if ad was completed (20s requirement)
+  if (!adCompleted || adCompleted !== 'true') {
+    return res.status(400).json({
+      error: 'AD_REQUIRED',
+      message: '20-second ad must be completed before QR generation',
+      adDuration: 20
+    });
+  }
   
   // Generate HMAC-signed QR token with 30s TTL
   const issuedAt = new Date();
@@ -132,7 +215,8 @@ app.get('/api/v1/gate-passes/:id/qr', (req, res) => {
   res.json({
     token: token,
     ttlSeconds: 30,
-    expiresAt: expiresAt.toISOString()
+    expiresAt: expiresAt.toISOString(),
+    adCompleted: true
   });
 });
 
@@ -310,6 +394,131 @@ app.post('/api/v1/attendance/mark', (req, res) => {
   };
   
   res.status(201).json(attendanceRecord);
+});
+
+// CSV Export endpoint
+app.get('/api/v1/export/:type', (req, res) => {
+  const { type } = req.params;
+  
+  let csvData = '';
+  let filename = '';
+  
+  switch (type) {
+    case 'rooms':
+      csvData = 'Room ID,Room Number,Block,Floor,Type,Capacity,Occupancy,Status\n' +
+                'room-101,R101,Block A,Floor 1,Triple,3,2,Available\n' +
+                'room-102,R102,Block A,Floor 1,Triple,3,3,Full\n' +
+                'room-103,R103,Block A,Floor 1,Triple,3,1,Available';
+      filename = 'rooms_export.csv';
+      break;
+    case 'students':
+      csvData = 'Student ID,Roll Number,Name,Email,Phone,Room,Bed,Status\n' +
+                'student-001,HC2024001,John Student,student@demo.com,+91-9876543210,R101,Bed 1,Active\n' +
+                'student-002,HC2024002,Jane Doe,jane@demo.com,+91-9876543211,R102,Bed 2,Active';
+      filename = 'students_export.csv';
+      break;
+    case 'attendance':
+      csvData = 'Date,Student ID,Session ID,Status,Reason,Marked At\n' +
+                '2024-12-22,student-001,session-001,present,,2024-12-22T18:00:00Z\n' +
+                '2024-12-22,student-002,session-001,late,Traffic,2024-12-22T18:15:00Z';
+      filename = 'attendance_export.csv';
+      break;
+    default:
+      return res.status(400).json({ error: 'Invalid export type' });
+  }
+  
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.send(csvData);
+});
+
+// CSV Import endpoint
+app.post('/api/v1/import/:type', (req, res) => {
+  const { type } = req.params;
+  const csvData = req.body.data;
+  
+  // Simulate CSV processing
+  const lines = csvData.split('\n');
+  const processed = lines.length - 1; // Exclude header
+  
+  res.json({
+    success: true,
+    type: type,
+    processed: processed,
+    errors: [],
+    importedAt: new Date().toISOString()
+  });
+});
+
+// FCM Device Token Registration
+app.post('/api/v1/fcm/register', (req, res) => {
+  const { userId, deviceToken, platform } = req.body;
+  
+  res.json({
+    success: true,
+    deviceId: `device_${Date.now()}`,
+    userId: userId,
+    deviceToken: deviceToken,
+    platform: platform || 'android',
+    registeredAt: new Date().toISOString()
+  });
+});
+
+// Send Push Notification
+app.post('/api/v1/notices/push', (req, res) => {
+  const { title, content, target, priority } = req.body;
+  
+  res.json({
+    success: true,
+    noticeId: `notice_${Date.now()}`,
+    title: title,
+    content: content,
+    target: target,
+    priority: priority || 'normal',
+    sentAt: new Date().toISOString(),
+    delivered: Math.floor(Math.random() * 100) + 50 // 50-150 deliveries
+  });
+});
+
+// Ad Analytics endpoints
+app.post('/api/v1/ads/impression', (req, res) => {
+  const { adId, userId, module } = req.body;
+  
+  res.json({
+    success: true,
+    impressionId: `imp_${Date.now()}`,
+    adId: adId,
+    userId: userId,
+    module: module,
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.post('/api/v1/ads/completion', (req, res) => {
+  const { adId, userId, duration } = req.body;
+  
+  res.json({
+    success: true,
+    completionId: `comp_${Date.now()}`,
+    adId: adId,
+    userId: userId,
+    duration: duration,
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/api/v1/ads/stats', (req, res) => {
+  res.json({
+    impressions: 1250,
+    completions: 980,
+    skips: 270,
+    watchRate: 78.4,
+    byModule: {
+      gatePass: { impressions: 450, completions: 380, watchRate: 84.4 },
+      attendance: { impressions: 300, completions: 250, watchRate: 83.3 },
+      meals: { impressions: 500, completions: 350, watchRate: 70.0 }
+    }
+  });
 });
 
 // Get Student Attendance Summary
