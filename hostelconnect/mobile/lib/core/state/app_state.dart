@@ -189,4 +189,3 @@ class User {
   @override
   int get hashCode => Object.hash(id, email, role);
 }
-});
