@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../network/http_client.dart';
 import '../models/room_models.dart';
+import '../models/student.dart';
+import '../models/allocation_history.dart';
 
 final roomApiServiceProvider = Provider((ref) => RoomApiService(ref.read(dioProvider)));
 

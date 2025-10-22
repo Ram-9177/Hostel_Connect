@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../network/http_client.dart';
 import '../models/dashboard_models.dart';
+import '../models/analytics.dart';
 
 final reportsApiServiceProvider = Provider((ref) => ReportsApiService(ref.read(dioProvider)));
 
