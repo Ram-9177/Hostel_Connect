@@ -16,7 +16,7 @@ import { Device } from '../devices/entities/device.entity';
 export declare const dataSourceOptions: {
     type: "sqlite";
     database: string;
-    entities: (typeof Student | typeof User | typeof AttendanceSession | typeof AttendanceCheck | typeof AttendanceRoster | typeof GatePass | typeof Ad | typeof AdEvent | typeof MealIntent | typeof MealOverride | typeof Hostel | typeof Block | typeof Room | typeof Device)[];
+    entities: (typeof Student | typeof User | typeof AdEvent | typeof Ad | typeof Room | typeof Block | typeof Hostel | typeof AttendanceSession | typeof Device | typeof AttendanceCheck | typeof AttendanceRoster | typeof GatePass | typeof MealIntent | typeof MealOverride)[];
     synchronize: boolean;
     logging: boolean;
 };

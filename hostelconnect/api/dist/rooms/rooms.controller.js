@@ -21,8 +21,14 @@ let RoomsController = class RoomsController {
     constructor(roomsService) {
         this.roomsService = roomsService;
     }
-    async getMap() {
-        return this.roomsService.getMap();
+    async getMap(hostelId) {
+        return this.roomsService.getMap(hostelId);
+    }
+    async getAvailableRooms(hostelId) {
+        return this.roomsService.getAvailableRooms(hostelId);
+    }
+    async getRoomDetails(id) {
+        return this.roomsService.getRoomDetails(id);
     }
     async allocate(allocateDto) {
         return this.roomsService.allocate(allocateDto);
@@ -38,11 +44,33 @@ exports.RoomsController = RoomsController;
 __decorate([
     (0, common_1.Get)('map'),
     (0, swagger_1.ApiOperation)({ summary: 'Get room occupancy map' }),
+    (0, swagger_1.ApiQuery)({ name: 'hostelId', required: false, description: 'Filter by hostel ID' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Room map retrieved' }),
+    __param(0, (0, common_1.Query)('hostelId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RoomsController.prototype, "getMap", null);
+__decorate([
+    (0, common_1.Get)('available'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get available rooms' }),
+    (0, swagger_1.ApiQuery)({ name: 'hostelId', required: false, description: 'Filter by hostel ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Available rooms retrieved' }),
+    __param(0, (0, common_1.Query)('hostelId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], RoomsController.prototype, "getAvailableRooms", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get room details' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Room ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Room details retrieved' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], RoomsController.prototype, "getRoomDetails", null);
 __decorate([
     (0, common_1.Post)('allocate'),
     (0, swagger_1.ApiOperation)({ summary: 'Allocate room to student' }),

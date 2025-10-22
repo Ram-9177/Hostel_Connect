@@ -1,8 +1,7 @@
 // lib/core/error_handling/error_boundary.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../responsive/responsive_breakpoints.dart';
-import '../responsive/responsive_widgets.dart';
+import 'dart:ui';
 
 class ErrorBoundary extends StatefulWidget {
   final Widget child;
@@ -38,37 +37,37 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
     return Scaffold(
       backgroundColor: Colors.red.shade50,
       body: Center(
-        child: ResponsivePadding(
-          padding: EdgeInsets.all(ResponsiveUtils.getResponsivePadding(context)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.error_outline,
-                size: ResponsiveUtils.getResponsiveIconSize(context),
+                size: 64,
                 color: Colors.red,
               ),
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context)),
-              ResponsiveText(
+              const SizedBox(height: 16),
+              const Text(
                 'Something went wrong',
                 style: TextStyle(
-                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, base: 24),
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.red.shade800,
+                  color: Colors.red,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, multiplier: 0.5)),
-              ResponsiveText(
-                'We apologize for the inconvenience. Please try again or contact support if the problem persists.',
+              const SizedBox(height: 8),
+              const Text(
+                'An unexpected error occurred. Please try again.',
                 style: TextStyle(
-                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, base: 16),
-                  color: Colors.red.shade600,
+                  fontSize: 14,
+                  color: Colors.red,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context)),
-              ResponsiveButton(
+              const SizedBox(height: 16),
+              ElevatedButton(
                 onPressed: () {
                   setState(() {
                     _hasError = false;
@@ -76,8 +75,7 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
                     _stackTrace = null;
                   });
                 },
-                child: Text('Try Again'),
-                variant: ButtonVariant.primary,
+                child: const Text('Try Again'),
               ),
             ],
           ),

@@ -3,6 +3,7 @@ export declare class Room {
     roomNumber: string;
     blockId: string;
     hostelId: string;
+    floor: number;
     capacity: number;
     currentOccupancy: number;
     isActive: boolean;

@@ -318,8 +318,8 @@ class _HProfessionalInputState extends State<HProfessionalInput> {
                   : null,
               filled: true,
               fillColor: widget.enabled 
-                  ? HTeluguTheme.surface 
-                  : HTeluguTheme.surface.withOpacity(0.5),
+                  ? Colors.white 
+                  : Colors.white.withOpacity(0.5),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
@@ -356,8 +356,8 @@ class _HProfessionalInputState extends State<HProfessionalInput> {
                 ),
               ),
               contentPadding: EdgeInsets.symmetric(
-                horizontal: HTokens.md,
-                vertical: HTokens.sm,
+                horizontal: HTeluguTheme.spacingMD,
+                vertical: HTeluguTheme.spacingSM,
               ),
             ),
           ),
@@ -392,9 +392,9 @@ class HProfessionalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return HResponsive.builder(builder: (ctx, r) {
       Widget card = Container(
-        margin: margin ?? EdgeInsets.all(HTokens.sm),
+        margin: margin ?? EdgeInsets.all(HTeluguTheme.spacingSM),
         decoration: BoxDecoration(
-          color: backgroundColor ?? HTeluguTheme.surface,
+          color: backgroundColor ?? Colors.white,
           borderRadius: borderRadius ?? BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

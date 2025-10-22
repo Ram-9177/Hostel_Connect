@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hostelconnect/core/responsive.dart';
 import 'package:hostelconnect/core/state/app_state.dart';
+import 'package:hostelconnect/core/navigation/navigation_service.dart';
 import 'package:hostelconnect/features/dashboards/presentation/widgets/dash_tile.dart';
 import 'package:hostelconnect/shared/widgets/ui/card.dart';
 import 'package:hostelconnect/shared/widgets/ui/button.dart';
@@ -242,25 +243,120 @@ class _WardenDashboardPageState extends ConsumerState<WardenDashboardPage>
                 SizedBox(height: HTokens.xl),
                 
                 // Quick Actions
-                Text(
-                  'Quick Actions',
-                  style: TextStyle(
-                    fontSize: r.isXS ? 18 : 20,
-                    fontWeight: FontWeight.bold,
-                    color: HTokens.onSurface,
+                HCard(
+                  backgroundColor: HTokens.primary.withOpacity(0.05),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.admin_panel_settings, color: HTokens.primary),
+                          SizedBox(width: HTokens.sm),
+                          Text(
+                            'Warden Actions',
+                            style: TextStyle(
+                              fontSize: r.isXS ? 18 : 20,
+                              fontWeight: FontWeight.bold,
+                              color: HTokens.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: HTokens.md),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HButton(
+                              text: 'Start Attendance',
+                              variant: HButtonVariant.primary,
+                              icon: Icons.qr_code_scanner,
+                              onPressed: () {
+                                NavigationService.navigateToStartAttendance(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(width: HTokens.sm),
+                          Expanded(
+                            child: HButton(
+                              text: 'Gate Passes',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.exit_to_app,
+                              onPressed: () {
+                                NavigationService.navigateToGatePasses(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: HTokens.sm),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HButton(
+                              text: 'View Policies',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.policy_outlined,
+                              onPressed: () {
+                                NavigationService.navigateToWardenPolicyView(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: HTokens.sm),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HButton(
+                              text: 'Room Allotment',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.bed,
+                              onPressed: () {
+                                NavigationService.navigateToRoomAllotmentWithGuard(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(width: HTokens.sm),
+                          Expanded(
+                            child: HButton(
+                              text: 'Hostel Data',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.home_work,
+                              onPressed: () {
+                                NavigationService.navigateToHostelData(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: HTokens.sm),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HButton(
+                              text: 'Complaints',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.report_problem,
+                              onPressed: () {
+                                NavigationService.navigateToComplaints(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(width: HTokens.sm),
+                          Expanded(
+                            child: HButton(
+                              text: 'Reports',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.assessment,
+                              onPressed: () {
+                                NavigationService.navigateToReportsWithGuard(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(height: HTokens.md),
-                
-                Wrap(
-                  spacing: HTokens.sm,
-                  runSpacing: HTokens.sm,
-                  children: [
-                    _buildActionChip('Start Attendance', Icons.qr_code_scanner, HTokens.primary, () {}),
-                    _buildActionChip('Gate Passes', Icons.exit_to_app, HTokens.secondary, () {}),
-                    _buildActionChip('Complaints', Icons.report_problem, HTokens.warning, () {}),
-                    _buildActionChip('Reports', Icons.assessment, HTokens.info, () {}),
-                  ],
                 ),
                 
                 SizedBox(height: HTokens.xl),

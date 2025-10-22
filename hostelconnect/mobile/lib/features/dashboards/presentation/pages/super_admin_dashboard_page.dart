@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/responsive.dart';
 import '../../../../core/state/app_state.dart';
+import '../../../../core/navigation/navigation_service.dart';
 import '../../../../shared/widgets/ui/professional_components.dart';
 import '../../../../shared/theme/telugu_theme.dart';
 import '../widgets/dash_tile.dart';
@@ -298,6 +299,34 @@ class _SuperAdminDashboardPageState extends ConsumerState<SuperAdminDashboardPag
                             fontSize: r.isXS ? 18 : 20,
                             fontWeight: FontWeight.bold,
                             color: HTeluguTheme.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: HTokens.md),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: HProfessionalButton(
+                            text: 'Room Allotment',
+                            onPressed: () {
+                              NavigationService.navigateToRoomAllotment(context);
+                            },
+                            variant: HProfessionalButtonVariant.primary,
+                            icon: Icons.bed,
+                            isFullWidth: true,
+                          ),
+                        ),
+                        SizedBox(width: HTokens.md),
+                        Expanded(
+                          child: HProfessionalButton(
+                            text: 'Hostel Data',
+                            onPressed: () {
+                              NavigationService.navigateToHostelData(context);
+                            },
+                            variant: HProfessionalButtonVariant.secondary,
+                            icon: Icons.home_work,
+                            isFullWidth: true,
                           ),
                         ),
                       ],

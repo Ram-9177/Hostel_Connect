@@ -3,7 +3,7 @@ class AppConstants {
   static const String appVersion = '1.0.0';
   
   // API Configuration
-  static const String baseUrl = 'http://192.168.1.24:3000'; // Machine's actual IP
+  static const String baseUrl = 'http://10.0.2.2:3000'; // Android emulator localhost
   static const String apiVersion = '/api/v1';
   
   // Storage Keys

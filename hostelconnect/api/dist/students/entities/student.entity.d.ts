@@ -7,9 +7,11 @@ export declare class Student {
     password: string;
     phone: string;
     roomId: string;
+    bedNumber: number;
     hostelId: string;
     role: string;
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
+    room: any;
 }

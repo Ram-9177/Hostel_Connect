@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SocketModule } from './socket/socket.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,6 +14,12 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { AdsModule } from './ads/ads.module';
 import { NoticesModule } from './notices/notices.module';
+import { RoomsModule } from './rooms/rooms.module';
+import { HostelsModule } from './hostels/hostels.module';
+import { StudentsModule } from './students/students.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { FilesModule } from './files/files.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 // Database configuration
 import { dataSourceOptions } from './database/data-source';
@@ -48,11 +55,20 @@ import { dataSourceOptions } from './database/data-source';
     // Task scheduling
     ScheduleModule.forRoot(),
 
+    // Real-time features
+    SocketModule,
+    NotificationsModule,
+    FilesModule,
+    AnalyticsModule,
+
     // Feature modules (simplified for demo)
     AuthModule,
     UsersModule,
     AdsModule,
     NoticesModule,
+    RoomsModule,
+    HostelsModule,
+    StudentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

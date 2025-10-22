@@ -141,27 +141,27 @@ class BreadcrumbNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return HResponsive.builder(builder: (ctx, r) {
       return Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: r.spacing.md,
-          vertical: r.spacing.sm,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 8,
         ),
         decoration: BoxDecoration(
           color: HTeluguTheme.surface,
           border: Border(
             bottom: BorderSide(
-              color: HTeluguTheme.outline.withOpacity(0.2),
+              color: HTeluguTheme.onSurfaceVariant.withOpacity(0.2),
               width: 1,
             ),
           ),
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.home,
-              size: r.spacing.sm,
-              color: HTeluguTheme.onSurfaceVariant,
+              size: 16,
+              color: Colors.grey,
             ),
-            SizedBox(width: r.spacing.xs),
+            const SizedBox(width: 8),
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -186,13 +186,13 @@ class BreadcrumbNavigation extends StatelessWidget {
                           ),
                         ),
                         if (!isLast) ...[
-                          SizedBox(width: r.spacing.xs),
-                          Icon(
-                            Icons.chevron_right,
-                            size: r.spacing.sm,
-                            color: HTeluguTheme.onSurfaceVariant,
-                          ),
-                          SizedBox(width: r.spacing.xs),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          Icons.chevron_right,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 8),
                         ],
                       ],
                     );
@@ -272,7 +272,7 @@ class NavigationDrawer extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: HTokens.xs),
+          const SizedBox(height: 8),
           Text(
             'Navigation Menu',
             style: HTeluguTheme.bodyMedium.copyWith(

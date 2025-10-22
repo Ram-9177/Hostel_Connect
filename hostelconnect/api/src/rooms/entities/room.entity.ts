@@ -14,6 +14,9 @@ export class Room {
   @Column()
   hostelId: string;
 
+  @Column({ default: 1 })
+  floor: number;
+
   @Column({ default: 2 })
   capacity: number;
 

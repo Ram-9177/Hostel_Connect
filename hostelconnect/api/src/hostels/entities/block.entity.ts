@@ -11,6 +11,9 @@ export class Block {
   @Column()
   hostelId: string;
 
+  @Column({ default: 1 })
+  floors: number;
+
   @Column({ default: true })
   isActive: boolean;
 

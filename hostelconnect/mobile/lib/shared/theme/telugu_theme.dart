@@ -1,85 +1,162 @@
+// lib/shared/theme/telugu_theme.dart
 import 'package:flutter/material.dart';
 
+/// Telugu-themed design system
 class HTeluguTheme {
-  // Solid/Light Color Palette
-  static const Color background = Color(0xFFF5F7FA);
+  // Colors
+  static const Color primary = Color(0xFF2563EB);
+  static const Color primaryVariant = Color(0xFF1D4ED8);
+  static const Color secondary = Color(0xFF10B981);
+  static const Color secondaryVariant = Color(0xFF059669);
+  
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color primary = Color(0xFF1E88E5);
-  static const Color primaryDark = Color(0xFF1565C0);
-  static const Color accent = Color(0xFFFFB300);
-  static const Color textPrimary = Color(0xFF111827);
-  static const Color textSecondary = Color(0xFF6B7280);
-  static const Color success = Color(0xFF16A34A);
-  static const Color warning = Color(0xFFF59E0B);
+  static const Color background = Color(0xFFF8FAFC);
   static const Color error = Color(0xFFDC2626);
-  static const Color shadow = Color(0x1A000000);
+  static const Color errorContainer = Color(0xFFFEE2E2);
+  static const Color onErrorContainer = Color(0xFF991B1B);
   
-  // Material 3 Colors
   static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color onSurface = textPrimary;
-  static const Color onSurfaceVariant = textSecondary;
-  static const Color secondary = accent;
-  
-  // Text styles for direct access
+  static const Color onSecondary = Color(0xFFFFFFFF);
+  static const Color onSurface = Color(0xFF1F2937);
+  static const Color onBackground = Color(0xFF1F2937);
+  static const Color onError = Color(0xFFFFFFFF);
+
+  // Text styles
+  static const TextStyle displayLarge = TextStyle(
+    fontSize: 32,
+    fontWeight: FontWeight.bold,
+    color: onSurface,
+  );
+
+  static const TextStyle displayMedium = TextStyle(
+    fontSize: 28,
+    fontWeight: FontWeight.bold,
+    color: onSurface,
+  );
+
+  static const TextStyle displaySmall = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: onSurface,
+  );
+
+  static const TextStyle headlineLarge = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
+    color: onSurface,
+  );
+
   static const TextStyle headlineMedium = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w600,
-    color: textPrimary,
-    height: 1.3,
+    color: onSurface,
   );
-  
+
   static const TextStyle headlineSmall = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w600,
-    color: textPrimary,
-    height: 1.3,
+    color: onSurface,
   );
-  
+
+  static const TextStyle titleLarge = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w500,
+    color: onSurface,
+  );
+
+  static const TextStyle titleMedium = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: onSurface,
+  );
+
+  static const TextStyle titleSmall = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: onSurface,
+  );
+
+  static const TextStyle bodyLarge = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+    color: onSurface,
+  );
+
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.normal,
-    color: textPrimary,
-    height: 1.5,
+    color: onSurface,
   );
-  
+
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.normal,
-    color: textSecondary,
-    height: 1.5,
+    color: onSurface,
   );
 
-  // Light Theme
+  static const TextStyle labelLarge = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: onSurface,
+  );
+
+  static const TextStyle labelMedium = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: onSurface,
+  );
+
+  static const TextStyle labelSmall = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.w500,
+    color: onSurface,
+  );
+
+  // Theme data
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: const ColorScheme.light(
         primary: primary,
-        onPrimary: onPrimary,
+        primaryContainer: primaryVariant,
         secondary: secondary,
+        secondaryContainer: secondaryVariant,
         surface: surface,
-        onSurface: onSurface,
-        onSurfaceVariant: onSurfaceVariant,
         background: background,
         error: error,
-        onError: Colors.white,
+        errorContainer: errorContainer,
+        onPrimary: onPrimary,
+        onSecondary: onSecondary,
+        onSurface: onSurface,
+        onBackground: onBackground,
+        onError: onError,
+        onErrorContainer: onErrorContainer,
       ),
-      scaffoldBackgroundColor: background,
+      textTheme: const TextTheme(
+        displayLarge: displayLarge,
+        displayMedium: displayMedium,
+        displaySmall: displaySmall,
+        headlineLarge: headlineLarge,
+        headlineMedium: headlineMedium,
+        headlineSmall: headlineSmall,
+        titleLarge: titleLarge,
+        titleMedium: titleMedium,
+        titleSmall: titleSmall,
+        bodyLarge: bodyLarge,
+        bodyMedium: bodyMedium,
+        bodySmall: bodySmall,
+        labelLarge: labelLarge,
+        labelMedium: labelMedium,
+        labelSmall: labelSmall,
+      ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: primary,
-        foregroundColor: onPrimary,
+        backgroundColor: surface,
+        foregroundColor: onSurface,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: onPrimary,
-        ),
       ),
       cardTheme: CardTheme(
-        color: surface,
         elevation: 2,
-        shadowColor: shadow,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -89,192 +166,28 @@ class HTeluguTheme {
           backgroundColor: primary,
           foregroundColor: onPrimary,
           elevation: 2,
-          shadowColor: shadow,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 16,
-          ),
-          minimumSize: const Size(44, 44), // Accessibility requirement
         ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: primary,
-          side: const BorderSide(color: primary),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 16,
-          ),
-          minimumSize: const Size(44, 44), // Accessibility requirement
-        ),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
-          minimumSize: const Size(44, 44), // Accessibility requirement
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: textSecondary),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: textSecondary),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: primary, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: error),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-      ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
-          height: 1.2,
-        ),
-        headlineMedium: headlineMedium,
-        headlineSmall: headlineSmall,
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.normal,
-          color: textPrimary,
-          height: 1.5,
-        ),
-        bodyMedium: bodyMedium,
-        bodySmall: bodySmall,
-        labelLarge: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: textPrimary,
-          height: 1.3,
-        ),
-        labelMedium: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: textSecondary,
-          height: 1.3,
-        ),
-        labelSmall: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-          color: textSecondary,
-          height: 1.3,
-        ),
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: surface,
-        selectedItemColor: primary,
-        unselectedItemColor: textSecondary,
-        type: BottomNavigationBarType.fixed,
-        elevation: 8,
-      ),
-      dividerTheme: const DividerThemeData(
-        color: textSecondary,
-        thickness: 1,
-        space: 1,
-      ),
-      snackBarTheme: SnackBarThemeData(
-        backgroundColor: textPrimary,
-        contentTextStyle: const TextStyle(
-          color: Colors.white,
-          fontSize: 14,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
-  // Telugu Labels for Key Surfaces
-  static const Map<String, String> teluguLabels = {
-    // Dashboard tiles
-    'present': 'హాజరు',
-    'outpass': 'బయట అనుమతి',
-    'manual_percentage': 'మాన్యువల్ శాతం',
-    'kiosk_scans': 'కియోస్క్ స్కాన్',
-    'warden_scans': 'వార్డెన్ స్కాన్',
-    
-    // Primary buttons
-    'approve': 'అంగీకరించు',
-    'reject': 'తిరస్కరించు',
-    'save': 'సేవ్ చెయ్యి',
-    'scan_now': 'ఇప్పుడే స్కాన్ చేయి',
-    
-    // Meals
-    'breakfast': 'ఉదయం భోజనం',
-    'lunch': 'మధ్యాహ్న భోజనం',
-    'snacks': 'తినుబండారాలు',
-    'dinner': 'రాత్రి భోజనం',
-    'all_yes': 'అన్నీ అవును',
-    'all_no': 'అన్నీ కాదు',
-    'same_as_yesterday': 'నిన్న లావు',
-    
-    // Headings
-    'notices': 'ప్రకటనలు',
-    'dashboard': 'హాస్టల్ డ్యాష్‌బోర్డ్',
-  };
-
-  // Get Telugu label with English fallback
-  static String getTeluguLabel(String key, {String? englishFallback}) {
-    return teluguLabels[key] ?? englishFallback ?? key;
+  // Telugu labels
+  static String getTeluguLabel(String key) {
+    const labels = {
+      'room_allotment': 'గది కేటాయింపు',
+      'student_management': 'విద్యార్థి నిర్వహణ',
+      'attendance': 'హాజరు',
+      'gate_pass': 'గేట్ పాస్',
+      'meals': 'భోజనం',
+      'notices': 'నోటీసులు',
+      'reports': 'రిపోర్టులు',
+      'settings': 'సెట్టింగులు',
+      'profile': 'ప్రొఫైల్',
+      'logout': 'లాగ్ అవుట్',
+    };
+    return labels[key] ?? key;
   }
-
-  // Accessibility helpers
-  static bool isAccessibleContrast(Color foreground, Color background) {
-    // Calculate contrast ratio (simplified)
-    final foregroundLuminance = foreground.computeLuminance();
-    final backgroundLuminance = background.computeLuminance();
-    
-    final lighter = foregroundLuminance > backgroundLuminance 
-        ? foregroundLuminance 
-        : backgroundLuminance;
-    final darker = foregroundLuminance > backgroundLuminance 
-        ? backgroundLuminance 
-        : foregroundLuminance;
-    
-    final contrast = (lighter + 0.05) / (darker + 0.05);
-    return contrast >= 4.5; // WCAG AA standard
-  }
-
-  // Responsive spacing
-  static const double spacingXS = 4;
-  static const double spacingSM = 8;
-  static const double spacingMD = 16;
-  static const double spacingLG = 24;
-  static const double spacingXL = 32;
-  static const double spacingXXL = 40;
-
-  // Border radius
-  static const double radiusSM = 4;
-  static const double radiusMD = 8;
-  static const double radiusLG = 12;
-  static const double radiusXL = 16;
 }

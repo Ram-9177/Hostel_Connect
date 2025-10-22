@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, UseGuards, Param, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { RoomsService } from './rooms.service';
 
@@ -12,9 +12,26 @@ export class RoomsController {
 
   @Get('map')
   @ApiOperation({ summary: 'Get room occupancy map' })
+  @ApiQuery({ name: 'hostelId', required: false, description: 'Filter by hostel ID' })
   @ApiResponse({ status: 200, description: 'Room map retrieved' })
-  async getMap() {
-    return this.roomsService.getMap();
+  async getMap(@Query('hostelId') hostelId?: string) {
+    return this.roomsService.getMap(hostelId);
+  }
+
+  @Get('available')
+  @ApiOperation({ summary: 'Get available rooms' })
+  @ApiQuery({ name: 'hostelId', required: false, description: 'Filter by hostel ID' })
+  @ApiResponse({ status: 200, description: 'Available rooms retrieved' })
+  async getAvailableRooms(@Query('hostelId') hostelId?: string) {
+    return this.roomsService.getAvailableRooms(hostelId);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get room details' })
+  @ApiParam({ name: 'id', description: 'Room ID' })
+  @ApiResponse({ status: 200, description: 'Room details retrieved' })
+  async getRoomDetails(@Param('id') id: string) {
+    return this.roomsService.getRoomDetails(id);
   }
 
   @Post('allocate')

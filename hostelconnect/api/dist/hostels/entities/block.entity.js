@@ -27,6 +27,10 @@ __decorate([
     __metadata("design:type", String)
 ], Block.prototype, "hostelId", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: 1 }),
+    __metadata("design:type", Number)
+], Block.prototype, "floors", void 0);
+__decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Boolean)
 ], Block.prototype, "isActive", void 0);

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Meal Icon -->
+  <defs>
+    <linearGradient id="mealGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="plateGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F8FAFC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E2E8F0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" fill="#F8FAFC" rx="64"/>
+  
+  <!-- Plate -->
+  <ellipse cx="256" cy="320" rx="180" ry="60" fill="url(#plateGradient)" stroke="#CBD5E1" stroke-width="4"/>
+  
+  <!-- Food Items -->
+  <!-- Rice -->
+  <ellipse cx="200" cy="280" rx="40" ry="30" fill="#FEF3C7"/>
+  <ellipse cx="220" cy="270" rx="35" ry="25" fill="#FDE68A"/>
+  
+  <!-- Curry -->
+  <ellipse cx="280" cy="270" rx="35" ry="25" fill="#DC2626"/>
+  <ellipse cx="290" cy="260" rx="30" ry="20" fill="#EF4444"/>
+  
+  <!-- Vegetables -->
+  <ellipse cx="320" cy="290" rx="30" ry="20" fill="#10B981"/>
+  <ellipse cx="330" cy="285" rx="25" ry="15" fill="#34D399"/>
+  
+  <!-- Dal -->
+  <ellipse cx="240" cy="300" rx="25" ry="15" fill="#F59E0B"/>
+  <ellipse cx="250" cy="295" rx="20" ry="12" fill="#FBBF24"/>
+  
+  <!-- Spoons -->
+  <rect x="150" y="200" width="8" height="60" fill="#6B7280" rx="4"/>
+  <ellipse cx="154" cy="200" rx="12" ry="8" fill="#9CA3AF"/>
+  
+  <rect x="350" y="200" width="8" height="60" fill="#6B7280" rx="4"/>
+  <ellipse cx="354" cy="200" rx="12" ry="8" fill="#9CA3AF"/>
+  
+  <!-- Steam -->
+  <path d="M 200 200 Q 210 180 200 160 Q 190 180 200 200" fill="#E5E7EB" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
+  </path>
+  <path d="M 280 200 Q 290 180 280 160 Q 270 180 280 200" fill="#E5E7EB" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  <path d="M 320 200 Q 330 180 320 160 Q 310 180 320 200" fill="#E5E7EB" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Clock -->
+  <circle cx="400" cy="120" r="40" fill="url(#mealGradient)" stroke="#D97706" stroke-width="3"/>
+  <circle cx="400" cy="120" r="35" fill="#FEF3C7"/>
+  <line x1="400" y1="120" x2="400" y2="100" stroke="#1F2937" stroke-width="3" stroke-linecap="round"/>
+  <line x1="400" y1="120" x2="415" y2="120" stroke="#1F2937" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="400" cy="120" r="3" fill="#1F2937"/>
+  
+  <!-- Time Text -->
+  <text x="400" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1F2937">12:00</text>
+</svg>

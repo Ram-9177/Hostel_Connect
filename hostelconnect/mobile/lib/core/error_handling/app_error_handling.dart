@@ -1,7 +1,5 @@
 // Comprehensive Error Handling and Loading System
 import 'package:flutter/material.dart';
-import '../responsive/responsive_breakpoints.dart';
-import '../responsive/responsive_widgets.dart';
 
 /// Error types enumeration
 enum ErrorType {

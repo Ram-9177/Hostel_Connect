@@ -76,11 +76,15 @@ class HButton extends StatelessWidget {
                       Icon(icon, size: dimensions.iconSize),
                       SizedBox(width: HTokens.sm),
                     ],
-                    Text(
-                      text,
-                      style: TextStyle(
-                        fontSize: dimensions.fontSize,
-                        fontWeight: FontWeight.w600,
+                    Flexible(
+                      child: Text(
+                        text,
+                        style: TextStyle(
+                          fontSize: dimensions.fontSize,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                   ],

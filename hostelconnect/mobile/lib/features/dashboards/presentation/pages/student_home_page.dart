@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hostelconnect/core/responsive.dart';
 import 'package:hostelconnect/core/state/app_state.dart';
+import 'package:hostelconnect/core/navigation/navigation_service.dart';
 import 'package:hostelconnect/features/dashboards/presentation/widgets/dash_tile.dart';
 import 'package:hostelconnect/shared/widgets/ui/card.dart';
 import 'package:hostelconnect/shared/widgets/ui/button.dart';
@@ -246,137 +247,196 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage>
                 SizedBox(height: HTokens.xl),
                 
                 // Quick Actions
-                Text(
-                  'Quick Actions',
-                  style: TextStyle(
-                    fontSize: r.isXS ? 18 : 20,
-                    fontWeight: FontWeight.bold,
-                    color: HTokens.onSurface,
+                HCard(
+                  backgroundColor: HTokens.primary.withOpacity(0.05),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.flash_on, color: HTokens.primary),
+                          SizedBox(width: HTokens.sm),
+                          Text(
+                            'Quick Actions',
+                            style: TextStyle(
+                              fontSize: r.isXS ? 18 : 20,
+                              fontWeight: FontWeight.bold,
+                              color: HTokens.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: HTokens.md),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HButton(
+                              text: 'Gate Pass',
+                              variant: HButtonVariant.primary,
+                              icon: Icons.exit_to_app,
+                              onPressed: () {
+                                NavigationService.navigateToGatePass(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(width: HTokens.sm),
+                          Expanded(
+                            child: HButton(
+                              text: 'Meals',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.restaurant,
+                              onPressed: () {
+                                NavigationService.navigateToMeals(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: HTokens.sm),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HButton(
+                              text: 'Attendance',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.qr_code_scanner,
+                              onPressed: () {
+                                NavigationService.navigateToAttendance(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(width: HTokens.sm),
+                          Expanded(
+                            child: HButton(
+                              text: 'Profile',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.person,
+                              onPressed: () {
+                                NavigationService.navigateToProfile(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(height: HTokens.md),
-                
-                Wrap(
-                  spacing: HTokens.sm,
-                  runSpacing: HTokens.sm,
-                  children: [
-                    _buildActionChip('Gate Pass', Icons.exit_to_app, HTokens.primary, () {}),
-                    _buildActionChip('Meals', Icons.restaurant, HTokens.secondary, () {}),
-                    _buildActionChip('Complaints', Icons.report_problem, HTokens.warning, () {}),
-                    _buildActionChip('Profile', Icons.person, HTokens.info, () {}),
-                  ],
                 ),
                 
                 SizedBox(height: HTokens.xl),
                 
                 // Enhanced Dashboard Tiles
-                Text(
-                  'Today\'s Overview',
-                  style: TextStyle(
-                    fontSize: r.isXS ? 18 : 20,
-                    fontWeight: FontWeight.bold,
-                    color: HTokens.onSurface,
-                  ),
-                ),
-                SizedBox(height: HTokens.md),
-                
-                AnimatedBuilder(
-                  animation: _tilesController,
-                  builder: (context, child) {
-                    return FadeTransition(
-                      opacity: _tilesFadeAnimation,
-                      child: SlideTransition(
-                        position: _tilesSlideAnimation,
-                        child: HDashGrid(
-                          tiles: [
-                            DashTile(
-                              title: 'Gate Pass Status',
-                              value: 'Active',
-                              updatedAt: '2 min ago',
-                              trailing: Icon(Icons.check_circle, color: HTokens.success),
+                HCard(
+                  backgroundColor: HTokens.success.withOpacity(0.05),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.dashboard, color: HTokens.success),
+                          SizedBox(width: HTokens.sm),
+                          Text(
+                            'Today\'s Overview',
+                            style: TextStyle(
+                              fontSize: r.isXS ? 18 : 20,
+                              fontWeight: FontWeight.bold,
                               color: HTokens.success,
-                              onTap: () {},
                             ),
-                            DashTile(
-                              title: 'Meals Today',
-                              value: '3/4',
-                              updatedAt: '1 hour ago',
-                              trailing: Icon(Icons.restaurant, color: HTokens.info),
-                              color: HTokens.info,
-                              onTap: () {},
-                            ),
-                            DashTile(
-                              title: 'Attendance',
-                              value: 'Present',
-                              updatedAt: '30 min ago',
-                              trailing: Icon(Icons.person_pin_circle, color: HTokens.success),
-                              color: HTokens.success,
-                              onTap: () {},
-                            ),
-                            DashTile(
-                              title: 'Complaints',
-                              value: '0',
-                              updatedAt: 'Today',
-                              trailing: Icon(Icons.check_circle_outline, color: HTokens.success),
-                              color: HTokens.success,
-                              onTap: () {},
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                      SizedBox(height: HTokens.md),
+                      HDashGrid(
+                        tiles: [
+                          DashTile(
+                            title: 'Gate Pass Status',
+                            value: 'Active',
+                            updatedAt: '2 min ago',
+                            trailing: Icon(Icons.check_circle, color: HTokens.success),
+                            color: HTokens.success,
+                            onTap: () {},
+                          ),
+                          DashTile(
+                            title: 'Meals Today',
+                            value: '3/4',
+                            updatedAt: '1 hour ago',
+                            trailing: Icon(Icons.restaurant, color: HTokens.info),
+                            color: HTokens.info,
+                            onTap: () {},
+                          ),
+                          DashTile(
+                            title: 'Attendance',
+                            value: 'Present',
+                            updatedAt: '30 min ago',
+                            trailing: Icon(Icons.person_pin_circle, color: HTokens.success),
+                            color: HTokens.success,
+                            onTap: () {},
+                          ),
+                          DashTile(
+                            title: 'Complaints',
+                            value: '0',
+                            updatedAt: 'Today',
+                            trailing: Icon(Icons.check_circle_outline, color: HTokens.success),
+                            color: HTokens.success,
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 
                 SizedBox(height: HTokens.xl),
                 
                 // Enhanced Recent Activity
-                Text(
-                  'Recent Activity',
-                  style: TextStyle(
-                    fontSize: r.isXS ? 18 : 20,
-                    fontWeight: FontWeight.bold,
-                    color: HTokens.onSurface,
-                  ),
-                ),
-                SizedBox(height: HTokens.md),
-                
-                AnimatedBuilder(
-                  animation: _activityController,
-                  builder: (context, child) {
-                    return FadeTransition(
-                      opacity: _activityFadeAnimation,
-                      child: HCard(
-                        child: Column(
-                          children: [
-                            _buildActivityItem(
-                              'Gate pass approved',
-                              '2 hours ago',
-                              Icons.check_circle,
-                              HTokens.success,
-                              'Your gate pass request has been approved by the warden.',
+                HCard(
+                  backgroundColor: HTokens.info.withOpacity(0.05),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.history, color: HTokens.info),
+                          SizedBox(width: HTokens.sm),
+                          Text(
+                            'Recent Activity',
+                            style: TextStyle(
+                              fontSize: r.isXS ? 18 : 20,
+                              fontWeight: FontWeight.bold,
+                              color: HTokens.info,
                             ),
-                            Divider(height: 1),
-                            _buildActivityItem(
-                              'Lunch meal taken',
-                              '4 hours ago',
-                              Icons.restaurant,
-                              HTokens.info,
-                              'You have successfully taken your lunch meal.',
-                            ),
-                            Divider(height: 1),
-                            _buildActivityItem(
-                              'Night attendance marked',
-                              'Yesterday',
-                              Icons.nightlight_round,
-                              HTokens.success,
-                              'Your night attendance has been marked as present.',
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                      SizedBox(height: HTokens.md),
+                      Column(
+                        children: [
+                          _buildActivityItem(
+                            'Gate pass approved',
+                            '2 hours ago',
+                            Icons.check_circle,
+                            HTokens.success,
+                            'Your gate pass request has been approved by the warden.',
+                          ),
+                          Divider(height: 1),
+                          _buildActivityItem(
+                            'Lunch meal taken',
+                            '4 hours ago',
+                            Icons.restaurant,
+                            HTokens.info,
+                            'You have successfully taken your lunch meal.',
+                          ),
+                          Divider(height: 1),
+                          _buildActivityItem(
+                            'Night attendance marked',
+                            'Yesterday',
+                            Icons.nightlight_round,
+                            HTokens.success,
+                            'Your night attendance has been marked as present.',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 
                 SizedBox(height: HTokens.xl),
@@ -407,20 +467,24 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage>
                         Row(
                           children: [
                             Expanded(
-                              child: HButton(
-                                text: 'Emergency Contact',
-                                variant: HButtonVariant.outline,
-                                icon: Icons.phone,
-                                onPressed: () {},
-                              ),
+                            child: HButton(
+                              text: 'Emergency',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.phone,
+                              onPressed: () {
+                                NavigationService.navigateToEmergencyContact(context);
+                              },
+                            ),
                             ),
                             SizedBox(width: HTokens.sm),
                             Expanded(
                               child: HButton(
-                                text: 'Report Issue',
+                                text: 'Report',
                                 variant: HButtonVariant.outline,
                                 icon: Icons.report,
-                                onPressed: () {},
+                                onPressed: () {
+                                  NavigationService.navigateToReportIssue(context);
+                                },
                               ),
                             ),
                           ],

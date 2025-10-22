@@ -5,9 +5,7 @@ import '../../../../core/network/network_config.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/state/app_state.dart';
 import '../../../../shared/widgets/ui/professional_components.dart';
-import '../../../../shared/widgets/error_handling/network_error_widget.dart';
 import '../../../../core/responsive.dart';
-import '../../../../shared/theme/telugu_theme.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -117,7 +115,6 @@ class _LoginPageState extends ConsumerState<LoginPage>
   @override
   Widget build(BuildContext context) {
     final appState = ref.watch(appStateProvider);
-    final appStateNotifier = ref.read(appStateProvider.notifier);
     
     return Scaffold(
       body: Container(
@@ -187,9 +184,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                 child: HProfessionalCard(
                                   backgroundColor: Colors.white.withOpacity(0.95),
                                   borderRadius: BorderRadius.circular(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
+                                  child: Form(
+                                    key: _formKey,
+                                    child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         // Header

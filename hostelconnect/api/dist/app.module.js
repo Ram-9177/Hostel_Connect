@@ -13,12 +13,19 @@ const typeorm_1 = require("@nestjs/typeorm");
 const bull_1 = require("@nestjs/bull");
 const throttler_1 = require("@nestjs/throttler");
 const schedule_1 = require("@nestjs/schedule");
+const socket_module_1 = require("./socket/socket.module");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
 const ads_module_1 = require("./ads/ads.module");
 const notices_module_1 = require("./notices/notices.module");
+const rooms_module_1 = require("./rooms/rooms.module");
+const hostels_module_1 = require("./hostels/hostels.module");
+const students_module_1 = require("./students/students.module");
+const notifications_module_1 = require("./notifications/notifications.module");
+const files_module_1 = require("./files/files.module");
+const analytics_module_1 = require("./analytics/analytics.module");
 const data_source_1 = require("./database/data-source");
 let AppModule = class AppModule {
 };
@@ -45,10 +52,17 @@ exports.AppModule = AppModule = __decorate([
                 },
             ]),
             schedule_1.ScheduleModule.forRoot(),
+            socket_module_1.SocketModule,
+            notifications_module_1.NotificationsModule,
+            files_module_1.FilesModule,
+            analytics_module_1.AnalyticsModule,
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
             ads_module_1.AdsModule,
             notices_module_1.NoticesModule,
+            rooms_module_1.RoomsModule,
+            hostels_module_1.HostelsModule,
+            students_module_1.StudentsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

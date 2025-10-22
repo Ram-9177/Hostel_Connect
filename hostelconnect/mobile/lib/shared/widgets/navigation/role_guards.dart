@@ -1,88 +1,133 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../core/state/app_state.dart';
-import '../shared/theme/telugu_theme.dart';
+import '../../core/state/app_state.dart';
+import '../../shared/theme/telugu_theme.dart';
+import '../../core/responsive.dart';
 
-// Role-based route guard
+/// Role-based access control widget - PRODUCTION SECURE
 class RoleGuard extends ConsumerWidget {
   final List<String> allowedRoles;
   final Widget child;
-  final String? forbiddenMessage;
+  final Widget? fallback;
 
   const RoleGuard({
     super.key,
     required this.allowedRoles,
     required this.child,
-    this.forbiddenMessage,
+    this.fallback,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appState = ref.watch(appStateProvider);
-    final userRole = appState.user?.role.toLowerCase();
-
-    // Check if user role is allowed
-    if (userRole == null || !allowedRoles.contains(userRole)) {
-      return _ForbiddenPage(
-        message: forbiddenMessage ?? _getDefaultForbiddenMessage(),
+    
+    // Show loading while checking authentication
+    if (appState.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
       );
     }
-
+    
+    // Redirect to login if not authenticated
+    if (!appState.isAuthenticated || appState.user == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacementNamed('/login');
+      });
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    
+    final userRole = appState.user!.role;
+    
+    // Validate role exists
+    if (userRole.isEmpty) {
+      return fallback ?? const _AccessDeniedWidget(
+        message: 'Invalid user role. Please contact administrator.',
+      );
+    }
+    
+    // Check if user has required role
+    final hasAccess = _checkRoleAccess(userRole, allowedRoles);
+    
+    if (!hasAccess) {
+      return fallback ?? const _AccessDeniedWidget(
+        message: 'You do not have permission to access this page.',
+      );
+    }
+    
     return child;
   }
-
-  String _getDefaultForbiddenMessage() {
-    return 'ఈ భాగానికి మీకు అనుమతి లేదు\nYou do not have access to this section.';
+  
+  /// Check if user role has access to required roles
+  bool _checkRoleAccess(String userRole, List<String> allowedRoles) {
+    // Role hierarchy for permission checking
+    const roleHierarchy = {
+      'super_admin': 5,
+      'warden_head': 4,
+      'warden': 3,
+      'chef': 2,
+      'student': 1,
+    };
+    
+    final userLevel = roleHierarchy[userRole] ?? 0;
+    
+    // Check if user has any of the allowed roles or higher
+    for (final allowedRole in allowedRoles) {
+      final requiredLevel = roleHierarchy[allowedRole] ?? 0;
+      if (userLevel >= requiredLevel) {
+        return true;
+      }
+    }
+    
+    return false;
   }
 }
 
-// Forbidden access page
-class _ForbiddenPage extends StatelessWidget {
+/// Access denied widget
+class _AccessDeniedWidget extends StatelessWidget {
   final String message;
-
-  const _ForbiddenPage({required this.message});
+  
+  const _AccessDeniedWidget({required this.message});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: HTeluguTheme.background,
-      appBar: AppBar(
-        title: const Text('Access Denied'),
-        backgroundColor: HTeluguTheme.primary,
-        foregroundColor: HTeluguTheme.onPrimary,
-      ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(HTokens.lg),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.block,
-                size: 80,
+                Icons.lock_outline,
+                size: HTokens.iconXl,
                 color: HTeluguTheme.error,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: HTokens.lg),
               Text(
-                message,
-                textAlign: TextAlign.center,
-                style: HTeluguTheme.headlineMedium.copyWith(
+                'Access Denied',
+                style: HTeluguTheme.titleLarge.copyWith(
                   color: HTeluguTheme.error,
                 ),
               ),
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
+              const SizedBox(height: HTokens.sm),
+              Text(
+                message,
+                style: HTeluguTheme.bodyMedium.copyWith(
+                  color: HTeluguTheme.onBackground,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: HTokens.lg),
+              ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Back'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: HTeluguTheme.primary,
                   foregroundColor: HTeluguTheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
                 ),
+                child: const Text('Go Back'),
               ),
             ],
           ),
@@ -92,7 +137,91 @@ class _ForbiddenPage extends StatelessWidget {
   }
 }
 
-// Role-specific quick access rows
+/// Admin role guard
+class AdminRoleGuard extends StatelessWidget {
+  final Widget child;
+  final Widget? fallback;
+
+  const AdminRoleGuard({
+    super.key,
+    required this.child,
+    this.fallback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RoleGuard(
+      allowedRoles: ['super_admin', 'warden_head'],
+      child: child,
+      fallback: fallback,
+    );
+  }
+}
+
+/// Warden role guard
+class WardenRoleGuard extends StatelessWidget {
+  final Widget child;
+  final Widget? fallback;
+
+  const WardenRoleGuard({
+    super.key,
+    required this.child,
+    this.fallback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RoleGuard(
+      allowedRoles: ['warden', 'warden_head', 'super_admin'],
+      child: child,
+      fallback: fallback,
+    );
+  }
+}
+
+/// Student role guard
+class StudentRoleGuard extends StatelessWidget {
+  final Widget child;
+  final Widget? fallback;
+
+  const StudentRoleGuard({
+    super.key,
+    required this.child,
+    this.fallback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RoleGuard(
+      allowedRoles: ['student'],
+      child: child,
+      fallback: fallback,
+    );
+  }
+}
+
+/// Chef role guard
+class ChefRoleGuard extends StatelessWidget {
+  final Widget child;
+  final Widget? fallback;
+
+  const ChefRoleGuard({
+    super.key,
+    required this.child,
+    this.fallback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RoleGuard(
+      allowedRoles: ['chef', 'super_admin'],
+      child: child,
+      fallback: fallback,
+    );
+  }
+}
+
+/// Role-specific quick access rows
 class QuickAccessRow extends ConsumerWidget {
   const QuickAccessRow({super.key});
 
@@ -295,7 +424,7 @@ class QuickAccessRow extends ConsumerWidget {
   }
 }
 
-// Quick access tile component
+/// Quick access tile component
 class _QuickAccessTile extends StatelessWidget {
   final IconData icon;
   final String title;

@@ -31,6 +31,10 @@ __decorate([
     __metadata("design:type", String)
 ], Room.prototype, "hostelId", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: 1 }),
+    __metadata("design:type", Number)
+], Room.prototype, "floor", void 0);
+__decorate([
     (0, typeorm_1.Column)({ default: 2 }),
     __metadata("design:type", Number)
 ], Room.prototype, "capacity", void 0);

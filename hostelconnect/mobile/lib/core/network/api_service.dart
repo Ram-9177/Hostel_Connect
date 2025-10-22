@@ -112,7 +112,13 @@ class ApiService {
           'password': password,
         }),
       ),
-      (data) => data,
+      (data) {
+        // Handle the API response structure
+        if (data['success'] == true && data['data'] != null) {
+          return data['data'];
+        }
+        return data;
+      },
       endpoint,
     );
   }
@@ -143,7 +149,13 @@ class ApiService {
           'hostelId': hostelId,
         }),
       ),
-      (data) => data,
+      (data) {
+        // Handle the API response structure
+        if (data['success'] == true && data['data'] != null) {
+          return data['data'];
+        }
+        return data;
+      },
       endpoint,
     );
   }
@@ -158,7 +170,13 @@ class ApiService {
           'refreshToken': refreshToken,
         }),
       ),
-      (data) => data,
+      (data) {
+        // Handle the API response structure
+        if (data['success'] == true && data['data'] != null) {
+          return data['data'];
+        }
+        return data;
+      },
       endpoint,
     );
   }
@@ -170,7 +188,13 @@ class ApiService {
         Uri.parse('${NetworkConfig.apiUrl}$endpoint'),
         headers: _getAuthHeaders(token),
       ),
-      (data) => data,
+      (data) {
+        // Handle the API response structure
+        if (data['success'] == true && data['data'] != null) {
+          return data['data'];
+        }
+        return data;
+      },
       endpoint,
     );
   }
@@ -357,7 +381,13 @@ class ApiService {
         headers: _defaultHeaders,
         body: jsonEncode({"email": email}),
       ),
-      (data) => data,
+      (data) {
+        // Handle the API response structure
+        if (data['success'] == true && data['data'] != null) {
+          return data['data'];
+        }
+        return data;
+      },
       endpoint,
     );
   }
@@ -371,7 +401,13 @@ class ApiService {
         headers: _defaultHeaders,
         body: jsonEncode({"token": token, "newPassword": newPassword}),
       ),
-      (data) => data,
+      (data) {
+        // Handle the API response structure
+        if (data['success'] == true && data['data'] != null) {
+          return data['data'];
+        }
+        return data;
+      },
       endpoint,
     );
   }

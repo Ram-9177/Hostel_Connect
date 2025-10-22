@@ -1,0 +1,176 @@
+name: HostelConnect
+description: Complete hostel management system with real-time notifications, offline support, and advanced analytics.
+
+# App Store Information
+app_store_name: HostelConnect - Hostel Management
+app_store_description: |
+  HostelConnect is a comprehensive hostel management system designed for educational institutions. 
+  It provides complete solutions for student management, room allocation, gate pass management, 
+  attendance tracking, meal management, and real-time notifications.
+
+  Key Features:
+  • Real-time notifications and updates
+  • Offline functionality with data synchronization
+  • QR code-based attendance tracking
+  • Gate pass request and approval system
+  • Room allocation and management
+  • Meal intent submission and forecasting
+  • Advanced analytics and insights
+  • Role-based access control
+  • File upload and management
+  • Cross-platform compatibility
+
+  Perfect for:
+  • Educational institutions
+  • Student hostels
+  • Boarding schools
+  • University accommodations
+
+keywords: ["hostel", "management", "student", "attendance", "room", "gatepass", "education", "boarding"]
+
+# App Store Categories
+primary_category: Education
+secondary_category: Productivity
+
+# App Store Screenshots (placeholder paths)
+screenshots:
+  ios:
+    - "assets/screenshots/ios/1_login.png"
+    - "assets/screenshots/ios/2_dashboard.png"
+    - "assets/screenshots/ios/3_gatepass.png"
+    - "assets/screenshots/ios/4_attendance.png"
+    - "assets/screenshots/ios/5_meals.png"
+    - "assets/screenshots/ios/6_profile.png"
+  android:
+    - "assets/screenshots/android/1_login.png"
+    - "assets/screenshots/android/2_dashboard.png"
+    - "assets/screenshots/android/3_gatepass.png"
+    - "assets/screenshots/android/4_attendance.png"
+    - "assets/screenshots/android/5_meals.png"
+    - "assets/screenshots/android/6_profile.png"
+
+# App Icons
+app_icon:
+  ios: "assets/icons/ios/icon.png"
+  android: "assets/icons/android/icon.png"
+
+# Privacy Policy and Terms
+privacy_policy_url: "https://hostelconnect.com/privacy"
+terms_of_service_url: "https://hostelconnect.com/terms"
+support_url: "https://hostelconnect.com/support"
+
+# App Store Optimization
+aso_keywords: "hostel management, student accommodation, boarding school, university hostel, student tracking, attendance management, room allocation, gate pass, meal management, educational technology"
+
+# Release Information
+version: "1.0.0"
+build_number: 1
+release_notes: |
+  Initial release of HostelConnect - Complete hostel management system
+  
+  Features:
+  • Complete student and room management
+  • Real-time notifications and updates
+  • Offline functionality with sync
+  • QR code attendance tracking
+  • Gate pass management system
+  • Meal intent and forecasting
+  • Advanced analytics and insights
+  • Role-based access control
+  • File upload capabilities
+  • Modern iOS-grade UI/UX
+
+# Compliance Information
+content_rating: 4+ (Everyone)
+age_rating: 4+
+
+# App Store Connect Information
+app_store_connect:
+  team_id: "YOUR_TEAM_ID"
+  bundle_id: "com.hostelconnect.app"
+  app_id: "YOUR_APP_ID"
+
+# Google Play Console Information
+google_play_console:
+  package_name: "com.hostelconnect.app"
+  service_account_key: "path/to/service-account-key.json"
+
+# Build Configuration
+build_config:
+  ios:
+    deployment_target: "12.0"
+    minimum_ios_version: "12.0"
+    target_ios_version: "17.0"
+  android:
+    min_sdk_version: 21
+    target_sdk_version: 34
+    compile_sdk_version: 34
+
+# Permissions
+permissions:
+  ios:
+    - "NSCameraUsageDescription": "Camera access required for QR code scanning"
+    - "NSPhotoLibraryUsageDescription": "Photo library access for profile pictures"
+    - "NSLocationWhenInUseUsageDescription": "Location access for attendance tracking"
+    - "NSMicrophoneUsageDescription": "Microphone access for voice notes"
+  android:
+    - "android.permission.CAMERA"
+    - "android.permission.READ_EXTERNAL_STORAGE"
+    - "android.permission.WRITE_EXTERNAL_STORAGE"
+    - "android.permission.ACCESS_FINE_LOCATION"
+    - "android.permission.ACCESS_COARSE_LOCATION"
+    - "android.permission.INTERNET"
+    - "android.permission.ACCESS_NETWORK_STATE"
+
+# Firebase Configuration
+firebase:
+  ios_config_file: "ios/Runner/GoogleService-Info.plist"
+  android_config_file: "android/app/google-services.json"
+
+# App Store Assets
+app_store_assets:
+  app_icon_1024: "assets/app_store/icon_1024.png"
+  app_icon_512: "assets/app_store/icon_512.png"
+  feature_graphic: "assets/app_store/feature_graphic.png"
+  promo_graphic: "assets/app_store/promo_graphic.png"
+
+# Testing Information
+testing:
+  testflight: true
+  internal_testing: true
+  external_testing: false
+  beta_groups: ["Internal Testers", "Beta Testers"]
+
+# Release Schedule
+release_schedule:
+  submit_for_review: "2025-01-25"
+  release_date: "2025-02-01"
+  phased_release: true
+  phased_release_percentage: 25
+
+# App Store Review Information
+review_information:
+  contact_email: "support@hostelconnect.com"
+  contact_phone: "+1-555-0123"
+  demo_account:
+    username: "demo@hostelconnect.com"
+    password: "demo123"
+  review_notes: |
+    HostelConnect is a comprehensive hostel management system for educational institutions.
+    
+    Demo Account:
+    Email: demo@hostelconnect.com
+    Password: demo123
+    
+    Key Features to Test:
+    1. Login with demo account
+    2. Navigate through different user roles (Student, Warden, Admin)
+    3. Test gate pass request and approval workflow
+    4. Test attendance scanning with QR codes
+    5. Test meal intent submission
+    6. Test offline functionality
+    7. Test real-time notifications
+    8. Test file upload for profile pictures
+    
+    The app includes comprehensive offline functionality, so it works even without internet connection.
+    All data syncs automatically when connection is restored.

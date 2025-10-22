@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- HostelConnect Logo -->
+  <defs>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="secondaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="512" cy="512" r="480" fill="url(#primaryGradient)" stroke="#1D4ED8" stroke-width="8"/>
+  
+  <!-- Hostel Building -->
+  <rect x="300" y="400" width="424" height="200" fill="url(#secondaryGradient)" rx="20"/>
+  
+  <!-- Building Windows -->
+  <rect x="350" y="450" width="60" height="60" fill="#F8FAFC" rx="8"/>
+  <rect x="450" y="450" width="60" height="60" fill="#F8FAFC" rx="8"/>
+  <rect x="550" y="450" width="60" height="60" fill="#F8FAFC" rx="8"/>
+  <rect x="650" y="450" width="60" height="60" fill="#F8FAFC" rx="8"/>
+  
+  <rect x="350" y="530" width="60" height="60" fill="#F8FAFC" rx="8"/>
+  <rect x="450" y="530" width="60" height="60" fill="#F8FAFC" rx="8"/>
+  <rect x="550" y="530" width="60" height="60" fill="#F8FAFC" rx="8"/>
+  <rect x="650" y="530" width="60" height="60" fill="#F8FAFC" rx="8"/>
+  
+  <!-- Door -->
+  <rect x="500" y="550" width="24" height="50" fill="#1F2937" rx="4"/>
+  
+  <!-- Roof -->
+  <polygon points="280,400 512,300 744,400" fill="#1D4ED8"/>
+  
+  <!-- Connection Lines -->
+  <line x1="200" y1="200" x2="400" y2="350" stroke="#10B981" stroke-width="6" stroke-linecap="round"/>
+  <line x1="824" y1="200" x2="624" y2="350" stroke="#10B981" stroke-width="6" stroke-linecap="round"/>
+  <line x1="200" y1="824" x2="400" y2="674" stroke="#10B981" stroke-width="6" stroke-linecap="round"/>
+  <line x1="824" y1="824" x2="624" y2="674" stroke="#10B981" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Connection Nodes -->
+  <circle cx="200" cy="200" r="20" fill="#10B981"/>
+  <circle cx="824" cy="200" r="20" fill="#10B981"/>
+  <circle cx="200" cy="824" r="20" fill="#10B981"/>
+  <circle cx="824" cy="824" r="20" fill="#10B981"/>
+  
+  <!-- Central Icon -->
+  <circle cx="512" cy="512" r="40" fill="#F8FAFC" stroke="#2563EB" stroke-width="4"/>
+  <text x="512" y="525" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#2563EB">H</text>
+</svg>

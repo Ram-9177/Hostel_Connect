@@ -1,0 +1,8 @@
+/* Inter SemiBold Font - Placeholder */
+/* This is a placeholder font file. In production, replace with actual Inter font files */
+@font-face {
+  font-family: 'Inter';
+  src: url('Inter-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}

@@ -1,8 +1,6 @@
 // lib/core/loading/loading_system.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../responsive/responsive_breakpoints.dart';
-import '../responsive/responsive_widgets.dart';
 
 enum LoadingType {
   spinner,
@@ -84,18 +82,18 @@ class _LoadingOverlayState extends State<LoadingOverlay>
           Container(
             color: widget.backgroundColor ?? Colors.black.withOpacity(0.5),
             child: Center(
-              child: ResponsivePadding(
-                padding: EdgeInsets.all(ResponsiveUtils.getResponsivePadding(context)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildLoadingIndicator(),
                     if (widget.message != null) ...[
-                      SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context)),
-                      ResponsiveText(
+                      const SizedBox(height: 16),
+                      Text(
                         widget.message!,
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, base: 16),
+                        style: const TextStyle(
+                          fontSize: 16,
                           color: Colors.white,
                         ),
                         textAlign: TextAlign.center,
@@ -112,7 +110,7 @@ class _LoadingOverlayState extends State<LoadingOverlay>
 
   Widget _buildLoadingIndicator() {
     final color = widget.indicatorColor ?? Colors.white;
-    final size = ResponsiveUtils.getResponsiveIconSize(context);
+    const size = 48.0;
 
     switch (widget.type) {
       case LoadingType.spinner:

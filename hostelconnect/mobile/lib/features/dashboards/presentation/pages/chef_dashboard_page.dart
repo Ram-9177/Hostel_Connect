@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hostelconnect/core/responsive.dart';
 import 'package:hostelconnect/core/state/app_state.dart';
+import 'package:hostelconnect/core/navigation/navigation_service.dart';
 import 'package:hostelconnect/features/dashboards/presentation/widgets/dash_tile.dart';
 import 'package:hostelconnect/shared/widgets/ui/card.dart';
 import 'package:hostelconnect/shared/widgets/ui/button.dart';
@@ -242,25 +243,79 @@ class _ChefDashboardPageState extends ConsumerState<ChefDashboardPage>
                 SizedBox(height: HTokens.xl),
                 
                 // Quick Actions
-                Text(
-                  'Quick Actions',
-                  style: TextStyle(
-                    fontSize: r.isXS ? 18 : 20,
-                    fontWeight: FontWeight.bold,
-                    color: HTokens.onSurface,
+                HCard(
+                  backgroundColor: HTokens.warning.withOpacity(0.05),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.restaurant_menu, color: HTokens.warning),
+                          SizedBox(width: HTokens.sm),
+                          Text(
+                            'Kitchen Actions',
+                            style: TextStyle(
+                              fontSize: r.isXS ? 18 : 20,
+                              fontWeight: FontWeight.bold,
+                              color: HTokens.warning,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: HTokens.md),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HButton(
+                              text: 'Meal Planning',
+                              variant: HButtonVariant.primary,
+                              icon: Icons.menu_book,
+                              onPressed: () {
+                                NavigationService.navigateToMealPlanningWithGuard(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(width: HTokens.sm),
+                          Expanded(
+                            child: HButton(
+                              text: 'Inventory',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.inventory,
+                              onPressed: () {
+                                NavigationService.navigateToInventoryWithGuard(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: HTokens.sm),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HButton(
+                              text: 'Dietary Requests',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.healing,
+                              onPressed: () {
+                                NavigationService.navigateToDietaryRequests(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(width: HTokens.sm),
+                          Expanded(
+                            child: HButton(
+                              text: 'Reports',
+                              variant: HButtonVariant.outline,
+                              icon: Icons.assessment,
+                              onPressed: () {
+                                NavigationService.navigateToReports(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(height: HTokens.md),
-                
-                Wrap(
-                  spacing: HTokens.sm,
-                  runSpacing: HTokens.sm,
-                  children: [
-                    _buildActionChip('Meal Planning', Icons.menu_book, HTokens.primary, () {}),
-                    _buildActionChip('Inventory', Icons.inventory, HTokens.secondary, () {}),
-                    _buildActionChip('Dietary Requests', Icons.healing, HTokens.warning, () {}),
-                    _buildActionChip('Reports', Icons.assessment, HTokens.info, () {}),
-                  ],
                 ),
                 
                 SizedBox(height: HTokens.xl),

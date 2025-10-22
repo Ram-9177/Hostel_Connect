@@ -1,0 +1,37 @@
+import Redis from 'ioredis';
+export declare class RedisService {
+    private readonly redis;
+    constructor(redis: Redis);
+    get(key: string): Promise<string | null>;
+    set(key: string, value: string, ttl?: number): Promise<boolean>;
+    setex(key: string, seconds: number, value: string): Promise<boolean>;
+    del(key: string): Promise<boolean>;
+    exists(key: string): Promise<boolean>;
+    expire(key: string, seconds: number): Promise<boolean>;
+    keys(pattern: string): Promise<string[]>;
+    flushdb(): Promise<boolean>;
+    info(): Promise<string>;
+    hget(key: string, field: string): Promise<string | null>;
+    hset(key: string, field: string, value: string): Promise<boolean>;
+    hgetall(key: string): Promise<Record<string, string>>;
+    hdel(key: string, field: string): Promise<boolean>;
+    lpush(key: string, ...values: string[]): Promise<number>;
+    rpush(key: string, ...values: string[]): Promise<number>;
+    lpop(key: string): Promise<string | null>;
+    rpop(key: string): Promise<string | null>;
+    lrange(key: string, start: number, stop: number): Promise<string[]>;
+    sadd(key: string, ...members: string[]): Promise<number>;
+    srem(key: string, ...members: string[]): Promise<number>;
+    smembers(key: string): Promise<string[]>;
+    sismember(key: string, member: string): Promise<boolean>;
+    zadd(key: string, score: number, member: string): Promise<number>;
+    zrem(key: string, member: string): Promise<number>;
+    zrange(key: string, start: number, stop: number): Promise<string[]>;
+    zrevrange(key: string, start: number, stop: number): Promise<string[]>;
+    cacheUserSession(userId: string, sessionData: any, ttl?: number): Promise<boolean>;
+    getUserSession(userId: string): Promise<any | null>;
+    invalidateUserCache(userId: string): Promise<void>;
+    cacheQueryResult(queryKey: string, result: any, ttl?: number): Promise<boolean>;
+    getCachedQueryResult(queryKey: string): Promise<any | null>;
+    invalidatePattern(pattern: string): Promise<void>;
+}

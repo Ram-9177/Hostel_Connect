@@ -1,6 +1,8 @@
 // lib/core/performance.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
+import 'dart:developer';
 
 class HPerformance {
   // Precache critical images
@@ -40,14 +42,12 @@ class HPerformance {
       width: width,
       height: height,
       fit: fit,
-      cacheWidth: (width * MediaQuery.devicePixelRatioOf(context)).round(),
-      cacheHeight: (height * MediaQuery.devicePixelRatioOf(context)).round(),
       errorBuilder: (context, error, stackTrace) {
         return Container(
           width: width,
           height: height,
           color: Colors.grey[300],
-          child: Icon(Icons.error),
+          child: const Icon(Icons.error),
         );
       },
     );

@@ -1,0 +1,8 @@
+/* Inter Bold Font - Placeholder */
+/* This is a placeholder font file. In production, replace with actual Inter font files */
+@font-face {
+  font-family: 'Inter';
+  src: url('Inter-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
