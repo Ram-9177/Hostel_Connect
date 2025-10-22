@@ -40,13 +40,33 @@ class AuthService {
         return AuthResult.error('Invalid response from server');
       }
       
-      // Validate response structure
-      if (!response.containsKey('user') || !response.containsKey('tokens')) {
+      // Handle normalized API response format
+      if (!response.containsKey('user') || !response.containsKey('accessToken')) {
         return AuthResult.error('Invalid server response format');
       }
       
-      final user = User.fromJson(response['user']);
-      final tokens = AuthTokens.fromJson(response['tokens']);
+      // Create tokens from normalized response
+      final tokens = AuthTokens(
+        accessToken: response['accessToken']?.toString() ?? '',
+        refreshToken: response['refreshToken']?.toString() ?? '',
+        expiresIn: response['expiresIn'] ?? 3600,
+      );
+      
+      // Create user from normalized response
+      final userData = response['user'];
+      final user = User(
+        id: userData['id']?.toString() ?? '',
+        email: userData['email']?.toString() ?? '',
+        role: userData['role']?.toString() ?? 'student',
+        hostelId: userData['hostelId']?.toString() ?? 'default-hostel',
+        firstName: userData['name']?.toString() ?? userData['firstName']?.toString() ?? '',
+        lastName: userData['lastName']?.toString() ?? '',
+        phone: userData['phone']?.toString(),
+        isActive: userData['isActive'] ?? true,
+        createdAt: userData['createdAt'] != null ? DateTime.tryParse(userData['createdAt'].toString()) : null,
+        updatedAt: userData['updatedAt'] != null ? DateTime.tryParse(userData['updatedAt'].toString()) : null,
+      );
+      
       final deviceId = response['deviceId'] ?? 'device_${DateTime.now().millisecondsSinceEpoch}';
       
       // Validate tokens

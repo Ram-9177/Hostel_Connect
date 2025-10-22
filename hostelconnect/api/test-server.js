@@ -26,47 +26,35 @@ app.get('/api/v1/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Test login endpoint
+// Test login endpoint - normalized response format
 app.post('/api/v1/auth/login', (req, res) => {
   const { email, password } = req.body;
   
   // Demo credentials
   const demoUsers = {
-    'student@demo.com': { password: 'password123', role: 'student' },
-    'warden@demo.com': { password: 'password123', role: 'warden' },
-    'wardenhead@demo.com': { password: 'password123', role: 'warden_head' },
-    'chef@demo.com': { password: 'password123', role: 'chef' },
-    'admin@demo.com': { password: 'password123', role: 'super_admin' }
+    'student@demo.com': { password: 'password123', role: 'student', name: 'John Student' },
+    'warden@demo.com': { password: 'password123', role: 'warden', name: 'Jane Warden' },
+    'wardenhead@demo.com': { password: 'password123', role: 'warden_head', name: 'Mike Head' },
+    'chef@demo.com': { password: 'password123', role: 'chef', name: 'Sarah Chef' },
+    'admin@demo.com': { password: 'password123', role: 'super_admin', name: 'Admin User' }
   };
   
   if (demoUsers[email] && demoUsers[email].password === password) {
-    res.json({
-      success: true,
+    // Success response - normalized format
+    res.status(200).json({
+      accessToken: 'demo-access-token-' + Date.now(),
+      refreshToken: 'demo-refresh-token-' + Date.now(),
       user: {
         id: 'demo-user-' + Date.now(),
-        email: email,
-        firstName: email.split('@')[0],
-        lastName: 'User',
         role: demoUsers[email].role,
-        phone: '9876543210',
-        studentId: 'STU001',
-        hostelId: 'hostel-1',
-        roomId: 'room-101',
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      },
-      tokens: {
-        accessToken: 'demo-access-token-' + Date.now(),
-        refreshToken: 'demo-refresh-token-' + Date.now(),
-        expiresIn: 3600
-      },
-      deviceId: 'device-' + Date.now()
+        name: demoUsers[email].name,
+        email: email
+      }
     });
   } else {
+    // Failure response - clean 401
     res.status(401).json({
-      success: false,
-      message: 'Invalid credentials'
+      error: 'INVALID_CREDENTIALS'
     });
   }
 });
