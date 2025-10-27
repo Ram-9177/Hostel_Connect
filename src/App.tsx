@@ -122,7 +122,7 @@ function AppContent() {
         case "help-center":
           return <HelpCenter onBack={handleBack} />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={user.role} />;
+          return <Settings onBack={handleBack} userRole={user.role} onNavigate={handleNavigate} onLogout={handleLogout} />;
         default:
           return <StudentHome onNavigate={handleNavigate} />;
       }
@@ -148,7 +148,7 @@ function AppContent() {
         case "complaints":
           return <NoticesAndComplaints onBack={handleBack} />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={user.role} />;
+          return <Settings onBack={handleBack} userRole={user.role} onNavigate={handleNavigate} onLogout={handleLogout} />;
         default:
           return <WardenDashboard onBack={handleLogout} />;
       }
@@ -170,7 +170,7 @@ function AppContent() {
         case "emergency-requests":
           return <EmergencyRequests />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={user.role} />;
+          return <Settings onBack={handleBack} userRole={user.role} onNavigate={handleNavigate} onLogout={handleLogout} />;
         default:
           return <WardenHeadDashboard onBack={handleLogout} />;
       }
@@ -198,7 +198,7 @@ function AppContent() {
         case "gate-security":
           return <GateSecurity />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={user.role} />;
+          return <Settings onBack={handleBack} userRole={user.role} onNavigate={handleNavigate} onLogout={handleLogout} />;
         default:
           return <SuperAdminDashboard onBack={handleLogout} />;
       }
@@ -210,7 +210,7 @@ function AppContent() {
         case "chef":
           return <ChefBoard onBack={handleLogout} onNavigate={handleNavigate} />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={user.role} />;
+          return <Settings onBack={handleBack} userRole={user.role} onNavigate={handleNavigate} onLogout={handleLogout} />;
         default:
           return <ChefBoard onBack={handleLogout} onNavigate={handleNavigate} />;
       }
@@ -222,7 +222,7 @@ function AppContent() {
         case "gate-security":
           return <GateSecurity onNavigate={handleNavigate} />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={user.role} />;
+          return <Settings onBack={handleBack} userRole={user.role} onNavigate={handleNavigate} onLogout={handleLogout} />;
         default:
           return <GateSecurity onNavigate={handleNavigate} />;
       }
