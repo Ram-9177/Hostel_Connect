@@ -5,6 +5,7 @@ import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { motion } from "motion/react";
+import { premiumColors, roleColors, premiumShadows, premiumAnimations } from "../../styles/premium-design-tokens";
 
 interface StudentHomeProps {
   onNavigate: (page: string) => void;
@@ -26,6 +27,7 @@ export function StudentHome({
   hostelName = "Hostel" 
 }: StudentHomeProps) {
   const greeting = getGreeting();
+  const studentColors = roleColors.STUDENT;
   
   const quickActions = [
     {
@@ -34,9 +36,9 @@ export function StudentHome({
       titleTe: "గేట్ పాస్",
       description: "Request outpass",
       icon: QrCode,
-      color: "bg-primary",
+      color: premiumColors.primary[700],
       count: "2 Active",
-      gradient: "from-primary to-primary/80",
+      gradient: "linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)",
     },
     {
       id: "attendance",
@@ -44,9 +46,9 @@ export function StudentHome({
       titleTe: "హాజరు",
       description: "Mark your presence",
       icon: ClipboardCheck,
-      color: "bg-green-600",
+      color: premiumColors.success[600],
       count: "85% This Month",
-      gradient: "from-green-600 to-green-700",
+      gradient: "linear-gradient(135deg, #15803D 0%, #16A34A 100%)",
     },
     {
       id: "meals",
@@ -54,9 +56,9 @@ export function StudentHome({
       titleTe: "భోజనం",
       description: "Set preferences",
       icon: Utensils,
-      color: "bg-accent",
+      color: premiumColors.warning[600],
       count: "3 Pending",
-      gradient: "from-accent to-amber-500",
+      gradient: "linear-gradient(135deg, #C2410C 0%, #D97706 100%)",
     },
     {
       id: "notices",
@@ -64,9 +66,9 @@ export function StudentHome({
       titleTe: "ప్రకటనలు",
       description: "Latest updates",
       icon: Megaphone,
-      color: "bg-secondary",
+      color: premiumColors.secondary[600],
       count: "5 New",
-      gradient: "from-secondary to-blue-700",
+      gradient: "linear-gradient(135deg, #7E22CE 0%, #A855F7 100%)",
     },
     {
       id: "schedule",
@@ -74,9 +76,9 @@ export function StudentHome({
       titleTe: "కార్యక్రమం",
       description: "View timetable",
       icon: Calendar,
-      color: "bg-purple-600",
+      color: "#7C3AED",
       count: "Today",
-      gradient: "from-purple-600 to-purple-700",
+      gradient: "linear-gradient(135deg, #6B21A8 0%, #7C3AED 100%)",
     },
     {
       id: "study",
@@ -84,9 +86,9 @@ export function StudentHome({
       titleTe: "అధ్యయన గది",
       description: "Book study space",
       icon: BookOpen,
-      color: "bg-indigo-600",
+      color: "#4F46E5",
       count: "Available",
-      gradient: "from-indigo-600 to-indigo-700",
+      gradient: "linear-gradient(135deg, #3730A3 0%, #4F46E5 100%)",
     },
   ];
 
@@ -94,10 +96,17 @@ export function StudentHome({
     <div className="min-h-screen bg-background pb-20">
       {/* Container with responsive width and centering */}
       <div className="max-w-md mx-auto lg:max-w-2xl xl:max-w-4xl">
-        {/* Enhanced Header with gradient and better spacing */}
-        <div className="bg-gradient-to-br from-primary via-primary to-secondary text-white p-6 pb-10 rounded-b-[2rem] shadow-lg relative overflow-hidden">
-          {/* Decorative background elements */}
+        {/* Premium Header with sophisticated gradient */}
+        <div 
+          className="text-white p-6 pb-10 rounded-b-[2rem] relative overflow-hidden"
+          style={{
+            background: studentColors.gradient,
+            boxShadow: premiumShadows.primaryGlow,
+          }}
+        >
+          {/* Subtle decorative elements */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12" />
           
           <div className="relative">
@@ -165,15 +174,27 @@ export function StudentHome({
                   transition={{ delay: index * 0.1 }}
                 >
                   <Card
-                    className="p-4 cursor-pointer hover:shadow-xl transition-all active:scale-95 border-0 shadow-md relative overflow-hidden group"
+                    className="p-4 cursor-pointer hover:shadow-2xl transition-all active:scale-95 border-0 relative overflow-hidden group"
+                    style={{
+                      boxShadow: premiumShadows.md,
+                    }}
                     onClick={() => onNavigate(action.id)}
                   >
                     {/* Gradient background on hover */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${action.gradient} opacity-0 group-hover:opacity-5 transition-opacity`} />
+                    <div 
+                      className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity"
+                      style={{ background: action.gradient }}
+                    />
                     
                     <div className="relative space-y-3">
                       <div className="flex items-start justify-between">
-                        <div className={`${action.color} w-12 h-12 rounded-xl flex items-center justify-center shadow-lg`}>
+                        <div 
+                          className="w-12 h-12 rounded-xl flex items-center justify-center"
+                          style={{
+                            background: action.gradient,
+                            boxShadow: premiumShadows.sm,
+                          }}
+                        >
                           <Icon className="h-6 w-6 text-white" />
                         </div>
                         {action.count.includes("New") && (
@@ -187,7 +208,12 @@ export function StudentHome({
                         </p>
                       </div>
                       <div className="pt-1 border-t border-border/50">
-                        <p className="text-xs text-primary font-medium">{action.count}</p>
+                        <p 
+                          className="text-xs font-medium"
+                          style={{ color: action.color }}
+                        >
+                          {action.count}
+                        </p>
                       </div>
                     </div>
                   </Card>
@@ -196,8 +222,13 @@ export function StudentHome({
             })}
           </div>
 
-        {/* Today's Summary Card with enhanced design */}
-        <Card className="p-4 space-y-4 border-0 shadow-md bg-gradient-to-br from-card to-muted/10">
+        {/* Today's Summary Card with premium design */}
+        <Card 
+          className="p-4 space-y-4 border-0 bg-gradient-to-br from-card to-muted/10"
+          style={{
+            boxShadow: premiumShadows.md,
+          }}
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="mb-1">Today's Activity</h3>
@@ -211,27 +242,32 @@ export function StudentHome({
                 <p className="text-lg">✓</p>
               </div>
               <p className="text-xs text-muted-foreground">Attendance</p>
-              <p className="text-xs text-green-600 mt-1">Marked</p>
+              <p className="text-xs mt-1" style={{ color: premiumColors.success[600] }}>Marked</p>
             </div>
             <div className="text-center p-3 bg-card rounded-xl">
               <div className="w-8 h-8 bg-amber-100 dark:bg-amber-950 rounded-full flex items-center justify-center mx-auto mb-2">
                 <p className="text-lg">4</p>
               </div>
               <p className="text-xs text-muted-foreground">Meals</p>
-              <p className="text-xs text-accent mt-1">Set</p>
+              <p className="text-xs mt-1" style={{ color: premiumColors.warning[600] }}>Set</p>
             </div>
             <div className="text-center p-3 bg-card rounded-xl">
               <div className="w-8 h-8 bg-blue-100 dark:bg-blue-950 rounded-full flex items-center justify-center mx-auto mb-2">
                 <p className="text-lg">2</p>
               </div>
               <p className="text-xs text-muted-foreground">Passes</p>
-              <p className="text-xs text-primary mt-1">Active</p>
+              <p className="text-xs mt-1" style={{ color: premiumColors.primary[600] }}>Active</p>
             </div>
           </div>
         </Card>
 
-        {/* Recent Notices Preview with better visual hierarchy */}
-        <Card className="p-4 space-y-4 border-0 shadow-md">
+        {/* Recent Notices Preview with premium style */}
+        <Card 
+          className="p-4 space-y-4 border-0"
+          style={{
+            boxShadow: premiumShadows.md,
+          }}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Megaphone className="h-5 w-5 text-primary" />
