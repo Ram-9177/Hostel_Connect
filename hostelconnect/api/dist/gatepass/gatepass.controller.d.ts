@@ -1,30 +1,17 @@
 import { GatePassService } from './gatepass.service';
-import { CreateGatePassDto } from './dto/create-gate-pass.dto';
-import { ApproveGatePassDto } from './dto/approve-gate-pass.dto';
+import { CreateGatePassDto, ApproveGatePassDto, RejectGatePassDto } from './dto/create-gate-pass.dto';
 export declare class GatePassController {
     private readonly gatePassService;
     constructor(gatePassService: GatePassService);
-    create(createDto: CreateGatePassDto, req: any): Promise<import("./entities/gate-pass.entity").GatePass>;
-    findAll(req: any): Promise<import("./entities/gate-pass.entity").GatePass[]>;
-    findOne(id: string): Promise<import("./entities/gate-pass.entity").GatePass>;
-    approve(id: string, approveDto: ApproveGatePassDto, req: any): Promise<import("./entities/gate-pass.entity").GatePass>;
-    cancel(id: string, req: any): Promise<import("./entities/gate-pass.entity").GatePass>;
-    getQRToken(id: string): Promise<{
-        qrToken: string;
-        expiresAt: Date;
-        adRequired: boolean;
-    }>;
-    unlockQRTokenAfterAd(id: string, req: any): Promise<{
+    createGatePass(createGatePassDto: CreateGatePassDto): Promise<import("./entities/gate-pass.entity").GatePass>;
+    getAllGatePasses(): Promise<import("./entities/gate-pass.entity").GatePass[]>;
+    getPendingGatePasses(): Promise<import("./entities/gate-pass.entity").GatePass[]>;
+    getStudentGatePasses(studentId: string): Promise<import("./entities/gate-pass.entity").GatePass[]>;
+    approveGatePass(id: string, approveDto: ApproveGatePassDto): Promise<import("./entities/gate-pass.entity").GatePass>;
+    rejectGatePass(id: string, rejectDto: RejectGatePassDto): Promise<import("./entities/gate-pass.entity").GatePass>;
+    getQRCode(id: string): Promise<{
         qrToken: string;
         expiresAt: Date;
     }>;
-    markAdWatched(id: string, body: {
-        adId: string;
-    }, req: any): Promise<{
-        message: string;
-    }>;
-    refreshQRToken(id: string): Promise<{
-        qrToken: string;
-        expiresAt: Date;
-    }>;
+    useGatePass(id: string): Promise<import("./entities/gate-pass.entity").GatePass>;
 }

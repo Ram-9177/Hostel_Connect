@@ -11,42 +11,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScanGatePassDto = void 0;
 const class_validator_1 = require("class-validator");
-const swagger_1 = require("@nestjs/swagger");
 class ScanGatePassDto {
 }
 exports.ScanGatePassDto = ScanGatePassDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'base64-encoded-qr-token' }),
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], ScanGatePassDto.prototype, "qrToken", void 0);
+], ScanGatePassDto.prototype, "qrCode", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'OUT' }),
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], ScanGatePassDto.prototype, "eventType", void 0);
+], ScanGatePassDto.prototype, "location", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'device-uuid', required: false }),
+    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
-], ScanGatePassDto.prototype, "deviceId", void 0);
+], ScanGatePassDto.prototype, "securityGuardId", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'guard-user-uuid', required: false }),
+    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
-], ScanGatePassDto.prototype, "guardUserId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 12.9716, required: false }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], ScanGatePassDto.prototype, "latitude", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 77.5946, required: false }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], ScanGatePassDto.prototype, "longitude", void 0);
+], ScanGatePassDto.prototype, "securityGuardName", void 0);
 //# sourceMappingURL=scan-gate-pass.dto.js.map

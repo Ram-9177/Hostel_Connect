@@ -8,6 +8,23 @@ class AuthApiService {
 
   AuthApiService(this._httpClient);
 
+  Future<Map<String, dynamic>> register(Map<String, dynamic> userData) async {
+    try {
+      final response = await _httpClient.post(
+        Environment.authRegister,
+        data: userData,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response.data;
+      } else {
+        throw Exception('Registration failed: ${response.statusMessage}');
+      }
+    } catch (e) {
+      throw Exception('Registration failed: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final response = await _httpClient.post(
@@ -59,22 +76,6 @@ class AuthApiService {
     }
   }
 
-  Future<Map<String, dynamic>> register(Map<String, dynamic> userData) async {
-    try {
-      final response = await _httpClient.post(
-        Environment.authRegister,
-        data: userData,
-      );
-
-      if (response.statusCode == 201) {
-        return response.data;
-      } else {
-        throw Exception('Registration failed: ${response.statusMessage}');
-      }
-    } catch (e) {
-      throw Exception('Registration failed: $e');
-    }
-  }
 
   Future<Map<String, dynamic>> forgotPassword(String email) async {
     try {

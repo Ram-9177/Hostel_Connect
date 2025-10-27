@@ -18,76 +18,171 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const gate_event_entity_1 = require("./entities/gate-event.entity");
 const gate_pass_entity_1 = require("../gatepass/entities/gate-pass.entity");
-const qr_token_service_1 = require("../common/utils/qr-token.service");
 let GateService = class GateService {
-    constructor(gateEventRepository, gatePassRepository, qrTokenService) {
+    constructor(gateEventRepository, gatePassRepository) {
         this.gateEventRepository = gateEventRepository;
         this.gatePassRepository = gatePassRepository;
-        this.qrTokenService = qrTokenService;
     }
     async scanGatePass(scanDto) {
-        const tokenPayload = this.qrTokenService.validateToken(scanDto.qrToken);
-        if (!tokenPayload || tokenPayload.type !== 'GATE_PASS') {
-            throw new common_1.BadRequestException('Invalid or expired QR token');
-        }
-        const gatePass = await this.gatePassRepository.findOne({
-            where: { id: tokenPayload.entityId },
-            relations: ['student'],
-        });
-        if (!gatePass) {
-            throw new common_1.NotFoundException('Gate pass not found');
-        }
-        if (gatePass.status !== 'APPROVED') {
-            throw new common_1.BadRequestException('Gate pass is not approved');
-        }
-        const now = new Date();
-        if (now < gatePass.startTime || now > gatePass.endTime) {
-            throw new common_1.BadRequestException('Gate pass is not valid at this time');
-        }
-        const existingEvent = await this.gateEventRepository.findOne({
-            where: {
-                passId: gatePass.id,
-                eventType: scanDto.eventType,
-            },
-            order: { timestamp: 'DESC' },
-        });
-        if (existingEvent) {
-            const timeDiff = now.getTime() - existingEvent.timestamp.getTime();
-            if (timeDiff < 5 * 60 * 1000) {
-                throw new common_1.BadRequestException('Duplicate scan detected');
+        try {
+            const gatePass = await this.validateGatePass(scanDto.qrCode);
+            if (!gatePass) {
+                return {
+                    success: false,
+                    message: 'Invalid or expired gate pass',
+                    event: null
+                };
             }
-        }
-        const gateEvent = this.gateEventRepository.create({
-            passId: gatePass.id,
-            studentId: gatePass.studentId,
-            eventType: scanDto.eventType,
-            method: 'QR_SCAN',
-            deviceId: scanDto.deviceId,
-            guardUserId: scanDto.guardUserId,
-            timestamp: now,
-            latitude: scanDto.latitude,
-            longitude: scanDto.longitude,
-        });
-        const savedEvent = await this.gateEventRepository.save(gateEvent);
-        if (scanDto.eventType === 'OUT') {
-            await this.gatePassRepository.update(gatePass.id, {
-                status: 'EXPIRED',
+            const eventType = await this.determineEventType(gatePass.studentId);
+            const gateEvent = this.gateEventRepository.create({
+                gatePassId: gatePass.id,
+                studentId: gatePass.studentId,
+                studentName: `${gatePass.firstName} ${gatePass.lastName}`,
+                eventType,
+                timestamp: new Date(),
+                location: scanDto.location || 'Main Gate',
+                status: 'SUCCESS',
+                qrCode: scanDto.qrCode,
             });
+            const savedEvent = await this.gateEventRepository.save(gateEvent);
+            if (eventType === 'OUT') {
+                await this.gatePassRepository.update(gatePass.id, {
+                    status: gate_pass_entity_1.GatePassStatus.ACTIVE,
+                    lastUsedAt: new Date(),
+                });
+            }
+            else if (eventType === 'IN') {
+                await this.gatePassRepository.update(gatePass.id, {
+                    status: gate_pass_entity_1.GatePassStatus.COMPLETED,
+                    completedAt: new Date(),
+                });
+            }
+            return {
+                success: true,
+                message: `Student ${eventType === 'OUT' ? 'exited' : 'entered'} successfully`,
+                event: savedEvent,
+                gatePass: gatePass
+            };
         }
-        return savedEvent;
+        catch (error) {
+            console.error('Gate scan error:', error);
+            const failedEvent = this.gateEventRepository.create({
+                gatePassId: null,
+                studentId: null,
+                studentName: 'Unknown',
+                eventType: 'UNKNOWN',
+                timestamp: new Date(),
+                location: scanDto.location || 'Main Gate',
+                status: 'FAILED',
+                qrCode: scanDto.qrCode,
+                reason: error.message,
+            });
+            await this.gateEventRepository.save(failedEvent);
+            return {
+                success: false,
+                message: 'Failed to process gate pass',
+                error: error.message,
+                event: failedEvent
+            };
+        }
     }
-    async getGatePassEvents(passId) {
+    async validateGatePass(qrCode) {
+        try {
+            const passId = this.extractPassIdFromQR(qrCode);
+            if (!passId) {
+                return null;
+            }
+            const gatePass = await this.gatePassRepository.findOne({
+                where: { id: passId }
+            });
+            if (!gatePass) {
+                return null;
+            }
+            if (gatePass.status !== 'APPROVED') {
+                return null;
+            }
+            const now = new Date();
+            const startTime = new Date(gatePass.startTime);
+            const endTime = new Date(gatePass.endTime);
+            if (now < startTime || now > endTime) {
+                return null;
+            }
+            return gatePass;
+        }
+        catch (error) {
+            console.error('Gate pass validation error:', error);
+            return null;
+        }
+    }
+    async determineEventType(studentId) {
+        const recentEvent = await this.gateEventRepository.findOne({
+            where: { studentId },
+            order: { timestamp: 'DESC' }
+        });
+        if (!recentEvent || recentEvent.eventType === 'IN') {
+            return 'OUT';
+        }
+        return 'IN';
+    }
+    async getGateEvents() {
         return this.gateEventRepository.find({
-            where: { passId },
-            order: { timestamp: 'ASC' },
+            order: { timestamp: 'DESC' },
+            take: 100
         });
     }
-    async getStudentGateEvents(studentId, limit = 10) {
+    async getTodayEvents() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return this.gateEventRepository.find({
+            where: {
+                timestamp: {
+                    $gte: today,
+                    $lt: tomorrow
+                }
+            },
+            order: { timestamp: 'DESC' }
+        });
+    }
+    async getStudentEvents(studentId) {
         return this.gateEventRepository.find({
             where: { studentId },
             order: { timestamp: 'DESC' },
-            take: limit,
+            take: 50
         });
+    }
+    async getGateStats() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const todayEvents = await this.gateEventRepository.find({
+            where: {
+                timestamp: {
+                    $gte: today,
+                    $lt: tomorrow
+                }
+            }
+        });
+        const stats = {
+            totalScans: todayEvents.length,
+            successfulScans: todayEvents.filter(e => e.status === 'SUCCESS').length,
+            failedScans: todayEvents.filter(e => e.status === 'FAILED').length,
+            studentsOut: todayEvents.filter(e => e.eventType === 'OUT').length,
+            studentsIn: todayEvents.filter(e => e.eventType === 'IN').length,
+            uniqueStudents: new Set(todayEvents.map(e => e.studentId)).size,
+        };
+        return stats;
+    }
+    extractPassIdFromQR(qrCode) {
+        try {
+            const parsed = JSON.parse(qrCode);
+            return parsed.passId || parsed.id || null;
+        }
+        catch {
+            return qrCode;
+        }
     }
 };
 exports.GateService = GateService;
@@ -96,7 +191,6 @@ exports.GateService = GateService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(gate_event_entity_1.GateEvent)),
     __param(1, (0, typeorm_1.InjectRepository)(gate_pass_entity_1.GatePass)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository,
-        qr_token_service_1.QRTokenService])
+        typeorm_2.Repository])
 ], GateService);
 //# sourceMappingURL=gate.service.js.map

@@ -14,9 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StudentsController = void 0;
 const common_1 = require("@nestjs/common");
-const swagger_1 = require("@nestjs/swagger");
-const passport_1 = require("@nestjs/passport");
 const students_service_1 = require("./students.service");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let StudentsController = class StudentsController {
     constructor(studentsService) {
         this.studentsService = studentsService;
@@ -24,98 +23,39 @@ let StudentsController = class StudentsController {
     async getAllStudents() {
         return this.studentsService.getAllStudents();
     }
-    async getUnassignedStudents() {
-        return this.studentsService.getUnassignedStudents();
+    async getStudent(id) {
+        return this.studentsService.getStudent(id);
     }
-    async getStudentsByHostel(hostelId) {
-        return this.studentsService.getStudentsByHostel(hostelId);
-    }
-    async getStudentsByRoom(roomId) {
-        return this.studentsService.getStudentsByRoom(roomId);
-    }
-    async getStudentById(id) {
-        return this.studentsService.getStudentById(id);
-    }
-    async updateStudent(id, updateStudentDto) {
-        return this.studentsService.updateStudent(id, updateStudentDto);
-    }
-    async deleteStudent(id) {
-        return this.studentsService.deleteStudent(id);
+    async getStudentByStudentId(studentId) {
+        return this.studentsService.getStudentByStudentId(studentId);
     }
 };
 exports.StudentsController = StudentsController;
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all students' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Students retrieved successfully' }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], StudentsController.prototype, "getAllStudents", null);
 __decorate([
-    (0, common_1.Get)('unassigned'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get unassigned students' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Unassigned students retrieved successfully' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "getUnassignedStudents", null);
-__decorate([
-    (0, common_1.Get)('hostel/:hostelId'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get students by hostel' }),
-    (0, swagger_1.ApiParam)({ name: 'hostelId', description: 'Hostel ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Students retrieved successfully' }),
-    __param(0, (0, common_1.Param)('hostelId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "getStudentsByHostel", null);
-__decorate([
-    (0, common_1.Get)('room/:roomId'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get students by room' }),
-    (0, swagger_1.ApiParam)({ name: 'roomId', description: 'Room ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Students retrieved successfully' }),
-    __param(0, (0, common_1.Param)('roomId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "getStudentsByRoom", null);
-__decorate([
     (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get student by ID' }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'Student ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Student retrieved successfully' }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], StudentsController.prototype, "getStudentById", null);
+], StudentsController.prototype, "getStudent", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Update student' }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'Student ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Student updated successfully' }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "updateStudent", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Delete student' }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'Student ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Student deleted successfully' }),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)('by-student-id/:studentId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('studentId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], StudentsController.prototype, "deleteStudent", null);
+], StudentsController.prototype, "getStudentByStudentId", null);
 exports.StudentsController = StudentsController = __decorate([
-    (0, swagger_1.ApiTags)('Students'),
     (0, common_1.Controller)('students'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
-    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [students_service_1.StudentsService])
 ], StudentsController);
 //# sourceMappingURL=students.controller.js.map

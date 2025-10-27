@@ -475,7 +475,13 @@ export function Profile({ onBack, onLogout, onNavigate }: ProfileProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-between group hover:bg-primary/5 hover:border-primary/20 min-h-[48px]"
-                onClick={() => toast.info("Password change feature coming soon")}
+                onClick={() => {
+                  if (onNavigate) {
+                    onNavigate("change-password");
+                  } else {
+                    toast.info("Change password feature");
+                  }
+                }}
               >
                 <div className="flex items-center gap-3">
                   <Shield className="h-5 w-5 text-primary" />
@@ -489,7 +495,13 @@ export function Profile({ onBack, onLogout, onNavigate }: ProfileProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-between group hover:bg-primary/5 hover:border-primary/20 min-h-[48px]"
-                onClick={() => toast.info("ID card download coming soon")}
+                onClick={() => {
+                  if (onNavigate) {
+                    onNavigate("id-card");
+                  } else {
+                    toast.info("ID card download");
+                  }
+                }}
               >
                 <div className="flex items-center gap-3">
                   <User className="h-5 w-5 text-green-600" />
@@ -537,7 +549,13 @@ export function Profile({ onBack, onLogout, onNavigate }: ProfileProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-between group hover:bg-primary/5 hover:border-primary/20 min-h-[48px]"
-                onClick={() => toast.info("Help center coming soon")}
+                onClick={() => {
+                  if (onNavigate) {
+                    onNavigate("help-center");
+                  } else {
+                    toast.info("Help center");
+                  }
+                }}
               >
                 <div className="flex items-center gap-3">
                   <AlertCircle className="h-5 w-5 text-blue-600" />

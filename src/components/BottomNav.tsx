@@ -17,7 +17,7 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50 shadow-2xl">
-      <div className="max-w-md mx-auto flex justify-around items-center h-20 px-2">
+      <div className="max-w-md mx-auto flex justify-around items-center h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentPage === item.id;
@@ -45,7 +45,7 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
                   isActive ? "bg-primary/10" : ""
                 }`}>
                   <Icon className={`transition-all ${
-                    isActive ? "h-6 w-6" : "h-5 w-5"
+                    isActive ? "h-5 w-5" : "h-4 w-4"
                   }`} />
                 </div>
                 <span className={`text-xs transition-all ${

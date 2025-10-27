@@ -1,32 +1,19 @@
-import { IsString, IsOptional, IsNumber, IsUUID } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
 
 export class ScanGatePassDto {
-  @ApiProperty({ example: 'base64-encoded-qr-token' })
   @IsString()
-  qrToken: string;
+  @IsNotEmpty()
+  qrCode: string;
 
-  @ApiProperty({ example: 'OUT' })
   @IsString()
-  eventType: string;
-
-  @ApiProperty({ example: 'device-uuid', required: false })
   @IsOptional()
-  @IsUUID()
-  deviceId?: string;
+  location?: string;
 
-  @ApiProperty({ example: 'guard-user-uuid', required: false })
+  @IsString()
   @IsOptional()
-  @IsUUID()
-  guardUserId?: string;
+  securityGuardId?: string;
 
-  @ApiProperty({ example: 12.9716, required: false })
+  @IsString()
   @IsOptional()
-  @IsNumber()
-  latitude?: number;
-
-  @ApiProperty({ example: 77.5946, required: false })
-  @IsOptional()
-  @IsNumber()
-  longitude?: number;
+  securityGuardName?: string;
 }

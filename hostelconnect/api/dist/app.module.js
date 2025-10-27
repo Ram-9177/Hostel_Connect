@@ -14,6 +14,7 @@ const bull_1 = require("@nestjs/bull");
 const throttler_1 = require("@nestjs/throttler");
 const schedule_1 = require("@nestjs/schedule");
 const socket_module_1 = require("./socket/socket.module");
+const auth_bypass_middleware_1 = require("./common/middleware/auth-bypass.middleware");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const auth_module_1 = require("./auth/auth.module");
@@ -23,11 +24,21 @@ const notices_module_1 = require("./notices/notices.module");
 const rooms_module_1 = require("./rooms/rooms.module");
 const hostels_module_1 = require("./hostels/hostels.module");
 const students_module_1 = require("./students/students.module");
+const gatepass_module_1 = require("./gatepass/gatepass.module");
+const wardens_module_1 = require("./wardens/wardens.module");
+const chefs_module_1 = require("./chefs/chefs.module");
+const admins_module_1 = require("./admins/admins.module");
+const gate_module_1 = require("./gate/gate.module");
 const notifications_module_1 = require("./notifications/notifications.module");
 const files_module_1 = require("./files/files.module");
 const analytics_module_1 = require("./analytics/analytics.module");
 const data_source_1 = require("./database/data-source");
 let AppModule = class AppModule {
+    configure(consumer) {
+        consumer
+            .apply(auth_bypass_middleware_1.AuthBypassMiddleware)
+            .forRoutes('*');
+    }
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
@@ -63,6 +74,11 @@ exports.AppModule = AppModule = __decorate([
             rooms_module_1.RoomsModule,
             hostels_module_1.HostelsModule,
             students_module_1.StudentsModule,
+            gatepass_module_1.GatePassModule,
+            wardens_module_1.WardensModule,
+            chefs_module_1.ChefsModule,
+            admins_module_1.AdminsModule,
+            gate_module_1.GateModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

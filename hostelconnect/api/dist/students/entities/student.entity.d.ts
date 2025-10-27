@@ -4,14 +4,17 @@ export declare class Student {
     firstName: string;
     lastName: string;
     email: string;
-    password: string;
+    phoneNumber: string;
     phone: string;
+    hostelId: string;
+    roomNumber: string;
     roomId: string;
     bedNumber: number;
-    hostelId: string;
-    role: string;
+    course: string;
+    year: string;
+    emergencyContact: string;
+    emergencyPhone: string;
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
-    room: any;
 }

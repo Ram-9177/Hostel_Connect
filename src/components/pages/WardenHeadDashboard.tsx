@@ -1,4 +1,4 @@
-import { ArrowLeft, Settings, TrendingUp, Thermometer } from "lucide-react";
+import { ArrowLeft, Settings, TrendingUp, Thermometer, Home, UserCircle, BarChart3, ClipboardList, AlertCircle } from "lucide-react";
 import { Card } from "../ui/card";
 import { UpdatedTime } from "../UpdatedTime";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -9,9 +9,19 @@ import { Area, AreaChart, CartesianGrid, Legend, Line, LineChart, ResponsiveCont
 
 interface WardenHeadDashboardProps {
   onBack: () => void;
+  onNavigate?: (page: string) => void;
 }
 
-export function WardenHeadDashboard({ onBack }: WardenHeadDashboardProps) {
+export function WardenHeadDashboard({ onBack, onNavigate }: WardenHeadDashboardProps) {
+  const quickActions = [
+    { id: "rooms", label: "Rooms", icon: Home, color: "bg-blue-600", description: "Manage all hostel rooms" },
+    { id: "student-records", label: "Students", icon: UserCircle, color: "bg-purple-600", description: "View all student records" },
+    { id: "analytics", label: "Analytics", icon: BarChart3, color: "bg-indigo-600", description: "View detailed analytics" },
+    { id: "manual-gate-pass", label: "Gate Pass", icon: ClipboardList, color: "bg-orange-600", description: "Manage gate passes" },
+    { id: "emergency-requests", label: "Emergency", icon: AlertCircle, color: "bg-red-600", description: "View emergency requests" },
+    { id: "settings", label: "Settings", icon: Settings, color: "bg-gray-600", description: "Dashboard settings" },
+  ];
+
   const floorHeatmap = [
     { floor: "Floor 1", attendance: 95, occupancy: 98 },
     { floor: "Floor 2", attendance: 88, occupancy: 95 },
@@ -57,6 +67,33 @@ export function WardenHeadDashboard({ onBack }: WardenHeadDashboardProps) {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
+            {/* Quick Actions Section */}
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold">Quick Actions</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {quickActions.map((action) => {
+                  const Icon = action.icon;
+                  return (
+                    <Card
+                      key={action.id}
+                      className="p-4 cursor-pointer hover:shadow-lg transition-shadow border-0"
+                      onClick={() => onNavigate?.(action.id)}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`${action.color} w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0`}>
+                          <Icon className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm">{action.label}</h4>
+                          <p className="text-xs text-muted-foreground mt-0.5">{action.description}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="flex items-center justify-between">
               <h3>Floor-wise Heatmap</h3>
               <UpdatedTime />

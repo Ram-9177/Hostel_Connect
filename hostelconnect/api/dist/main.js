@@ -21,8 +21,23 @@ async function bootstrap() {
     app.useGlobalInterceptors(new transform_interceptor_1.TransformInterceptor());
     app.setGlobalPrefix('api/v1');
     app.enableCors({
-        origin: true,
+        origin: [
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'http://localhost:3002',
+            'http://localhost:3003',
+            'http://localhost:3004',
+            'http://10.0.2.2:3000',
+            'http://10.0.2.2:3001',
+            'http://10.0.2.2:3002',
+            'http://10.0.2.2:3003',
+            'http://10.0.2.2:3004',
+            /^http:\/\/192\.168\.\d+\.\d+:\d+$/,
+            /^http:\/\/10\.\d+\.\d+\.\d+:\d+$/,
+        ],
         credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     });
     const config = new swagger_1.DocumentBuilder()
         .setTitle('HostelConnect API')

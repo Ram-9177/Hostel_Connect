@@ -10,50 +10,29 @@ export class StudentsService {
     private readonly studentRepository: Repository<Student>,
   ) {}
 
-  async getAllStudents() {
-    return await this.studentRepository.find({
+  async getAllStudents(): Promise<Student[]> {
+    return this.studentRepository.find({
       order: { createdAt: 'DESC' }
     });
   }
 
-  async getStudentById(id: string) {
+  async getStudent(id: string): Promise<Student> {
     const student = await this.studentRepository.findOne({ where: { id } });
+    
     if (!student) {
       throw new NotFoundException('Student not found');
     }
+    
     return student;
   }
 
-  async getStudentsByHostel(hostelId: string) {
-    return await this.studentRepository.find({
-      where: { hostelId },
-      order: { firstName: 'ASC' }
-    });
-  }
-
-  async getStudentsByRoom(roomId: string) {
-    return await this.studentRepository.find({
-      where: { roomId },
-      order: { bedNumber: 'ASC' }
-    });
-  }
-
-  async updateStudent(id: string, updateStudentDto: any) {
-    const student = await this.getStudentById(id);
-    Object.assign(student, updateStudentDto);
-    return await this.studentRepository.save(student);
-  }
-
-  async deleteStudent(id: string) {
-    const student = await this.getStudentById(id);
-    await this.studentRepository.remove(student);
-    return { message: 'Student deleted successfully' };
-  }
-
-  async getUnassignedStudents() {
-    return await this.studentRepository.find({
-      where: { roomId: null },
-      order: { firstName: 'ASC' }
-    });
+  async getStudentByStudentId(studentId: string): Promise<Student> {
+    const student = await this.studentRepository.findOne({ where: { studentId } });
+    
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    
+    return student;
   }
 }

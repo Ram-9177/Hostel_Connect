@@ -10,7 +10,9 @@ export declare class AppController {
         environment: string;
         uptime: number;
     };
-    testNotices(): {
+    testAuth(): {
         message: string;
+        timestamp: string;
+        status: string;
     };
 }

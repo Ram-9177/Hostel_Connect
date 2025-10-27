@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SocketModule } from './socket/socket.module';
+import { AuthBypassMiddleware } from './common/middleware/auth-bypass.middleware';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,6 +18,11 @@ import { NoticesModule } from './notices/notices.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { HostelsModule } from './hostels/hostels.module';
 import { StudentsModule } from './students/students.module';
+import { GatePassModule } from './gatepass/gatepass.module';
+import { WardensModule } from './wardens/wardens.module';
+import { ChefsModule } from './chefs/chefs.module';
+import { AdminsModule } from './admins/admins.module';
+import { GateModule } from './gate/gate.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { FilesModule } from './files/files.module';
 import { AnalyticsModule } from './analytics/analytics.module';
@@ -69,8 +75,19 @@ import { dataSourceOptions } from './database/data-source';
     RoomsModule,
     HostelsModule,
     StudentsModule,
+    GatePassModule,
+    WardensModule,
+    ChefsModule,
+    AdminsModule,
+    GateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthBypassMiddleware)
+      .forRoutes('*');
+  }
+}

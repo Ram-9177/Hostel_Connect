@@ -1,4 +1,4 @@
-import { ArrowLeft, Building2, TrendingUp, Users, DollarSign, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Building2, TrendingUp, Users, DollarSign, ShieldCheck, Home, UserCircle, BarChart3, ClipboardList, AlertCircle, Shield, Settings, Eye } from "lucide-react";
 import { Card } from "../ui/card";
 import { UpdatedTime } from "../UpdatedTime";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -8,9 +8,22 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, Line
 
 interface SuperAdminDashboardProps {
   onBack: () => void;
+  onNavigate?: (page: string) => void;
 }
 
-export function SuperAdminDashboard({ onBack }: SuperAdminDashboardProps) {
+export function SuperAdminDashboard({ onBack, onNavigate }: SuperAdminDashboardProps) {
+  const quickActions = [
+    { id: "warden", label: "Warden View", icon: Eye, color: "bg-blue-600", description: "View warden dashboard" },
+    { id: "warden-head", label: "Warden Head", icon: Eye, color: "bg-indigo-600", description: "View warden head dashboard" },
+    { id: "rooms", label: "Rooms", icon: Home, color: "bg-green-600", description: "Manage all rooms" },
+    { id: "student-records", label: "Students", icon: UserCircle, color: "bg-purple-600", description: "Student management" },
+    { id: "analytics", label: "Analytics", icon: BarChart3, color: "bg-cyan-600", description: "View analytics" },
+    { id: "manual-gate-pass", label: "Gate Pass", icon: ClipboardList, color: "bg-orange-600", description: "Manage gate passes" },
+    { id: "emergency-requests", label: "Emergency", icon: AlertCircle, color: "bg-red-600", description: "Emergency requests" },
+    { id: "gate-security", label: "Security", icon: Shield, color: "bg-rose-600", description: "Gate security view" },
+    { id: "settings", label: "Settings", icon: Settings, color: "bg-gray-600", description: "System settings" },
+  ];
+
   const hostels = [
     { name: "Phoenix Hall", students: 180, attendance: 86, occupancy: 97 },
     { name: "Aurora Block", students: 200, attendance: 91, occupancy: 95 },
@@ -67,6 +80,32 @@ export function SuperAdminDashboard({ onBack }: SuperAdminDashboardProps) {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
+            {/* Quick Actions Section */}
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold">Quick Actions</h3>
+              <div className="grid grid-cols-3 gap-3">
+                {quickActions.map((action) => {
+                  const Icon = action.icon;
+                  return (
+                    <Card
+                      key={action.id}
+                      className="p-3 cursor-pointer hover:shadow-lg transition-shadow border-0"
+                      onClick={() => onNavigate?.(action.id)}
+                    >
+                      <div className="flex flex-col items-center gap-2 text-center">
+                        <div className={`${action.color} w-10 h-10 rounded-lg flex items-center justify-center`}>
+                          <Icon className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-xs">{action.label}</h4>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="flex items-center justify-between">
               <h3>Multi-Hostel Overview</h3>
               <UpdatedTime />

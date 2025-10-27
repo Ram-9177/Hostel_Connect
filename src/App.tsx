@@ -132,7 +132,7 @@ function AppContent() {
     if (user.role === "WARDEN") {
       switch (currentPage) {
         case "warden":
-          return <WardenDashboard onBack={handleLogout} />;
+          return <WardenDashboard onBack={handleLogout} onNavigate={handleNavigate} />;
         case "rooms":
           return <Rooms onBack={handleBack} />;
         case "attendance":
@@ -158,7 +158,7 @@ function AppContent() {
     if (user.role === "WARDEN_HEAD") {
       switch (currentPage) {
         case "warden-head":
-          return <WardenHeadDashboard onBack={handleLogout} />;
+          return <WardenHeadDashboard onBack={handleLogout} onNavigate={handleNavigate} />;
         case "rooms":
           return <Rooms onBack={handleBack} />;
         case "student-records":
@@ -180,11 +180,11 @@ function AppContent() {
     if (user.role === "ADMIN") {
       switch (currentPage) {
         case "super-admin":
-          return <SuperAdminDashboard onBack={handleLogout} />;
+          return <SuperAdminDashboard onBack={handleLogout} onNavigate={handleNavigate} />;
         case "warden":
-          return <WardenDashboard onBack={handleBack} />;
+          return <WardenDashboard onBack={handleBack} onNavigate={handleNavigate} />;
         case "warden-head":
-          return <WardenHeadDashboard onBack={handleBack} />;
+          return <WardenHeadDashboard onBack={handleBack} onNavigate={handleNavigate} />;
         case "rooms":
           return <Rooms onBack={handleBack} />;
         case "student-records":
@@ -208,11 +208,11 @@ function AppContent() {
     if (user.role === "CHEF") {
       switch (currentPage) {
         case "chef":
-          return <ChefBoard onBack={handleLogout} />;
+          return <ChefBoard onBack={handleLogout} onNavigate={handleNavigate} />;
         case "settings":
           return <Settings onBack={handleBack} userRole={user.role} />;
         default:
-          return <ChefBoard onBack={handleLogout} />;
+          return <ChefBoard onBack={handleLogout} onNavigate={handleNavigate} />;
       }
     }
 
@@ -220,11 +220,11 @@ function AppContent() {
     if (user.role === "SECURITY") {
       switch (currentPage) {
         case "gate-security":
-          return <GateSecurity />;
+          return <GateSecurity onNavigate={handleNavigate} />;
         case "settings":
           return <Settings onBack={handleBack} userRole={user.role} />;
         default:
-          return <GateSecurity />;
+          return <GateSecurity onNavigate={handleNavigate} />;
       }
     }
 

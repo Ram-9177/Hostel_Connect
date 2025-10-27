@@ -1,4 +1,4 @@
-import { ArrowLeft, Download, Lock, Unlock, PieChart } from "lucide-react";
+import { ArrowLeft, Download, Lock, Unlock, PieChart, Settings } from "lucide-react";
 import { Card } from "../ui/card";
 import { UpdatedTime } from "../UpdatedTime";
 import { Button } from "../ui/button";
@@ -7,9 +7,10 @@ import { Cell, Legend, Pie, PieChart as RechartsPie, ResponsiveContainer, Toolti
 
 interface ChefBoardProps {
   onBack: () => void;
+  onNavigate?: (page: string) => void;
 }
 
-export function ChefBoard({ onBack }: ChefBoardProps) {
+export function ChefBoard({ onBack, onNavigate }: ChefBoardProps) {
   const isLocked = new Date().getHours() >= 23; // Locked after 11 PM
 
   const meals = [
@@ -48,6 +49,9 @@ export function ChefBoard({ onBack }: ChefBoardProps) {
           <h1 className="text-xl">Chef Board</h1>
           <p className="text-xs opacity-90 mt-0.5">Meal Planning Dashboard</p>
         </div>
+        <button onClick={() => onNavigate?.('settings')} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+          <Settings className="h-5 w-5" />
+        </button>
       </div>
 
       <div className="p-4 space-y-4">

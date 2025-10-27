@@ -21,10 +21,14 @@ export class AppController {
     return this.appService.getHealth();
   }
 
-  @Get('test-notices')
-  @ApiOperation({ summary: 'Test notices endpoint' })
-  @ApiResponse({ status: 200, description: 'Test endpoint working' })
-  testNotices() {
-    return { message: 'Test notices endpoint working' };
+  @Get('test-auth')
+  @ApiOperation({ summary: 'Test auth endpoint' })
+  @ApiResponse({ status: 200, description: 'Auth test working' })
+  testAuth() {
+    return { 
+      message: 'Auth test endpoint working',
+      timestamp: new Date().toISOString(),
+      status: 'success'
+    };
   }
 }

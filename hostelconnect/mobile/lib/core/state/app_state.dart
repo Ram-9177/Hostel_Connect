@@ -133,6 +133,8 @@ class User {
   final bool isActive;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? roomId;
+  final String? bedNumber;
 
   const User({
     required this.id,
@@ -145,6 +147,8 @@ class User {
     this.isActive = true,
     this.createdAt,
     this.updatedAt,
+    this.roomId,
+    this.bedNumber,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -159,6 +163,8 @@ class User {
       isActive: json['isActive'] ?? true,
       createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'].toString()) : null,
       updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'].toString()) : null,
+      roomId: json['roomId']?.toString(),
+      bedNumber: json['bedNumber']?.toString(),
     );
   }
 
@@ -174,6 +180,8 @@ class User {
       'isActive': isActive,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'roomId': roomId,
+      'bedNumber': bedNumber,
     };
   }
 

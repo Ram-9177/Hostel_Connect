@@ -1,8 +1,12 @@
-import { IsEmail, IsString, MinLength, IsUUID } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsOptional, IsEnum } from 'class-validator';
 
 export class RegisterDto {
+  @IsEmail()
+  email: string;
+
   @IsString()
-  studentId: string;
+  @MinLength(6)
+  password: string;
 
   @IsString()
   firstName: string;
@@ -10,19 +14,20 @@ export class RegisterDto {
   @IsString()
   lastName: string;
 
-  @IsEmail()
-  email: string;
+  @IsString()
+  studentId: string;
 
   @IsString()
   phone: string;
 
   @IsString()
-  @MinLength(6)
-  password: string;
-
-  @IsUUID()
-  roomId: string;
-
-  @IsUUID()
   hostelId: string;
+
+  @IsOptional()
+  @IsString()
+  roomId?: string;
+
+  @IsOptional()
+  @IsEnum(['STUDENT', 'WARDEN', 'CHEF', 'ADMIN'])
+  role?: string = 'STUDENT';
 }

@@ -3,17 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GatePassController } from './gatepass.controller';
 import { GatePassService } from './gatepass.service';
 import { GatePass } from './entities/gate-pass.entity';
-import { AdEvent } from '../ads/entities/ad-event.entity';
-import { QRTokenService } from '../common/utils/qr-token.service';
-import { UsersModule } from '../users/users.module';
+import { Student } from '../students/entities/student.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([GatePass, AdEvent]),
-    UsersModule,
+    TypeOrmModule.forFeature([GatePass, Student])
   ],
   controllers: [GatePassController],
-  providers: [GatePassService, QRTokenService],
-  exports: [GatePassService],
+  providers: [GatePassService],
+  exports: [GatePassService]
 })
 export class GatePassModule {}

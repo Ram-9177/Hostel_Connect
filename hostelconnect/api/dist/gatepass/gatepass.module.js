@@ -12,21 +12,18 @@ const typeorm_1 = require("@nestjs/typeorm");
 const gatepass_controller_1 = require("./gatepass.controller");
 const gatepass_service_1 = require("./gatepass.service");
 const gate_pass_entity_1 = require("./entities/gate-pass.entity");
-const ad_event_entity_1 = require("../ads/entities/ad-event.entity");
-const qr_token_service_1 = require("../common/utils/qr-token.service");
-const users_module_1 = require("../users/users.module");
+const student_entity_1 = require("../students/entities/student.entity");
 let GatePassModule = class GatePassModule {
 };
 exports.GatePassModule = GatePassModule;
 exports.GatePassModule = GatePassModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([gate_pass_entity_1.GatePass, ad_event_entity_1.AdEvent]),
-            users_module_1.UsersModule,
+            typeorm_1.TypeOrmModule.forFeature([gate_pass_entity_1.GatePass, student_entity_1.Student])
         ],
         controllers: [gatepass_controller_1.GatePassController],
-        providers: [gatepass_service_1.GatePassService, qr_token_service_1.QRTokenService],
-        exports: [gatepass_service_1.GatePassService],
+        providers: [gatepass_service_1.GatePassService],
+        exports: [gatepass_service_1.GatePassService]
     })
 ], GatePassModule);
 //# sourceMappingURL=gatepass.module.js.map

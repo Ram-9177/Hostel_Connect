@@ -37,11 +37,19 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Student.prototype, "password", void 0);
+], Student.prototype, "phoneNumber", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Student.prototype, "phone", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Student.prototype, "hostelId", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Student.prototype, "roomNumber", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
@@ -53,11 +61,19 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Student.prototype, "hostelId", void 0);
+], Student.prototype, "course", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 'STUDENT' }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Student.prototype, "role", void 0);
+], Student.prototype, "year", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Student.prototype, "emergencyContact", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Student.prototype, "emergencyPhone", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Boolean)
@@ -70,11 +86,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], Student.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)('Room', 'students'),
-    (0, typeorm_1.JoinColumn)({ name: 'roomId' }),
-    __metadata("design:type", Object)
-], Student.prototype, "room", void 0);
 exports.Student = Student = __decorate([
     (0, typeorm_1.Entity)('students')
 ], Student);

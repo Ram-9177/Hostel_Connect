@@ -1,15 +1,21 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Student } from '../../students/entities/student.entity';
 
 export enum GatePassType {
-  OUTING = 'OUTING',
+  REGULAR = 'REGULAR',
   EMERGENCY = 'EMERGENCY',
+  MEDICAL = 'MEDICAL',
+  FAMILY = 'FAMILY',
+  ACADEMIC = 'ACADEMIC',
+  FOOD = 'FOOD',
 }
 
 export enum GatePassStatus {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
-  CANCELLED = 'CANCELLED',
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED',
   EXPIRED = 'EXPIRED',
 }
 
@@ -18,49 +24,97 @@ export class GatePass {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('uuid')
+  @Column()
   studentId: string;
 
-  @Column('uuid')
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
+  @Column()
   hostelId: string;
 
-  @Column({
-    type: 'varchar',
-  })
-  type: string;
-
   @Column()
-  startTime: Date;
-
-  @Column()
-  endTime: Date;
-
-  @Column({
-    type: 'varchar',
-    default: 'PENDING',
-  })
-  status: string;
+  roomNumber: string;
 
   @Column()
   reason: string;
 
-  @Column({ nullable: true })
-  note?: string;
+  @Column({ type: 'text', nullable: true })
+  description: string;
 
-  @Column('uuid', { nullable: true })
-  decisionBy?: string;
+  @Column({ type: 'timestamp' })
+  startTime: Date;
+
+  @Column({ type: 'timestamp' })
+  endTime: Date;
+
+  @Column({
+    type: 'enum',
+    enum: GatePassStatus,
+    default: GatePassStatus.PENDING
+  })
+  status: GatePassStatus;
+
+  @Column({
+    type: 'enum',
+    enum: GatePassType,
+    default: GatePassType.REGULAR
+  })
+  type: GatePassType;
 
   @Column({ nullable: true })
-  decisionAt?: Date;
+  approvedBy: string;
 
   @Column({ nullable: true })
-  qrTokenHash?: string;
+  approvedByName: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  approvedAt: Date;
 
   @Column({ nullable: true })
-  qrTokenExpiresAt?: Date;
+  rejectedBy: string;
+
+  @Column({ nullable: true })
+  rejectedByName: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  rejectedAt: Date;
+
+  @Column({ nullable: true })
+  rejectionReason: string;
+
+  @Column({ nullable: true })
+  qrCode: string;
+
+  @Column({ nullable: true })
+  qrTokenHash: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  qrTokenExpiresAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lastUsedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  completedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  expiredAt: Date;
 
   @Column({ default: false })
   isEmergency: boolean;
+
+  @Column({ nullable: true })
+  decisionBy: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  decisionAt: Date;
+
+  @Column({ type: 'text', nullable: true })
+  note: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -68,15 +122,7 @@ export class GatePass {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne('Student', 'gatePasses')
+  @ManyToOne(() => Student)
   @JoinColumn({ name: 'studentId' })
-  student?: any;
-
-  @ManyToOne('Hostel', 'gatePasses')
-  @JoinColumn({ name: 'hostelId' })
-  hostel?: any;
-
-  @ManyToOne('User', 'gatePasses')
-  @JoinColumn({ name: 'decisionBy' })
-  decisionByUser?: any;
+  student: Student;
 }

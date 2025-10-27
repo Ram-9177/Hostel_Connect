@@ -1,6 +1,7 @@
 // lib/shared/widgets/responsive_page.dart
 import 'package:flutter/material.dart';
 import '../../core/responsive.dart';
+import '../theme/tokens.dart';
 
 class HPage extends StatelessWidget {
   final Widget body;

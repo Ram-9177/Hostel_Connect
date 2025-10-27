@@ -22,7 +22,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     try {
       const payload = this.jwtService.verify(token);
-      const user = await this.authService.validateUser(payload.sub);
+      const user = await this.authService.validateUser(payload.sub, payload.role);
       
       if (!user) {
         throw new UnauthorizedException('User not found');

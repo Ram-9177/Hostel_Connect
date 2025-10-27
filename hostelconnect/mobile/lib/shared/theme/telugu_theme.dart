@@ -1,193 +1,187 @@
 // lib/shared/theme/telugu_theme.dart
 import 'package:flutter/material.dart';
+import 'tokens.dart';
 
-/// Telugu-themed design system
 class HTeluguTheme {
-  // Colors
-  static const Color primary = Color(0xFF2563EB);
-  static const Color primaryVariant = Color(0xFF1D4ED8);
-  static const Color secondary = Color(0xFF10B981);
-  static const Color secondaryVariant = Color(0xFF059669);
+  // Primary colors
+  static const Color primary = HTokens.primary;
+  static const Color onPrimary = HTokens.onPrimary;
+  static const Color secondary = HTokens.secondary;
+  static const Color onSecondary = HTokens.onSecondary;
   
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color background = Color(0xFFF8FAFC);
-  static const Color error = Color(0xFFDC2626);
-  static const Color errorContainer = Color(0xFFFEE2E2);
-  static const Color onErrorContainer = Color(0xFF991B1B);
+  // Surface colors
+  static const Color surface = HTokens.surface;
+  static const Color onSurface = HTokens.onSurface;
+  static const Color surfaceVariant = HTokens.surfaceVariant;
+  static const Color onSurfaceVariant = HTokens.onSurfaceVariant;
   
-  static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color onSecondary = Color(0xFFFFFFFF);
-  static const Color onSurface = Color(0xFF1F2937);
-  static const Color onBackground = Color(0xFF1F2937);
-  static const Color onError = Color(0xFFFFFFFF);
-
-  // Text styles
-  static const TextStyle displayLarge = TextStyle(
-    fontSize: 32,
+  // Background colors
+  static const Color background = HTokens.background;
+  static const Color onBackground = HTokens.onBackground;
+  
+  // Status colors
+  static const Color error = HTokens.error;
+  static const Color onError = HTokens.onError;
+  static const Color accent = HTokens.accent;
+  static const Color success = HTokens.success;
+  static const Color warning = HTokens.warning;
+  static const Color info = HTokens.info;
+  
+  // Text colors
+  static const Color textPrimary = HTokens.onSurface;
+  static const Color textSecondary = HTokens.onSurfaceVariant;
+  static const Color textDisabled = Color(0xFF9E9E9E);
+  
+  // Border colors
+  static const Color border = Color(0xFFE0E0E0);
+  static const Color borderFocused = HTokens.primary;
+  static const Color borderError = HTokens.error;
+  
+  // Spacing
+  static const double spacingXS = HTokens.spacingXS;
+  static const double spacingSM = HTokens.spacingSM;
+  static const double spacingMD = HTokens.spacingMD;
+  static const double spacingLG = HTokens.spacingLG;
+  static const double spacingXL = HTokens.spacingXL;
+  static const double spacingXXL = HTokens.spacingXXL;
+  
+  // Typography
+  static const TextStyle heading1 = TextStyle(
+    fontSize: HTokens.fontSizeHeadline,
     fontWeight: FontWeight.bold,
-    color: onSurface,
+    color: textPrimary,
   );
-
-  static const TextStyle displayMedium = TextStyle(
-    fontSize: 28,
+  
+  static const TextStyle heading2 = TextStyle(
+    fontSize: HTokens.fontSizeTitle,
     fontWeight: FontWeight.bold,
-    color: onSurface,
+    color: textPrimary,
   );
-
-  static const TextStyle displaySmall = TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    color: onSurface,
-  );
-
-  static const TextStyle headlineLarge = TextStyle(
-    fontSize: 22,
+  
+  static const TextStyle heading3 = TextStyle(
+    fontSize: HTokens.fontSizeXXL,
     fontWeight: FontWeight.w600,
-    color: onSurface,
+    color: textPrimary,
   );
-
-  static const TextStyle headlineMedium = TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    color: onSurface,
-  );
-
-  static const TextStyle headlineSmall = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    color: onSurface,
-  );
-
+  
   static const TextStyle titleLarge = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w500,
-    color: onSurface,
+    fontSize: HTokens.fontSizeXL,
+    fontWeight: FontWeight.w600,
+    color: textPrimary,
   );
-
+  
   static const TextStyle titleMedium = TextStyle(
-    fontSize: 16,
+    fontSize: HTokens.fontSizeLG,
     fontWeight: FontWeight.w500,
-    color: onSurface,
+    color: textPrimary,
   );
-
+  
   static const TextStyle titleSmall = TextStyle(
-    fontSize: 14,
+    fontSize: HTokens.fontSizeMD,
     fontWeight: FontWeight.w500,
-    color: onSurface,
+    color: textPrimary,
   );
-
+  
   static const TextStyle bodyLarge = TextStyle(
-    fontSize: 16,
+    fontSize: HTokens.fontSizeLG,
     fontWeight: FontWeight.normal,
-    color: onSurface,
+    color: textPrimary,
   );
-
+  
   static const TextStyle bodyMedium = TextStyle(
-    fontSize: 14,
+    fontSize: HTokens.fontSizeMD,
     fontWeight: FontWeight.normal,
-    color: onSurface,
+    color: textPrimary,
   );
-
+  
   static const TextStyle bodySmall = TextStyle(
-    fontSize: 12,
+    fontSize: HTokens.fontSizeSM,
     fontWeight: FontWeight.normal,
-    color: onSurface,
+    color: textSecondary,
   );
-
-  static const TextStyle labelLarge = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    color: onSurface,
+  
+  static const TextStyle body1 = bodyLarge;
+  static const TextStyle body2 = bodyMedium;
+  
+  // Button styles
+  static ButtonStyle primaryButtonStyle = ElevatedButton.styleFrom(
+    backgroundColor: primary,
+    foregroundColor: onPrimary,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(HTokens.buttonRadius),
+    ),
+    padding: const EdgeInsets.symmetric(
+      horizontal: HTokens.spacingLG,
+      vertical: HTokens.spacingMD,
+    ),
   );
-
-  static const TextStyle labelMedium = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    color: onSurface,
+  
+  static ButtonStyle secondaryButtonStyle = OutlinedButton.styleFrom(
+    foregroundColor: primary,
+    side: const BorderSide(color: primary),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(HTokens.buttonRadius),
+    ),
+    padding: const EdgeInsets.symmetric(
+      horizontal: HTokens.spacingLG,
+      vertical: HTokens.spacingMD,
+    ),
   );
-
-  static const TextStyle labelSmall = TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    color: onSurface,
+  
+  // Card style
+  static BoxDecoration cardDecoration = BoxDecoration(
+    color: surface,
+    borderRadius: BorderRadius.circular(HTokens.cardRadius),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.1),
+        blurRadius: HTokens.elevationLow,
+        offset: const Offset(0, 2),
+      ),
+    ],
   );
-
-  // Theme data
-  static ThemeData get lightTheme {
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: const ColorScheme.light(
-        primary: primary,
-        primaryContainer: primaryVariant,
-        secondary: secondary,
-        secondaryContainer: secondaryVariant,
-        surface: surface,
-        background: background,
-        error: error,
-        errorContainer: errorContainer,
-        onPrimary: onPrimary,
-        onSecondary: onSecondary,
-        onSurface: onSurface,
-        onBackground: onBackground,
-        onError: onError,
-        onErrorContainer: onErrorContainer,
+  
+  // Input decoration
+  static InputDecoration inputDecoration({
+    String? labelText,
+    String? hintText,
+    String? errorText,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      labelText: labelText,
+      hintText: hintText,
+      errorText: errorText,
+      prefixIcon: prefixIcon,
+      suffixIcon: suffixIcon,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(HTokens.inputRadius),
+        borderSide: const BorderSide(color: border),
       ),
-      textTheme: const TextTheme(
-        displayLarge: displayLarge,
-        displayMedium: displayMedium,
-        displaySmall: displaySmall,
-        headlineLarge: headlineLarge,
-        headlineMedium: headlineMedium,
-        headlineSmall: headlineSmall,
-        titleLarge: titleLarge,
-        titleMedium: titleMedium,
-        titleSmall: titleSmall,
-        bodyLarge: bodyLarge,
-        bodyMedium: bodyMedium,
-        bodySmall: bodySmall,
-        labelLarge: labelLarge,
-        labelMedium: labelMedium,
-        labelSmall: labelSmall,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(HTokens.inputRadius),
+        borderSide: const BorderSide(color: border),
       ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: surface,
-        foregroundColor: onSurface,
-        elevation: 0,
-        centerTitle: true,
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(HTokens.inputRadius),
+        borderSide: const BorderSide(color: borderFocused, width: 2),
       ),
-      cardTheme: CardTheme(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(HTokens.inputRadius),
+        borderSide: const BorderSide(color: borderError),
       ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primary,
-          foregroundColor: onPrimary,
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: HTokens.spacingMD,
+        vertical: HTokens.spacingMD,
       ),
     );
   }
-
-  // Telugu labels
-  static String getTeluguLabel(String key) {
-    const labels = {
-      'room_allotment': 'గది కేటాయింపు',
-      'student_management': 'విద్యార్థి నిర్వహణ',
-      'attendance': 'హాజరు',
-      'gate_pass': 'గేట్ పాస్',
-      'meals': 'భోజనం',
-      'notices': 'నోటీసులు',
-      'reports': 'రిపోర్టులు',
-      'settings': 'సెట్టింగులు',
-      'profile': 'ప్రొఫైల్',
-      'logout': 'లాగ్ అవుట్',
-    };
-    return labels[key] ?? key;
+  
+  // Utility method for Telugu-English text
+  static String getTeluguEnglishText(String teluguKey, String englishText) {
+    // For now, return English text
+    // In a real implementation, this would handle Telugu translations
+    return englishText;
   }
 }

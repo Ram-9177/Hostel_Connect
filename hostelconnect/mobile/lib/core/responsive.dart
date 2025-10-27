@@ -1,40 +1,123 @@
 // lib/core/responsive.dart
 import 'package:flutter/material.dart';
 
-/// Responsive design utilities
-class HResponsive {
-  static const double mobileBreakpoint = 600;
-  static const double tabletBreakpoint = 900;
-  static const double desktopBreakpoint = 1200;
+import '../shared/theme/tokens.dart';
 
-  static bool isMobile(BuildContext context) {
-    return MediaQuery.of(context).size.width < mobileBreakpoint;
+/// Breakpoint identifiers used across the mobile app.
+enum HSize { xs, sm, md, lg, xl }
+
+typedef HResponsiveBuilder = Widget Function(
+  BuildContext context,
+  HResponsiveData responsive,
+);
+
+/// Provides computed responsive metadata derived from layout constraints
+/// and the surrounding [MediaQuery].
+class HResponsiveData {
+  HResponsiveData({
+    required this.context,
+    required this.constraints,
+    required this.mediaQuery,
+  });
+
+  final BuildContext context;
+  final BoxConstraints constraints;
+  final MediaQueryData mediaQuery;
+
+  factory HResponsiveData.fromContext(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    return HResponsiveData(
+      context: context,
+      constraints: BoxConstraints.tight(mq.size),
+      mediaQuery: mq,
+    );
   }
 
-  static bool isTablet(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    return width >= mobileBreakpoint && width < tabletBreakpoint;
+  double get width => constraints.maxWidth.isFinite
+      ? constraints.maxWidth
+      : mediaQuery.size.width;
+
+  double get height => mediaQuery.size.height;
+
+  Size get sizePX => Size(width, height);
+
+  Orientation get orientation => mediaQuery.orientation;
+
+  EdgeInsets get safePadding => mediaQuery.padding;
+
+  double get textScale => mediaQuery.textScaleFactor;
+
+  bool get isDarkMode => Theme.of(context).brightness == Brightness.dark;
+
+  /// Provides the current breakpoint bucket using [HTokens] thresholds.
+  HSize get size {
+    if (width >= HTokens.breakpointXL) return HSize.xl;
+    if (width >= HTokens.breakpointLG) return HSize.lg;
+    if (width >= HTokens.breakpointMD) return HSize.md;
+    if (width >= HTokens.breakpointSM) return HSize.sm;
+    return HSize.xs;
   }
 
-  static bool isDesktop(BuildContext context) {
-    return MediaQuery.of(context).size.width >= desktopBreakpoint;
+  bool get isMobile => size == HSize.xs;
+  bool get isTablet => size == HSize.sm || size == HSize.md;
+  bool get isDesktop => size == HSize.lg || size == HSize.xl;
+
+  /// Utility to resolve a value based on the active breakpoint.
+  double valueFor({
+    required double xs,
+    double? sm,
+    double? md,
+    double? lg,
+    double? xl,
+  }) {
+    switch (size) {
+      case HSize.xl:
+        return xl ?? lg ?? md ?? sm ?? xs;
+      case HSize.lg:
+        return lg ?? md ?? sm ?? xs;
+      case HSize.md:
+        return md ?? sm ?? xs;
+      case HSize.sm:
+        return sm ?? xs;
+      case HSize.xs:
+        return xs;
+    }
+  }
+}
+
+/// Responsive helper widget used throughout the UI and widget tests.
+class HResponsive extends StatelessWidget {
+  const HResponsive({
+    super.key,
+    required HResponsiveBuilder builder,
+    this.fallback,
+  }) : _builder = builder;
+
+  final HResponsiveBuilder _builder;
+  final Widget? fallback;
+
+  static Widget builder({
+    Key? key,
+    required HResponsiveBuilder builder,
+    Widget? fallback,
+  }) {
+    return HResponsive(
+      key: key,
+      builder: builder,
+      fallback: fallback,
+    );
   }
 
-  static bool isWideScreen(BuildContext context) {
-    return MediaQuery.of(context).size.width >= tabletBreakpoint;
-  }
-
+  /// Backwards-compatible helper to pick widgets by breakpoint using context.
   static T responsive<T>(
     BuildContext context, {
     required T mobile,
     T? tablet,
     T? desktop,
   }) {
-    if (isDesktop(context) && desktop != null) {
-      return desktop;
-    } else if (isTablet(context) && tablet != null) {
-      return tablet;
-    }
+    final data = HResponsiveData.fromContext(context);
+    if (data.isDesktop && desktop != null) return desktop;
+    if (data.isTablet && tablet != null) return tablet;
     return mobile;
   }
 
@@ -44,12 +127,8 @@ class HResponsive {
     double? tablet,
     double? desktop,
   }) {
-    return responsive(
-      context,
-      mobile: mobile,
-      tablet: tablet,
-      desktop: desktop,
-    );
+    final data = HResponsiveData.fromContext(context);
+    return data.valueFor(xs: mobile, sm: tablet, md: tablet, lg: desktop, xl: desktop);
   }
 
   static EdgeInsets responsivePadding(
@@ -58,58 +137,93 @@ class HResponsive {
     EdgeInsets? tablet,
     EdgeInsets? desktop,
   }) {
-    return responsive(
-      context,
-      mobile: mobile,
-      tablet: tablet,
-      desktop: desktop,
+    final data = HResponsiveData.fromContext(context);
+    if (data.isDesktop && desktop != null) return desktop;
+    if (data.isTablet && tablet != null) return tablet;
+    return mobile;
+  }
+
+  static double responsiveSpacing(BuildContext context) {
+    final data = HResponsiveData.fromContext(context);
+    return data.valueFor(
+      xs: HTokens.sm,
+      sm: HTokens.md,
+      md: HTokens.lg,
+      lg: HTokens.lg,
+      xl: HTokens.xl,
     );
   }
 
   static int responsiveColumns(BuildContext context) {
-    if (isDesktop(context)) return 4;
-    if (isTablet(context)) return 3;
-    return 2;
+    final data = HResponsiveData.fromContext(context);
+    switch (data.size) {
+      case HSize.xs:
+      case HSize.sm:
+        return 1;
+      case HSize.md:
+        return 2;
+      case HSize.lg:
+        return 3;
+      case HSize.xl:
+        return 4;
+    }
   }
 
-  static double responsiveSpacing(BuildContext context) {
-    if (isDesktop(context)) return 24.0;
-    if (isTablet(context)) return 20.0;
-    return 16.0;
+  static bool isDesktop(BuildContext context) {
+    return HResponsiveData.fromContext(context).isDesktop;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (ctx, constraints) {
+        final mediaQuery = MediaQuery.maybeOf(ctx);
+        if (mediaQuery == null) {
+          return fallback ?? const SizedBox.shrink();
+        }
+
+        final data = HResponsiveData(
+          context: ctx,
+          constraints: constraints,
+          mediaQuery: mediaQuery,
+        );
+
+        return _builder(ctx, data);
+      },
+    );
   }
 }
 
-/// Design tokens for consistent spacing and sizing
-class HTokens {
-  // Spacing
-  static const double xs = 4.0;
-  static const double sm = 8.0;
-  static const double md = 16.0;
-  static const double lg = 24.0;
-  static const double xl = 32.0;
-  static const double xxl = 48.0;
+/// Convenience helpers for spacing tokens that vary with responsive size.
+class HSpacing {
+  static double responsive(
+    HResponsiveData responsive, {
+    required double xs,
+    double? sm,
+    double? md,
+    double? lg,
+    double? xl,
+  }) {
+    return responsive.valueFor(xs: xs, sm: sm, md: md, lg: lg, xl: xl);
+  }
+}
 
-  // Border radius
-  static const double radiusXs = 4.0;
-  static const double radiusSm = 8.0;
-  static const double radiusMd = 12.0;
-  static const double radiusLg = 16.0;
-  static const double radiusXl = 24.0;
-
-  // Elevation
-  static const double elevationSm = 2.0;
-  static const double elevationMd = 4.0;
-  static const double elevationLg = 8.0;
-  static const double elevationXl = 16.0;
-
-  // Animation durations
-  static const Duration durationFast = Duration(milliseconds: 150);
-  static const Duration durationNormal = Duration(milliseconds: 300);
-  static const Duration durationSlow = Duration(milliseconds: 500);
-
-  // Icon sizes
-  static const double iconSm = 16.0;
-  static const double iconMd = 24.0;
-  static const double iconLg = 32.0;
-  static const double iconXl = 48.0;
+/// Responsive typography helpers.
+class HFontSize {
+  static double responsive(
+    HResponsiveData responsive, {
+    required double base,
+    double? sm,
+    double? md,
+    double? lg,
+    double? xl,
+  }) {
+    return responsive.valueFor(
+      xs: base,
+      sm: sm,
+      md: md,
+      lg: lg,
+      xl: xl,
+    );
+  }
 }

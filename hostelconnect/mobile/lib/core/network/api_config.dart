@@ -1,6 +1,6 @@
 // Network configuration and API endpoints
 class ApiConfig {
-  static const String baseUrl = 'http://10.17.134.33:3000/api/v1';
+  static const String baseUrl = 'http://localhost:3007/api/v1';
   static const Duration timeout = Duration(seconds: 30);
   static const Map<String, String> headers = {
     'Content-Type': 'application/json',

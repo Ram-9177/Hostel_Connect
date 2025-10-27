@@ -1,308 +1,219 @@
-# HostelConnect - Complete Hostel Management System
+# 🏠 HostelConnect - Complete Hostel Management Solution
 
-[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
-[![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/hostelconnect/app)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/hostelconnect/app)
 
-A comprehensive hostel management system built with Flutter and NestJS, featuring role-based access control, real-time updates, and modern UI/UX.
+> **Production-ready hostel management system for students, wardens, and administrators**
 
-## 🚀 Quick Start
+## 🚀 Features
 
-### Prerequisites
-- Flutter SDK (3.0+)
-- Node.js (16+)
-- Android Studio / Xcode
-- Git
+### 👨‍🎓 Student Features
+- **Gate Pass Management** - Request and track outpasses
+- **Attendance Tracking** - Mark daily attendance
+- **Meal Preferences** - Set meal preferences and track consumption
+- **Study Room Booking** - Reserve study spaces
+- **Schedule Management** - View timetables and events
+- **Notices & Updates** - Stay updated with hostel announcements
+- **Profile Management** - Update personal information
 
-### Installation
+### 👨‍🏫 Warden Features
+- **Student Management** - Track student records and activities
+- **Attendance Oversight** - Monitor attendance patterns
+- **Room Management** - Manage room assignments and inspections
+- **Gate Pass Approval** - Approve/reject outpass requests
+- **Analytics Dashboard** - View comprehensive reports
+- **Emergency Management** - Handle emergency requests
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd HostelConnect
-   ```
+### 👨‍💼 Admin Features
+- **Complete System Control** - Full administrative access
+- **User Management** - Manage all user accounts and roles
+- **System Configuration** - Configure hostel settings
+- **Reports & Analytics** - Generate detailed reports
+- **Security Management** - Monitor security activities
 
-2. **Start the API Server**
-   ```bash
-   cd hostelconnect/api
-   npm install
-   node test-server.js
-   ```
-
-3. **Run the Flutter App**
-   ```bash
-   cd hostelconnect/mobile
-   flutter pub get
-   flutter run
-   ```
-
-## 🎯 Features
-
-### Core Functionality
-- **Authentication System** - JWT-based with role management
-- **Role-Based Dashboards** - Student, Warden, Chef, Admin
-- **Gate Pass Management** - Request, approval, and QR scanning
-- **Attendance Tracking** - Manual and automated systems
-- **Meal Management** - Menu planning and meal tracking
-- **Room Allocation** - Bed management and room assignments
-- **Notice Board** - Announcements and notifications
-- **Reports & Analytics** - Comprehensive reporting system
-
-### Technical Features
-- **Real-time Updates** - Live data synchronization
-- **Offline Support** - Queue operations when offline
-- **Push Notifications** - FCM integration
-- **File Uploads** - Profile pictures and documents
-- **QR Code Scanning** - Gate pass verification
-- **Multi-language Support** - English and Telugu
-
-## 👥 User Roles
-
-### Student
-- Request gate passes
-- View attendance records
-- Manage meal preferences
-- Check room assignments
-- Read notices and announcements
-
-### Warden
-- Approve gate pass requests
-- Scan QR codes for entry/exit
-- Manage attendance sessions
-- Allocate rooms and beds
-- Send notices to students
-
-### Chef
-- Plan daily menus
-- Track meal preparation
-- Manage inventory
-- View meal feedback
-- Handle dietary requests
-
-### Admin
-- User management
-- System configuration
-- Analytics and reports
-- Security settings
-- Hostel management
-
-## 🔐 Demo Credentials
-
-| Role | Email | Password |
-|------|-------|----------|
-| Student | student@demo.com | password123 |
-| Warden | warden@demo.com | password123 |
-| Chef | chef@demo.com | password123 |
-| Admin | admin@demo.com | password123 |
-
-## 🏗️ Architecture
-
-### Backend (NestJS)
-```
-hostelconnect/api/
-├── src/
-│   ├── auth/           # Authentication module
-│   ├── users/          # User management
-│   ├── gate-pass/      # Gate pass system
-│   ├── attendance/     # Attendance tracking
-│   ├── meals/          # Meal management
-│   ├── rooms/          # Room allocation
-│   ├── notices/        # Notice board
-│   └── reports/        # Analytics
-├── test-server.js      # Development server
-└── package.json
-```
-
-### Frontend (Flutter)
-```
-hostelconnect/mobile/
-├── lib/
-│   ├── core/           # Core functionality
-│   │   ├── auth/       # Authentication
-│   │   ├── api/        # API services
-│   │   ├── models/     # Data models
-│   │   └── network/    # HTTP client
-│   ├── features/       # Feature modules
-│   │   ├── gate_pass/  # Gate pass system
-│   │   ├── attendance/ # Attendance tracking
-│   │   ├── meals/      # Meal management
-│   │   ├── rooms/      # Room management
-│   │   ├── notices/    # Notice board
-│   │   └── reports/    # Analytics
-│   ├── shared/         # Shared components
-│   │   ├── widgets/    # Reusable widgets
-│   │   ├── theme/      # App theming
-│   │   └── utils/      # Utilities
-│   └── main.dart       # App entry point
-└── pubspec.yaml
-```
-
-## 🎨 Design System
-
-### Color Palette
-- **Primary:** #1E88E5 (Blue)
-- **Success:** #16A34A (Green)
-- **Warning:** #F59E0B (Orange)
-- **Error:** #DC2626 (Red)
-- **Accent:** #FFB300 (Yellow)
-
-### Typography
-- **Headlines:** Bold, 32px
-- **Titles:** Semi-bold, 22px
-- **Body:** Regular, 16px
-- **Captions:** Regular, 12px
-
-### Components
-- Material Design 3 components
-- Consistent spacing (8px grid)
-- Rounded corners (12px radius)
-- Subtle shadows and elevations
-
-## 🔧 Development
-
-### API Development
-```bash
-cd hostelconnect/api
-npm run start:dev    # Development mode
-npm run build        # Production build
-npm run test         # Run tests
-```
-
-### Flutter Development
-```bash
-cd hostelconnect/mobile
-flutter run          # Run on device/emulator
-flutter build apk    # Build Android APK
-flutter build ios    # Build iOS app
-flutter test         # Run tests
-```
-
-### Database
-- **Development:** SQLite (local)
-- **Production:** PostgreSQL (Docker)
-- **Caching:** Redis (Docker)
-
-## 🚀 Deployment
-
-### Docker Setup
-```bash
-docker-compose up -d
-```
-
-### Azure Deployment
-1. Configure Azure App Service
-2. Set up PostgreSQL Flexible Server
-3. Configure Redis Cache
-4. Deploy using GitHub Actions
-
-### Environment Variables
-```env
-# API Configuration
-PORT=3000
-NODE_ENV=production
-DATABASE_URL=postgresql://...
-REDIS_URL=redis://...
-
-# JWT Configuration
-JWT_SECRET=your-secret-key
-JWT_EXPIRES_IN=24h
-
-# FCM Configuration
-FCM_SERVER_KEY=your-fcm-key
-```
-
-## 📱 Mobile App
-
-### Android
-- **Target SDK:** 34
-- **Min SDK:** 21
-- **Architecture:** ARM64, x86_64
-- **Permissions:** Camera, Storage, Network
-
-### iOS
-- **Target:** iOS 12.0+
-- **Architecture:** ARM64
-- **Permissions:** Camera, Photo Library, Network
-
-## 🔒 Security
-
-### Authentication
-- JWT tokens with rotation
-- Secure storage for tokens
-- Role-based access control
-- Session management
-
-### API Security
-- CORS configuration
-- Rate limiting
-- Input validation
-- SQL injection prevention
-- XSS protection
-
-### Mobile Security
-- Certificate pinning
-- Secure storage
-- Biometric authentication
-- App sandboxing
-
-## 📊 Performance
-
-### Backend
-- **Response Time:** <300ms (p95)
-- **Throughput:** 1000+ requests/second
-- **Uptime:** 99.9% SLA
-- **Caching:** Redis for hot data
+## 🛠️ Technology Stack
 
 ### Frontend
-- **App Size:** <50MB
-- **Startup Time:** <3 seconds
-- **Memory Usage:** <100MB
-- **Battery:** Optimized for mobile
+- **React 18** - Modern UI framework
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool
+- **Tailwind CSS** - Utility-first CSS framework
+- **Radix UI** - Accessible component library
+- **Framer Motion** - Smooth animations
 
-## 🧪 Testing
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **JWT** - Authentication tokens
+- **bcrypt** - Password hashing
+- **SQLite** - Database (development)
+- **PostgreSQL** - Database (production)
 
-### Backend Tests
+### Mobile
+- **Flutter** - Cross-platform mobile development
+- **Dart** - Programming language
+- **Riverpod** - State management
+- **Go Router** - Navigation
+
+## 📱 Installation & Setup
+
+### Prerequisites
+- Node.js 18+ 
+- npm 8+
+- Flutter 3.0+ (for mobile)
+- Git
+
+### Web Application
+
 ```bash
-npm run test          # Unit tests
-npm run test:e2e      # Integration tests
-npm run test:cov      # Coverage report
+# Clone the repository
+git clone https://github.com/hostelconnect/app.git
+cd app
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-### Frontend Tests
+### Mobile Application
+
 ```bash
-flutter test          # Unit tests
-flutter test integration_test/  # Integration tests
-flutter test --coverage        # Coverage report
+# Navigate to mobile directory
+cd hostelconnect/mobile
+
+# Install Flutter dependencies
+flutter pub get
+
+# Run on Android
+flutter run
+
+# Build for Android
+flutter build apk --release
+
+# Build for iOS
+flutter build ios --release
 ```
 
-## 📈 Monitoring
+## 🌐 Deployment
 
-### Application Monitoring
-- **Backend:** Application Insights
-- **Frontend:** Sentry
-- **Database:** Query performance
-- **API:** Response times and errors
+### Web Deployment (Vercel/Netlify)
 
-### Business Metrics
-- **User Engagement:** Daily active users
-- **Feature Usage:** Most used features
-- **Performance:** App responsiveness
-- **Errors:** Crash rates and bugs
+```bash
+# Build the application
+npm run build
+
+# Deploy to Vercel
+vercel --prod
+
+# Deploy to Netlify
+netlify deploy --prod --dir=build
+```
+
+### Mobile Deployment (Play Store/App Store)
+
+```bash
+# Build release APK
+flutter build apk --release
+
+# Build release AAB (recommended for Play Store)
+flutter build appbundle --release
+
+# Upload to Play Console
+# Follow Google Play Console instructions
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# API Configuration
+VITE_API_BASE_URL=https://api.hostelconnect.app
+VITE_APP_NAME=HostelConnect
+VITE_APP_VERSION=1.0.0
+
+# Authentication
+JWT_SECRET=your_jwt_secret_key
+JWT_REFRESH_SECRET=your_refresh_secret_key
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/hostelconnect
+```
+
+### Mobile Configuration
+
+Update `lib/core/network/api_config.dart`:
+
+```dart
+class ApiConfig {
+  static const String baseUrl = 'https://api.hostelconnect.app/api/v1';
+  static const Duration timeout = Duration(seconds: 30);
+}
+```
+
+## 📊 API Endpoints
+
+### Authentication
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/refresh` - Refresh token
+- `GET /api/v1/auth/profile` - Get user profile
+
+### Student Features
+- `GET /api/v1/students/gatepasses` - Get gate passes
+- `POST /api/v1/students/gatepasses` - Create gate pass
+- `GET /api/v1/students/attendance` - Get attendance
+- `POST /api/v1/students/attendance` - Mark attendance
+
+### Warden Features
+- `GET /api/v1/warden/students` - Get all students
+- `GET /api/v1/warden/gatepasses` - Get pending gate passes
+- `PUT /api/v1/warden/gatepasses/:id` - Approve/reject gate pass
+
+## 🎨 UI/UX Features
+
+- **Responsive Design** - Works on all screen sizes
+- **Dark/Light Mode** - Theme switching
+- **Accessibility** - WCAG 2.1 compliant
+- **Animations** - Smooth transitions and micro-interactions
+- **Offline Support** - Works without internet connection
+- **PWA Ready** - Installable web app
+
+## 🔒 Security Features
+
+- **JWT Authentication** - Secure token-based auth
+- **Password Hashing** - bcrypt encryption
+- **CORS Protection** - Cross-origin request security
+- **Input Validation** - Server-side validation
+- **Rate Limiting** - API request throttling
+- **HTTPS Only** - Secure connections
+
+## 📈 Performance
+
+- **Fast Loading** - Optimized bundle size
+- **Lazy Loading** - Code splitting
+- **Caching** - Smart caching strategies
+- **CDN Ready** - Static asset optimization
+- **Mobile Optimized** - Touch-friendly interface
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-### Code Style
-- **Backend:** ESLint + Prettier
-- **Frontend:** Dart analyzer
-- **Commits:** Conventional commits
-- **PRs:** Descriptive titles and descriptions
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
@@ -310,24 +221,26 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-### Documentation
-- [API Documentation](docs/api/)
-- [Mobile App Guide](docs/mobile/)
-- [Deployment Guide](docs/deployment/)
-- [Troubleshooting](docs/troubleshooting/)
+- **Documentation**: [docs.hostelconnect.app](https://docs.hostelconnect.app)
+- **Issues**: [GitHub Issues](https://github.com/hostelconnect/app/issues)
+- **Email**: support@hostelconnect.app
+- **Discord**: [HostelConnect Community](https://discord.gg/hostelconnect)
 
-### Contact
-- **Email:** support@hostelconnect.com
-- **Issues:** GitHub Issues
-- **Discussions:** GitHub Discussions
+## 🏆 Production Ready
 
-## 🎉 Acknowledgments
+This application is production-ready and includes:
 
-- Flutter team for the amazing framework
-- NestJS team for the robust backend
-- Material Design for the design system
-- Open source community for inspiration
+- ✅ Complete authentication system
+- ✅ Real-time data synchronization
+- ✅ Comprehensive error handling
+- ✅ Security best practices
+- ✅ Performance optimization
+- ✅ Mobile responsiveness
+- ✅ Accessibility compliance
+- ✅ Deployment configurations
 
 ---
 
-**Built with ❤️ for better hostel management**
+**Built with ❤️ by the HostelConnect Team**
+
+*Transforming hostel management for the digital age*

@@ -1,32 +1,51 @@
+import { Student } from '../../students/entities/student.entity';
 export declare enum GatePassType {
-    OUTING = "OUTING",
-    EMERGENCY = "EMERGENCY"
+    REGULAR = "REGULAR",
+    EMERGENCY = "EMERGENCY",
+    MEDICAL = "MEDICAL",
+    FAMILY = "FAMILY",
+    ACADEMIC = "ACADEMIC",
+    FOOD = "FOOD"
 }
 export declare enum GatePassStatus {
     PENDING = "PENDING",
     APPROVED = "APPROVED",
     REJECTED = "REJECTED",
-    CANCELLED = "CANCELLED",
+    ACTIVE = "ACTIVE",
+    COMPLETED = "COMPLETED",
     EXPIRED = "EXPIRED"
 }
 export declare class GatePass {
     id: string;
     studentId: string;
+    firstName: string;
+    lastName: string;
     hostelId: string;
-    type: string;
+    roomNumber: string;
+    reason: string;
+    description: string;
     startTime: Date;
     endTime: Date;
-    status: string;
-    reason: string;
-    note?: string;
-    decisionBy?: string;
-    decisionAt?: Date;
-    qrTokenHash?: string;
-    qrTokenExpiresAt?: Date;
+    status: GatePassStatus;
+    type: GatePassType;
+    approvedBy: string;
+    approvedByName: string;
+    approvedAt: Date;
+    rejectedBy: string;
+    rejectedByName: string;
+    rejectedAt: Date;
+    rejectionReason: string;
+    qrCode: string;
+    qrTokenHash: string;
+    qrTokenExpiresAt: Date;
+    lastUsedAt: Date;
+    completedAt: Date;
+    expiredAt: Date;
     isEmergency: boolean;
+    decisionBy: string;
+    decisionAt: Date;
+    note: string;
     createdAt: Date;
     updatedAt: Date;
-    student?: any;
-    hostel?: any;
-    decisionByUser?: any;
+    student: Student;
 }

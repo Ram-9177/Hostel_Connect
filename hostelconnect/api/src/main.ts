@@ -26,14 +26,32 @@ async function bootstrap() {
   // Global filters and interceptors
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
+  
+  // Remove any global authentication guards
+  // app.useGlobalGuards() - commented out to allow auth endpoints
 
   // Global prefix
   app.setGlobalPrefix('api/v1');
 
-  // CORS configuration
+  // CORS configuration for mobile app
   app.enableCors({
-    origin: true, // Allow all origins for development
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001', 
+      'http://localhost:3002',
+      'http://localhost:3003',
+      'http://localhost:3004',
+      'http://10.0.2.2:3000', // Android emulator
+      'http://10.0.2.2:3001',
+      'http://10.0.2.2:3002', 
+      'http://10.0.2.2:3003',
+      'http://10.0.2.2:3004',
+      /^http:\/\/192\.168\.\d+\.\d+:\d+$/, // Local network for real devices
+      /^http:\/\/10\.\d+\.\d+\.\d+:\d+$/, // Local network
+    ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
   // Enhanced Swagger documentation

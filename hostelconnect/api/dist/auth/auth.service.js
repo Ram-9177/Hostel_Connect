@@ -18,142 +18,241 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const jwt_1 = require("@nestjs/jwt");
 const student_entity_1 = require("../students/entities/student.entity");
+const warden_entity_1 = require("../wardens/entities/warden.entity");
+const chef_entity_1 = require("../chefs/entities/chef.entity");
+const admin_entity_1 = require("../admins/entities/admin.entity");
 const bcrypt = require("bcrypt");
 let AuthService = class AuthService {
-    constructor(studentRepository, jwtService) {
+    constructor(studentRepository, wardenRepository, chefRepository, adminRepository, jwtService) {
         this.studentRepository = studentRepository;
+        this.wardenRepository = wardenRepository;
+        this.chefRepository = chefRepository;
+        this.adminRepository = adminRepository;
         this.jwtService = jwtService;
     }
     async register(registerDto) {
-        const existingStudent = await this.studentRepository.findOne({
-            where: { email: registerDto.email },
-        });
-        if (existingStudent) {
+        const existingUser = await this.findUserByEmail(registerDto.email);
+        if (existingUser) {
             throw new common_1.BadRequestException('Email already registered');
         }
-        const existingStudentId = await this.studentRepository.findOne({
-            where: { studentId: registerDto.studentId },
-        });
-        if (existingStudentId) {
-            throw new common_1.BadRequestException('Student ID already registered');
+        if (registerDto.role === 'STUDENT') {
+            const existingStudentId = await this.studentRepository.findOne({
+                where: { studentId: registerDto.studentId },
+            });
+            if (existingStudentId) {
+                throw new common_1.BadRequestException('Student ID already registered');
+            }
         }
-        const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-        const student = this.studentRepository.create({
+        const hashedPassword = await bcrypt.hash(registerDto.password, 12);
+        let savedUser;
+        const userData = {
             ...registerDto,
             password: hashedPassword,
-            role: 'STUDENT',
             isActive: true,
-        });
-        const savedStudent = await this.studentRepository.save(student);
-        const tokens = await this.generateTokens(savedStudent);
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+        switch (registerDto.role) {
+            case 'STUDENT':
+                savedUser = await this.studentRepository.save(userData);
+                break;
+            case 'WARDEN':
+                savedUser = await this.wardenRepository.save(userData);
+                break;
+            case 'CHEF':
+                savedUser = await this.chefRepository.save(userData);
+                break;
+            case 'ADMIN':
+                savedUser = await this.adminRepository.save(userData);
+                break;
+            default:
+                throw new common_1.BadRequestException('Invalid role');
+        }
+        const tokens = await this.generateTokens(savedUser);
         return {
-            user: {
-                id: savedStudent.id,
-                studentId: savedStudent.studentId,
-                firstName: savedStudent.firstName,
-                lastName: savedStudent.lastName,
-                email: savedStudent.email,
-                role: savedStudent.role,
-                hostelId: savedStudent.hostelId,
-                roomId: savedStudent.roomId,
-            },
+            user: this.formatUserResponse(savedUser),
             ...tokens,
+            message: 'Registration successful',
         };
     }
     async login(loginDto) {
-        const student = await this.studentRepository.findOne({
-            where: { email: loginDto.email },
-        });
-        if (!student) {
+        const user = await this.findUserByEmail(loginDto.email);
+        if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        if (!student.isActive) {
+        if (!user.isActive) {
             throw new common_1.UnauthorizedException('Account is deactivated');
         }
-        const isPasswordValid = await bcrypt.compare(loginDto.password, student.password);
+        const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
         if (!isPasswordValid) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        const tokens = await this.generateTokens(student);
+        await this.updateLastLogin(user.id, user.role);
+        const tokens = await this.generateTokens(user);
         return {
-            user: {
-                id: student.id,
-                studentId: student.studentId,
-                firstName: student.firstName,
-                lastName: student.lastName,
-                email: student.email,
-                role: student.role,
-                hostelId: student.hostelId,
-                roomId: student.roomId,
-            },
+            user: this.formatUserResponse(user),
             ...tokens,
+            message: 'Login successful',
         };
     }
     async refreshToken(refreshToken) {
         try {
             const payload = this.jwtService.verify(refreshToken);
-            const student = await this.studentRepository.findOne({
-                where: { id: payload.sub },
-            });
-            if (!student || !student.isActive) {
+            const user = await this.findUserById(payload.sub, payload.role);
+            if (!user || !user.isActive) {
                 throw new common_1.UnauthorizedException('Invalid refresh token');
             }
-            const accessToken = this.jwtService.sign({ sub: student.id, email: student.email, role: student.role }, { expiresIn: '15m' });
+            const accessToken = this.jwtService.sign({ sub: user.id, email: user.email, role: user.role }, { expiresIn: '15m' });
             return { accessToken };
         }
         catch (error) {
             throw new common_1.UnauthorizedException('Invalid refresh token');
         }
     }
-    async generateTokens(student) {
-        const payload = { sub: student.id, email: student.email, role: student.role };
-        const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
-        const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-        return { accessToken, refreshToken };
-    }
-    async validateUser(userId) {
-        return this.studentRepository.findOne({
-            where: { id: userId, isActive: true },
-        });
-    }
-    async getProfile(userId) {
-        const student = await this.studentRepository.findOne({
-            where: { id: userId },
-        });
-        if (!student) {
-            throw new common_1.UnauthorizedException('User not found');
-        }
-        return {
-            user: {
-                id: student.id,
-                studentId: student.studentId,
-                firstName: student.firstName,
-                lastName: student.lastName,
-                email: student.email,
-                role: student.role,
-                hostelId: student.hostelId,
-                roomId: student.roomId,
-            },
-        };
-    }
     async forgotPassword(email) {
-        const student = await this.studentRepository.findOne({
-            where: { email },
-        });
-        if (!student) {
+        const user = await this.findUserByEmail(email);
+        if (!user) {
             return { message: 'If the email exists, password reset instructions have been sent.' };
         }
-        return { message: 'Password reset instructions have been sent to your email.' };
+        const resetToken = this.jwtService.sign({ sub: user.id, email: user.email, type: 'password_reset' }, { expiresIn: '1h' });
+        return {
+            message: 'Password reset instructions have been sent to your email.',
+        };
     }
     async resetPassword(token, newPassword) {
-        return { message: 'Password has been reset successfully.' };
+        try {
+            const payload = this.jwtService.verify(token);
+            if (payload.type !== 'password_reset') {
+                throw new common_1.UnauthorizedException('Invalid reset token');
+            }
+            const user = await this.findUserById(payload.sub, payload.role);
+            if (!user) {
+                throw new common_1.UnauthorizedException('User not found');
+            }
+            const hashedPassword = await bcrypt.hash(newPassword, 12);
+            await this.updatePassword(user.id, user.role, hashedPassword);
+            return { message: 'Password has been reset successfully.' };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('Invalid or expired reset token');
+        }
+    }
+    async validateUser(userId, role) {
+        return this.findUserById(userId, role);
+    }
+    async getProfile(userId, role) {
+        const user = await this.findUserById(userId, role);
+        if (!user) {
+            throw new common_1.UnauthorizedException('User not found');
+        }
+        return { user: this.formatUserResponse(user) };
+    }
+    async findUserByEmail(email) {
+        const repositories = [
+            { repo: this.studentRepository, role: 'STUDENT' },
+            { repo: this.wardenRepository, role: 'WARDEN' },
+            { repo: this.chefRepository, role: 'CHEF' },
+            { repo: this.adminRepository, role: 'ADMIN' },
+        ];
+        for (const { repo, role } of repositories) {
+            const user = await repo.findOne({ where: { email } });
+            if (user) {
+                return { ...user, role };
+            }
+        }
+        return null;
+    }
+    async findUserById(id, role) {
+        switch (role) {
+            case 'STUDENT':
+                return this.studentRepository.findOne({ where: { id } });
+            case 'WARDEN':
+                return this.wardenRepository.findOne({ where: { id } });
+            case 'CHEF':
+                return this.chefRepository.findOne({ where: { id } });
+            case 'ADMIN':
+                return this.adminRepository.findOne({ where: { id } });
+            default:
+                return null;
+        }
+    }
+    async updateLastLogin(id, role) {
+        const updateData = { lastLogin: new Date(), updatedAt: new Date() };
+        switch (role) {
+            case 'STUDENT':
+                await this.studentRepository.update(id, updateData);
+                break;
+            case 'WARDEN':
+                await this.wardenRepository.update(id, updateData);
+                break;
+            case 'CHEF':
+                await this.chefRepository.update(id, updateData);
+                break;
+            case 'ADMIN':
+                await this.adminRepository.update(id, updateData);
+                break;
+        }
+    }
+    async updatePassword(id, role, hashedPassword) {
+        const updateData = { password: hashedPassword, updatedAt: new Date() };
+        switch (role) {
+            case 'STUDENT':
+                await this.studentRepository.update(id, updateData);
+                break;
+            case 'WARDEN':
+                await this.wardenRepository.update(id, updateData);
+                break;
+            case 'CHEF':
+                await this.chefRepository.update(id, updateData);
+                break;
+            case 'ADMIN':
+                await this.adminRepository.update(id, updateData);
+                break;
+        }
+    }
+    formatUserResponse(user) {
+        return {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+            hostelId: user.hostelId,
+            roomId: user.roomId,
+            studentId: user.studentId,
+            phone: user.phone,
+            isActive: user.isActive,
+            lastLogin: user.lastLogin,
+            createdAt: user.createdAt,
+        };
+    }
+    async generateTokens(user) {
+        const payload = {
+            sub: user.id,
+            email: user.email,
+            role: user.role,
+            hostelId: user.hostelId
+        };
+        const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+        const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+        return {
+            accessToken,
+            refreshToken,
+            expiresIn: 900
+        };
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
+    __param(1, (0, typeorm_1.InjectRepository)(warden_entity_1.Warden)),
+    __param(2, (0, typeorm_1.InjectRepository)(chef_entity_1.Chef)),
+    __param(3, (0, typeorm_1.InjectRepository)(admin_entity_1.Admin)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         jwt_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

@@ -1,15 +1,17 @@
 import { GatePassType } from '../entities/gate-pass.entity';
 export declare class CreateGatePassDto {
     studentId: string;
-    hostelId: string;
-    type: GatePassType;
-    startTime: Date;
-    endTime: Date;
     reason: string;
-    note?: string;
+    description?: string;
+    startTime: string;
+    endTime: string;
+    type?: GatePassType;
     isEmergency?: boolean;
 }
 export declare class ApproveGatePassDto {
-    approved: boolean;
-    reason?: string;
+    reason: string;
+    note?: string;
+}
+export declare class RejectGatePassDto {
+    reason: string;
 }

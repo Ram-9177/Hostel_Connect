@@ -12,9 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GateEvent = void 0;
 const typeorm_1 = require("typeorm");
 const gate_pass_entity_1 = require("../../gatepass/entities/gate-pass.entity");
-const student_entity_1 = require("../../students/entities/student.entity");
-const device_entity_1 = require("../../devices/entities/device.entity");
-const user_entity_1 = require("../../users/entities/user.entity");
 let GateEvent = class GateEvent {
 };
 exports.GateEvent = GateEvent;
@@ -23,69 +20,70 @@ __decorate([
     __metadata("design:type", String)
 ], GateEvent.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)('uuid'),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], GateEvent.prototype, "passId", void 0);
+], GateEvent.prototype, "gatePassId", void 0);
 __decorate([
-    (0, typeorm_1.Column)('uuid'),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], GateEvent.prototype, "studentId", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], GateEvent.prototype, "studentName", void 0);
+__decorate([
     (0, typeorm_1.Column)({
-        type: 'varchar',
+        type: 'enum',
+        enum: ['IN', 'OUT', 'UNKNOWN'],
+        default: 'UNKNOWN'
     }),
     __metadata("design:type", String)
 ], GateEvent.prototype, "eventType", void 0);
 __decorate([
-    (0, typeorm_1.Column)({
-        type: 'varchar',
-    }),
-    __metadata("design:type", String)
-], GateEvent.prototype, "method", void 0);
-__decorate([
-    (0, typeorm_1.Column)('uuid', { nullable: true }),
-    __metadata("design:type", String)
-], GateEvent.prototype, "deviceId", void 0);
-__decorate([
-    (0, typeorm_1.Column)('uuid', { nullable: true }),
-    __metadata("design:type", String)
-], GateEvent.prototype, "guardUserId", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)
 ], GateEvent.prototype, "timestamp", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Number)
-], GateEvent.prototype, "latitude", void 0);
+    (0, typeorm_1.Column)({ default: 'Main Gate' }),
+    __metadata("design:type", String)
+], GateEvent.prototype, "location", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['SUCCESS', 'FAILED'],
+        default: 'SUCCESS'
+    }),
+    __metadata("design:type", String)
+], GateEvent.prototype, "status", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Number)
-], GateEvent.prototype, "longitude", void 0);
+    __metadata("design:type", String)
+], GateEvent.prototype, "qrCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], GateEvent.prototype, "reason", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], GateEvent.prototype, "securityGuardId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], GateEvent.prototype, "securityGuardName", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], GateEvent.prototype, "createdAt", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => gate_pass_entity_1.GatePass),
-    (0, typeorm_1.JoinColumn)({ name: 'passId' }),
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", Date)
+], GateEvent.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => gate_pass_entity_1.GatePass, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'gatePassId' }),
     __metadata("design:type", gate_pass_entity_1.GatePass)
-], GateEvent.prototype, "pass", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => student_entity_1.Student),
-    (0, typeorm_1.JoinColumn)({ name: 'studentId' }),
-    __metadata("design:type", student_entity_1.Student)
-], GateEvent.prototype, "student", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => device_entity_1.Device),
-    (0, typeorm_1.JoinColumn)({ name: 'deviceId' }),
-    __metadata("design:type", device_entity_1.Device)
-], GateEvent.prototype, "device", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
-    (0, typeorm_1.JoinColumn)({ name: 'guardUserId' }),
-    __metadata("design:type", user_entity_1.User)
-], GateEvent.prototype, "guardUser", void 0);
+], GateEvent.prototype, "gatePass", void 0);
 exports.GateEvent = GateEvent = __decorate([
     (0, typeorm_1.Entity)('gate_events')
 ], GateEvent);

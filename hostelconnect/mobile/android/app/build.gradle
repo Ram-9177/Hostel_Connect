@@ -42,7 +42,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.hostelconnect"
-        minSdkVersion 21  // Android 5.0+ required for camera, FCM, WorkManager
+        minSdkVersion flutter.minSdkVersion  // Android 5.0+ required for camera, FCM, WorkManager
         targetSdkVersion 34  // Latest stable Android 14
         compileSdk 34
         versionCode flutterVersionCode.toInteger()

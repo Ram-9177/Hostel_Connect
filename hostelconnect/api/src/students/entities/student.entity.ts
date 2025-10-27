@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 @Entity('students')
 export class Student {
@@ -18,10 +18,16 @@ export class Student {
   email: string;
 
   @Column()
-  password: string;
+  phoneNumber: string;
 
   @Column()
-  phone: string;
+  phone: string; // Alternative phone field
+
+  @Column()
+  hostelId: string;
+
+  @Column()
+  roomNumber: string;
 
   @Column({ nullable: true })
   roomId: string;
@@ -30,10 +36,16 @@ export class Student {
   bedNumber: number;
 
   @Column()
-  hostelId: string;
+  course: string;
 
-  @Column({ default: 'STUDENT' })
-  role: string;
+  @Column()
+  year: string;
+
+  @Column()
+  emergencyContact: string;
+
+  @Column()
+  emergencyPhone: string;
 
   @Column({ default: true })
   isActive: boolean;
@@ -43,8 +55,4 @@ export class Student {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @ManyToOne('Room', 'students')
-  @JoinColumn({ name: 'roomId' })
-  room: any;
 }

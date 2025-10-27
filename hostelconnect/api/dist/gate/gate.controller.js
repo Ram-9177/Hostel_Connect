@@ -14,58 +14,81 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GateController = void 0;
 const common_1 = require("@nestjs/common");
-const swagger_1 = require("@nestjs/swagger");
-const passport_1 = require("@nestjs/passport");
 const gate_service_1 = require("./gate.service");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const scan_gate_pass_dto_1 = require("./dto/scan-gate-pass.dto");
 let GateController = class GateController {
     constructor(gateService) {
         this.gateService = gateService;
     }
-    async scan(scanDto) {
+    async scanGatePass(scanDto) {
         return this.gateService.scanGatePass(scanDto);
     }
-    async getGatePassEvents(passId) {
-        return this.gateService.getGatePassEvents(passId);
+    async getGateEvents() {
+        return this.gateService.getGateEvents();
     }
-    async getStudentGateEvents(studentId) {
-        return this.gateService.getStudentGateEvents(studentId);
+    async getTodayEvents() {
+        return this.gateService.getTodayEvents();
+    }
+    async getStudentEvents(studentId) {
+        return this.gateService.getStudentEvents(studentId);
+    }
+    async getGateStats() {
+        return this.gateService.getGateStats();
+    }
+    async validateGatePass(body) {
+        return this.gateService.validateGatePass(body.qrCode);
     }
 };
 exports.GateController = GateController;
 __decorate([
     (0, common_1.Post)('scan'),
-    (0, swagger_1.ApiOperation)({ summary: 'Scan gate pass QR code' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Gate scan processed successfully' }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid QR token or gate pass' }),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [scan_gate_pass_dto_1.ScanGatePassDto]),
     __metadata("design:returntype", Promise)
-], GateController.prototype, "scan", null);
+], GateController.prototype, "scanGatePass", null);
 __decorate([
-    (0, common_1.Get)('pass/:passId/events'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get gate pass events' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Gate pass events retrieved' }),
-    __param(0, (0, common_1.Param)('passId')),
+    (0, common_1.Get)('events'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], GateController.prototype, "getGatePassEvents", null);
+], GateController.prototype, "getGateEvents", null);
 __decorate([
-    (0, common_1.Get)('student/:studentId/events'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get student gate events' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Student gate events retrieved' }),
+    (0, common_1.Get)('events/today'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], GateController.prototype, "getTodayEvents", null);
+__decorate([
+    (0, common_1.Get)('events/student/:studentId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('studentId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], GateController.prototype, "getStudentGateEvents", null);
+], GateController.prototype, "getStudentEvents", null);
+__decorate([
+    (0, common_1.Get)('stats'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], GateController.prototype, "getGateStats", null);
+__decorate([
+    (0, common_1.Post)('validate'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], GateController.prototype, "validateGatePass", null);
 exports.GateController = GateController = __decorate([
-    (0, swagger_1.ApiTags)('Gate'),
     (0, common_1.Controller)('gate'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
-    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [gate_service_1.GateService])
 ], GateController);
 //# sourceMappingURL=gate.controller.js.map

@@ -14,146 +14,105 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GatePassController = void 0;
 const common_1 = require("@nestjs/common");
-const swagger_1 = require("@nestjs/swagger");
-const passport_1 = require("@nestjs/passport");
 const gatepass_service_1 = require("./gatepass.service");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_gate_pass_dto_1 = require("./dto/create-gate-pass.dto");
-const approve_gate_pass_dto_1 = require("./dto/approve-gate-pass.dto");
 let GatePassController = class GatePassController {
     constructor(gatePassService) {
         this.gatePassService = gatePassService;
     }
-    async create(createDto, req) {
-        return this.gatePassService.create(createDto, req.user.id);
+    async createGatePass(createGatePassDto) {
+        return this.gatePassService.createGatePass(createGatePassDto);
     }
-    async findAll(req) {
-        const studentId = req.user.role === 'STUDENT' ? req.user.id : undefined;
-        return this.gatePassService.findAll(studentId);
+    async getAllGatePasses() {
+        return this.gatePassService.getAllGatePasses();
     }
-    async findOne(id) {
-        return this.gatePassService.findById(id);
+    async getPendingGatePasses() {
+        return this.gatePassService.getPendingGatePasses();
     }
-    async approve(id, approveDto, req) {
-        return this.gatePassService.approve(id, approveDto, req.user.id);
+    async getStudentGatePasses(studentId) {
+        return this.gatePassService.getStudentGatePasses(studentId);
     }
-    async cancel(id, req) {
-        return this.gatePassService.cancel(id, req.user.id);
+    async approveGatePass(id, approveDto) {
+        return this.gatePassService.approveGatePass(id, approveDto);
     }
-    async getQRToken(id) {
-        return this.gatePassService.getQRToken(id);
+    async rejectGatePass(id, rejectDto) {
+        return this.gatePassService.rejectGatePass(id, rejectDto);
     }
-    async unlockQRTokenAfterAd(id, req) {
-        return this.gatePassService.unlockQRTokenAfterAd(id, req.user.id);
+    async getQRCode(id) {
+        return this.gatePassService.generateQRCode(id);
     }
-    async markAdWatched(id, body, req) {
-        await this.gatePassService.markAdWatched(req.user.id, body.adId, 'gatepass');
-        return { message: 'Ad marked as watched' };
-    }
-    async refreshQRToken(id) {
-        return this.gatePassService.refreshQRToken(id);
+    async useGatePass(id) {
+        return this.gatePassService.useGatePass(id);
     }
 };
 exports.GatePassController = GatePassController;
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new gate pass request' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'Gate pass created successfully' }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid gate pass data' }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_gate_pass_dto_1.CreateGatePassDto, Object]),
+    __metadata("design:paramtypes", [create_gate_pass_dto_1.CreateGatePassDto]),
     __metadata("design:returntype", Promise)
-], GatePassController.prototype, "create", null);
+], GatePassController.prototype, "createGatePass", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get gate pass requests' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Gate pass list retrieved' }),
-    __param(0, (0, common_1.Request)()),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], GatePassController.prototype, "findAll", null);
+], GatePassController.prototype, "getAllGatePasses", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get gate pass by ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Gate pass retrieved' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Gate pass not found' }),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)('pending'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], GatePassController.prototype, "getPendingGatePasses", null);
+__decorate([
+    (0, common_1.Get)('student/:studentId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('studentId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], GatePassController.prototype, "findOne", null);
+], GatePassController.prototype, "getStudentGatePasses", null);
 __decorate([
     (0, common_1.Patch)(':id/approve'),
-    (0, swagger_1.ApiOperation)({ summary: 'Approve or reject gate pass (Warden only)' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Gate pass decision updated' }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid decision' }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, approve_gate_pass_dto_1.ApproveGatePassDto, Object]),
+    __metadata("design:paramtypes", [String, create_gate_pass_dto_1.ApproveGatePassDto]),
     __metadata("design:returntype", Promise)
-], GatePassController.prototype, "approve", null);
+], GatePassController.prototype, "approveGatePass", null);
 __decorate([
-    (0, common_1.Patch)(':id/cancel'),
-    (0, swagger_1.ApiOperation)({ summary: 'Cancel gate pass (Student only)' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Gate pass cancelled' }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Cannot cancel gate pass' }),
+    (0, common_1.Patch)(':id/reject'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, create_gate_pass_dto_1.RejectGatePassDto]),
     __metadata("design:returntype", Promise)
-], GatePassController.prototype, "cancel", null);
+], GatePassController.prototype, "rejectGatePass", null);
 __decorate([
-    (0, common_1.Get)(':id/qr'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get QR token for approved gate pass' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'QR token retrieved' }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'QR token not available or ad required' }),
+    (0, common_1.Get)(':id/qr-code'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], GatePassController.prototype, "getQRToken", null);
+], GatePassController.prototype, "getQRCode", null);
 __decorate([
-    (0, common_1.Post)(':id/qr/unlock'),
-    (0, swagger_1.ApiOperation)({ summary: 'Unlock QR token after watching ad' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'QR token unlocked' }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Cannot unlock QR token' }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], GatePassController.prototype, "unlockQRTokenAfterAd", null);
-__decorate([
-    (0, common_1.Post)(':id/ad/watched'),
-    (0, swagger_1.ApiOperation)({ summary: 'Mark ad as watched for gate pass' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Ad marked as watched' }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
-    __metadata("design:returntype", Promise)
-], GatePassController.prototype, "markAdWatched", null);
-__decorate([
-    (0, common_1.Post)(':id/qr/refresh'),
-    (0, swagger_1.ApiOperation)({ summary: 'Refresh QR token for approved gate pass' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'QR token refreshed' }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Cannot refresh QR token' }),
+    (0, common_1.Post)(':id/use'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], GatePassController.prototype, "refreshQRToken", null);
+], GatePassController.prototype, "useGatePass", null);
 exports.GatePassController = GatePassController = __decorate([
-    (0, swagger_1.ApiTags)('Gate Pass'),
-    (0, common_1.Controller)('gate-pass'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
-    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Controller)('gate-pass-applications'),
     __metadata("design:paramtypes", [gatepass_service_1.GatePassService])
 ], GatePassController);
 //# sourceMappingURL=gatepass.controller.js.map

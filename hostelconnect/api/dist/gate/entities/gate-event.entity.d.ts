@@ -1,21 +1,18 @@
 import { GatePass } from '../../gatepass/entities/gate-pass.entity';
-import { Student } from '../../students/entities/student.entity';
-import { Device } from '../../devices/entities/device.entity';
-import { User } from '../../users/entities/user.entity';
 export declare class GateEvent {
     id: string;
-    passId: string;
+    gatePassId: string;
     studentId: string;
-    eventType: string;
-    method: string;
-    deviceId?: string;
-    guardUserId?: string;
+    studentName: string;
+    eventType: 'IN' | 'OUT' | 'UNKNOWN';
     timestamp: Date;
-    latitude?: number;
-    longitude?: number;
+    location: string;
+    status: 'SUCCESS' | 'FAILED';
+    qrCode: string;
+    reason: string;
+    securityGuardId: string;
+    securityGuardName: string;
     createdAt: Date;
-    pass: GatePass;
-    student: Student;
-    device?: Device;
-    guardUser?: User;
+    updatedAt: Date;
+    gatePass: GatePass;
 }

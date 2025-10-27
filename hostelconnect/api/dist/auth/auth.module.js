@@ -17,13 +17,16 @@ const auth_service_1 = require("./auth.service");
 const jwt_strategy_1 = require("./jwt.strategy");
 const jwt_auth_guard_1 = require("./jwt-auth.guard");
 const student_entity_1 = require("../students/entities/student.entity");
+const warden_entity_1 = require("../wardens/entities/warden.entity");
+const chef_entity_1 = require("../chefs/entities/chef.entity");
+const admin_entity_1 = require("../admins/entities/admin.entity");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([student_entity_1.Student]),
+            typeorm_1.TypeOrmModule.forFeature([student_entity_1.Student, warden_entity_1.Warden, chef_entity_1.Chef, admin_entity_1.Admin]),
             passport_1.PassportModule,
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],

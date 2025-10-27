@@ -22,44 +22,23 @@ let StudentsService = class StudentsService {
         this.studentRepository = studentRepository;
     }
     async getAllStudents() {
-        return await this.studentRepository.find({
+        return this.studentRepository.find({
             order: { createdAt: 'DESC' }
         });
     }
-    async getStudentById(id) {
+    async getStudent(id) {
         const student = await this.studentRepository.findOne({ where: { id } });
         if (!student) {
             throw new common_1.NotFoundException('Student not found');
         }
         return student;
     }
-    async getStudentsByHostel(hostelId) {
-        return await this.studentRepository.find({
-            where: { hostelId },
-            order: { firstName: 'ASC' }
-        });
-    }
-    async getStudentsByRoom(roomId) {
-        return await this.studentRepository.find({
-            where: { roomId },
-            order: { bedNumber: 'ASC' }
-        });
-    }
-    async updateStudent(id, updateStudentDto) {
-        const student = await this.getStudentById(id);
-        Object.assign(student, updateStudentDto);
-        return await this.studentRepository.save(student);
-    }
-    async deleteStudent(id) {
-        const student = await this.getStudentById(id);
-        await this.studentRepository.remove(student);
-        return { message: 'Student deleted successfully' };
-    }
-    async getUnassignedStudents() {
-        return await this.studentRepository.find({
-            where: { roomId: null },
-            order: { firstName: 'ASC' }
-        });
+    async getStudentByStudentId(studentId) {
+        const student = await this.studentRepository.findOne({ where: { studentId } });
+        if (!student) {
+            throw new common_1.NotFoundException('Student not found');
+        }
+        return student;
     }
 };
 exports.StudentsService = StudentsService;

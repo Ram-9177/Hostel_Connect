@@ -1,66 +1,94 @@
 // lib/core/models/student.dart
+import 'package:json_annotation/json_annotation.dart';
+
+part 'student.g.dart';
+
+@JsonSerializable()
 class Student {
   final String id;
-  final String studentId;
-  final String firstName;
-  final String lastName;
+  final String name;
   final String email;
   final String phone;
+  final String studentId;
+  final String hostelId;
   final String? roomId;
   final String? bedNumber;
-  final String hostelId;
+  final String course;
+  final String year;
+  final String? emergencyContact;
+  final String? emergencyPhone;
   final bool isActive;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   const Student({
     required this.id,
-    required this.studentId,
-    required this.firstName,
-    required this.lastName,
+    required this.name,
     required this.email,
     required this.phone,
+    required this.studentId,
+    required this.hostelId,
     this.roomId,
     this.bedNumber,
-    required this.hostelId,
-    this.isActive = true,
-    this.createdAt,
-    this.updatedAt,
+    required this.course,
+    required this.year,
+    this.emergencyContact,
+    this.emergencyPhone,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
-  factory Student.fromJson(Map<String, dynamic> json) {
+  factory Student.fromJson(Map<String, dynamic> json) => _$StudentFromJson(json);
+  Map<String, dynamic> toJson() => _$StudentToJson(this);
+
+  Student copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? phone,
+    String? studentId,
+    String? hostelId,
+    String? roomId,
+    String? bedNumber,
+    String? course,
+    String? year,
+    String? emergencyContact,
+    String? emergencyPhone,
+    bool? isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
     return Student(
-      id: json['id']?.toString() ?? '',
-      studentId: json['studentId']?.toString() ?? '',
-      firstName: json['firstName']?.toString() ?? '',
-      lastName: json['lastName']?.toString() ?? '',
-      email: json['email']?.toString() ?? '',
-      phone: json['phone']?.toString() ?? '',
-      roomId: json['roomId']?.toString(),
-      bedNumber: json['bedNumber']?.toString(),
-      hostelId: json['hostelId']?.toString() ?? '',
-      isActive: json['isActive'] ?? true,
-      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'].toString()) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'].toString()) : null,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      studentId: studentId ?? this.studentId,
+      hostelId: hostelId ?? this.hostelId,
+      roomId: roomId ?? this.roomId,
+      bedNumber: bedNumber ?? this.bedNumber,
+      course: course ?? this.course,
+      year: year ?? this.year,
+      emergencyContact: emergencyContact ?? this.emergencyContact,
+      emergencyPhone: emergencyPhone ?? this.emergencyPhone,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'studentId': studentId,
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'phone': phone,
-      'roomId': roomId,
-      'bedNumber': bedNumber,
-      'hostelId': hostelId,
-      'isActive': isActive,
-      'createdAt': createdAt?.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
-    };
+  @override
+  String toString() {
+    return 'Student(id: $id, name: $name, email: $email, studentId: $studentId)';
   }
 
-  String get fullName => '$firstName $lastName';
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Student && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

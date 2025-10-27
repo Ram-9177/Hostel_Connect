@@ -1,6 +1,7 @@
 // lib/shared/widgets/responsive/responsive_widgets.dart
 import 'package:flutter/material.dart';
 import '../../core/responsive.dart';
+import '../../theme/tokens.dart';
 
 /// Responsive wrapper widget
 class ResponsiveWrapper extends StatelessWidget {

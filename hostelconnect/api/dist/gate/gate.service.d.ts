@@ -1,21 +1,42 @@
 import { Repository } from 'typeorm';
 import { GateEvent } from './entities/gate-event.entity';
 import { GatePass } from '../gatepass/entities/gate-pass.entity';
-import { QRTokenService } from '../common/utils/qr-token.service';
-export interface ScanGatePassDto {
-    qrToken: string;
-    eventType: string;
-    deviceId?: string;
-    guardUserId?: string;
-    latitude?: number;
-    longitude?: number;
-}
+import { ScanGatePassDto } from './dto/scan-gate-pass.dto';
 export declare class GateService {
     private readonly gateEventRepository;
     private readonly gatePassRepository;
-    private readonly qrTokenService;
-    constructor(gateEventRepository: Repository<GateEvent>, gatePassRepository: Repository<GatePass>, qrTokenService: QRTokenService);
-    scanGatePass(scanDto: ScanGatePassDto): Promise<GateEvent>;
-    getGatePassEvents(passId: string): Promise<GateEvent[]>;
-    getStudentGateEvents(studentId: string, limit?: number): Promise<GateEvent[]>;
+    constructor(gateEventRepository: Repository<GateEvent>, gatePassRepository: Repository<GatePass>);
+    scanGatePass(scanDto: ScanGatePassDto): Promise<{
+        success: boolean;
+        message: string;
+        event: any;
+        gatePass?: undefined;
+        error?: undefined;
+    } | {
+        success: boolean;
+        message: string;
+        event: GateEvent;
+        gatePass: GatePass;
+        error?: undefined;
+    } | {
+        success: boolean;
+        message: string;
+        error: any;
+        event: GateEvent;
+        gatePass?: undefined;
+    }>;
+    validateGatePass(qrCode: string): Promise<GatePass>;
+    determineEventType(studentId: string): Promise<'IN' | 'OUT'>;
+    getGateEvents(): Promise<GateEvent[]>;
+    getTodayEvents(): Promise<GateEvent[]>;
+    getStudentEvents(studentId: string): Promise<GateEvent[]>;
+    getGateStats(): Promise<{
+        totalScans: number;
+        successfulScans: number;
+        failedScans: number;
+        studentsOut: number;
+        studentsIn: number;
+        uniqueStudents: number;
+    }>;
+    private extractPassIdFromQR;
 }

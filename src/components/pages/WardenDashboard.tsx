@@ -1,4 +1,4 @@
-import { ArrowLeft, Users, FileText, CheckCircle, ScanLine, UserCheck } from "lucide-react";
+import { ArrowLeft, Users, FileText, CheckCircle, ScanLine, UserCheck, Home, UserCircle, BarChart3, ClipboardList, AlertCircle, MessageSquare, Settings } from "lucide-react";
 import { Card } from "../ui/card";
 import { UpdatedTime } from "../UpdatedTime";
 import { AdBanner } from "../AdBanner";
@@ -6,9 +6,10 @@ import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveCo
 
 interface WardenDashboardProps {
   onBack: () => void;
+  onNavigate?: (page: string) => void;
 }
 
-export function WardenDashboard({ onBack }: WardenDashboardProps) {
+export function WardenDashboard({ onBack, onNavigate }: WardenDashboardProps) {
   const trendData = [
     { day: "Mon", kiosk: 145, manual: 8 },
     { day: "Tue", kiosk: 152, manual: 5 },
@@ -22,6 +23,17 @@ export function WardenDashboard({ onBack }: WardenDashboardProps) {
   const pieData = [
     { name: "Kiosk Scan", value: 149, color: "#10B981" },
     { name: "Manual (Warden)", value: 6, color: "#F59E0B" },
+  ];
+
+  const quickActions = [
+    { id: "rooms", label: "Rooms", icon: Home, color: "bg-blue-600", description: "Manage rooms" },
+    { id: "attendance", label: "Attendance", icon: UserCheck, color: "bg-green-600", description: "Track attendance" },
+    { id: "student-records", label: "Students", icon: UserCircle, color: "bg-purple-600", description: "Student records" },
+    { id: "analytics", label: "Analytics", icon: BarChart3, color: "bg-indigo-600", description: "View reports" },
+    { id: "manual-gate-pass", label: "Gate Pass", icon: ClipboardList, color: "bg-orange-600", description: "Manual approval" },
+    { id: "emergency-requests", label: "Emergency", icon: AlertCircle, color: "bg-red-600", description: "Emergency requests" },
+    { id: "complaints", label: "Complaints", icon: MessageSquare, color: "bg-amber-600", description: "Handle complaints" },
+    { id: "settings", label: "Settings", icon: Settings, color: "bg-gray-600", description: "App settings" },
   ];
 
   return (
@@ -89,6 +101,33 @@ export function WardenDashboard({ onBack }: WardenDashboardProps) {
               <p className="text-sm text-muted-foreground">students (4% of present)</p>
             </div>
           </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="space-y-3">
+          <h3>Quick Actions</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+              return (
+                <Card
+                  key={action.id}
+                  className="p-4 cursor-pointer hover:shadow-lg transition-all active:scale-95 border-0 shadow-sm"
+                  onClick={() => onNavigate?.(action.id)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`${action.color} w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0`}>
+                      <Icon className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold mb-0.5">{action.label}</h4>
+                      <p className="text-xs text-muted-foreground truncate">{action.description}</p>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
         </div>
 
         {/* Attendance Split Pie Chart */}

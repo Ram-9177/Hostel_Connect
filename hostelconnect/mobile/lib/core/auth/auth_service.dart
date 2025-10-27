@@ -1,9 +1,9 @@
-// lib/core/auth/auth_service.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import '../api/auth_api_service.dart';
 import '../config/environment.dart';
+import '../state/app_state.dart';
 
 class AuthService {
   static const _storage = FlutterSecureStorage();
@@ -16,6 +16,55 @@ class AuthService {
   static final authStateProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     return AuthNotifier(ref);
   });
+
+  // Register new user - PRODUCTION READY
+  static Future<AuthResult> register(Map<String, dynamic> userData, AuthApiService? apiService) async {
+    try {
+      // Validate input parameters
+      if (userData['email']?.isEmpty ?? true || userData['password']?.isEmpty ?? true) {
+        return AuthResult.error('Email and password are required');
+      }
+      
+      if (!_isValidEmail(userData['email'])) {
+        return AuthResult.error('Please enter a valid email address');
+      }
+      
+      if (apiService == null) {
+        return AuthResult.error('Authentication service unavailable. Please try again later.');
+      }
+      
+      // Call real API - NO MOCK DATA IN PRODUCTION
+      final response = await apiService.register(userData);
+      
+      if (response == null || response.isEmpty) {
+        return AuthResult.error('Invalid response from server');
+      }
+      
+      // Handle normalized API response format
+      if (!response.containsKey('user') || !response.containsKey('accessToken')) {
+        return AuthResult.error('Invalid server response format');
+      }
+      
+      // Create tokens from normalized response
+      final tokens = AuthTokens(
+        accessToken: response['accessToken']?.toString() ?? '',
+        refreshToken: response['refreshToken']?.toString() ?? '',
+        expiresIn: response['expiresIn']?.toInt() ?? 3600,
+      );
+      
+      // Create user from normalized response
+      final user = User.fromJson(response['user']);
+      
+      // Store tokens securely
+      await _storage.write(key: _accessTokenKey, value: tokens.accessToken);
+      await _storage.write(key: _refreshTokenKey, value: tokens.refreshToken);
+      await _storage.write(key: _userKey, value: jsonEncode(user.toJson()));
+      
+      return AuthResult.success(user);
+    } catch (e) {
+      return AuthResult.error('Registration failed: ${e.toString()}');
+    }
+  }
 
   // Login with credentials - PRODUCTION READY
   static Future<AuthResult> login(String email, String password, AuthApiService? apiService) async {
@@ -65,6 +114,8 @@ class AuthService {
         isActive: userData['isActive'] ?? true,
         createdAt: userData['createdAt'] != null ? DateTime.tryParse(userData['createdAt'].toString()) : null,
         updatedAt: userData['updatedAt'] != null ? DateTime.tryParse(userData['updatedAt'].toString()) : null,
+        roomId: userData['roomId']?.toString(),
+        bedNumber: userData['bedNumber']?.toString(),
       );
       
       final deviceId = response['deviceId'] ?? 'device_${DateTime.now().millisecondsSinceEpoch}';
@@ -379,64 +430,4 @@ class AuthTokens {
   }
 }
 
-class User {
-  final String id;
-  final String email;
-  final String role;
-  final String hostelId;
-  final String firstName;
-  final String lastName;
-  final String? phone;
-  final bool isActive;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final String? roomId;
-  final String? bedNumber;
-
-  const User({
-    required this.id,
-    required this.email,
-    required this.role,
-    required this.hostelId,
-    required this.firstName,
-    required this.lastName,
-    this.phone,
-    this.isActive = true,
-    this.createdAt,
-    this.updatedAt,
-    this.roomId,
-    this.bedNumber,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id']?.toString() ?? '',
-      email: json['email']?.toString() ?? '',
-      role: json['role']?.toString() ?? 'student',
-      hostelId: json['hostelId']?.toString() ?? json['hostel_id']?.toString() ?? '',
-      firstName: json['firstName']?.toString() ?? json['first_name']?.toString() ?? '',
-      lastName: json['lastName']?.toString() ?? json['last_name']?.toString() ?? '',
-      phone: json['phone']?.toString(),
-      isActive: json['isActive'] ?? json['is_active'] ?? true,
-      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'].toString()) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'].toString()) : null,
-      roomId: json['roomId']?.toString() ?? json['room_id']?.toString(),
-      bedNumber: json['bedNumber']?.toString() ?? json['bed_number']?.toString(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'email': email,
-      'role': role,
-      'hostelId': hostelId,
-      'firstName': firstName,
-      'lastName': lastName,
-      'roomId': roomId,
-      'bedNumber': bedNumber,
-    };
-  }
-
-  String get fullName => '$firstName $lastName';
-}
+// User class is now imported from app_state.dart

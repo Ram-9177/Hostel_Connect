@@ -28,7 +28,7 @@ let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
         }
         try {
             const payload = this.jwtService.verify(token);
-            const user = await this.authService.validateUser(payload.sub);
+            const user = await this.authService.validateUser(payload.sub, payload.role);
             if (!user) {
                 throw new common_1.UnauthorizedException('User not found');
             }

@@ -1,10 +1,11 @@
 export declare class RegisterDto {
-    studentId: string;
+    email: string;
+    password: string;
     firstName: string;
     lastName: string;
-    email: string;
+    studentId: string;
     phone: string;
-    password: string;
-    roomId: string;
     hostelId: string;
+    roomId?: string;
+    role?: string;
 }
