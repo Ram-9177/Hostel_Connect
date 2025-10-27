@@ -4,6 +4,7 @@ import { UpdatedTime } from "../UpdatedTime";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Cell, Legend, Pie, PieChart as RechartsPie, ResponsiveContainer, Tooltip } from "recharts";
+import { premiumColors, premiumShadows, roleColors } from "../../styles/premium-design-tokens";
 
 interface ChefBoardProps {
   onBack: () => void;
@@ -40,13 +41,19 @@ export function ChefBoard({ onBack, onNavigate }: ChefBoardProps) {
 
   return (
     <div className="min-h-screen bg-background pb-8">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white p-4 flex items-center gap-3 shadow-sm">
-        <button onClick={onBack} className="p-1">
+      {/* Header with Premium Gradient */}
+      <div 
+        className="text-white p-4 flex items-center gap-3"
+        style={{
+          background: roleColors.CHEF.gradient,
+          boxShadow: premiumShadows.md
+        }}
+      >
+        <button onClick={onBack} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div className="flex-1">
-          <h1 className="text-xl">Chef Board</h1>
+          <h1 className="text-xl font-semibold">Chef Board</h1>
           <p className="text-xs opacity-90 mt-0.5">Meal Planning Dashboard</p>
         </div>
         <button onClick={() => onNavigate?.('settings')} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
@@ -55,11 +62,14 @@ export function ChefBoard({ onBack, onNavigate }: ChefBoardProps) {
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Date and Status */}
-        <Card className="p-4 border-0 shadow-sm">
+        {/* Date and Status with Premium Card */}
+        <Card 
+          className="p-4 border-0 bg-white dark:bg-gray-800"
+          style={{ boxShadow: premiumShadows.md }}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h3>Tomorrow's Forecast</h3>
+              <h3 className="font-semibold">Tomorrow's Forecast</h3>
               <p className="text-sm text-muted-foreground mt-1">
                 Monday, October 20, 2025
               </p>

@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Area, AreaChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { premiumColors, premiumShadows, roleColors } from "../../styles/premium-design-tokens";
 
 interface WardenHeadDashboardProps {
   onBack: () => void;
@@ -47,13 +48,19 @@ export function WardenHeadDashboard({ onBack, onNavigate }: WardenHeadDashboardP
 
   return (
     <div className="min-h-screen bg-background pb-8">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-4 flex items-center gap-3 shadow-sm">
-        <button onClick={onBack} className="p-1">
+      {/* Header with Premium Gradient */}
+      <div 
+        className="text-white p-4 flex items-center gap-3"
+        style={{
+          background: roleColors.WARDEN_HEAD.gradient,
+          boxShadow: premiumShadows.md
+        }}
+      >
+        <button onClick={onBack} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div className="flex-1">
-          <h1 className="text-xl">Warden Head Dashboard</h1>
+          <h1 className="text-xl font-semibold">Warden Head Dashboard</h1>
           <p className="text-xs opacity-90 mt-0.5">All Hostels Overview</p>
         </div>
       </div>
@@ -67,7 +74,7 @@ export function WardenHeadDashboard({ onBack, onNavigate }: WardenHeadDashboardP
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
-            {/* Quick Actions Section */}
+            {/* Quick Actions Section with Premium Cards */}
             <div className="space-y-3">
               <h3 className="text-base font-semibold">Quick Actions</h3>
               <div className="grid grid-cols-2 gap-3">
@@ -76,11 +83,15 @@ export function WardenHeadDashboard({ onBack, onNavigate }: WardenHeadDashboardP
                   return (
                     <Card
                       key={action.id}
-                      className="p-4 cursor-pointer hover:shadow-lg transition-shadow border-0"
+                      className="p-4 cursor-pointer hover:shadow-lg transition-all border-0 bg-white dark:bg-gray-800"
+                      style={{ boxShadow: premiumShadows.sm }}
                       onClick={() => onNavigate?.(action.id)}
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`${action.color} w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0`}>
+                        <div 
+                          className={`${action.color} w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0`}
+                          style={{ boxShadow: premiumShadows.primaryGlow }}
+                        >
                           <Icon className="h-5 w-5 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">

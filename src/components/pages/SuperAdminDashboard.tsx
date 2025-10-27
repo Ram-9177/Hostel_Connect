@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Badge } from "../ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { premiumColors, premiumShadows, roleColors } from "../../styles/premium-design-tokens";
 
 interface SuperAdminDashboardProps {
   onBack: () => void;
@@ -60,13 +61,19 @@ export function SuperAdminDashboard({ onBack, onNavigate }: SuperAdminDashboardP
 
   return (
     <div className="min-h-screen bg-background pb-8">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-4 flex items-center gap-3 shadow-sm">
-        <button onClick={onBack} className="p-1">
+      {/* Header with Premium Gradient */}
+      <div 
+        className="text-white p-4 flex items-center gap-3"
+        style={{
+          background: roleColors.ADMIN.gradient,
+          boxShadow: premiumShadows.md
+        }}
+      >
+        <button onClick={onBack} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div className="flex-1">
-          <h1 className="text-xl">Super Admin</h1>
+          <h1 className="text-xl font-semibold">Super Admin</h1>
           <p className="text-xs opacity-90 mt-0.5">Central Management Portal</p>
         </div>
       </div>
@@ -80,7 +87,7 @@ export function SuperAdminDashboard({ onBack, onNavigate }: SuperAdminDashboardP
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
-            {/* Quick Actions Section */}
+            {/* Quick Actions Section with Premium Cards */}
             <div className="space-y-3">
               <h3 className="text-base font-semibold">Quick Actions</h3>
               <div className="grid grid-cols-3 gap-3">
@@ -89,11 +96,15 @@ export function SuperAdminDashboard({ onBack, onNavigate }: SuperAdminDashboardP
                   return (
                     <Card
                       key={action.id}
-                      className="p-3 cursor-pointer hover:shadow-lg transition-shadow border-0"
+                      className="p-3 cursor-pointer hover:shadow-lg transition-all border-0 bg-white dark:bg-gray-800"
+                      style={{ boxShadow: premiumShadows.sm }}
                       onClick={() => onNavigate?.(action.id)}
                     >
                       <div className="flex flex-col items-center gap-2 text-center">
-                        <div className={`${action.color} w-10 h-10 rounded-lg flex items-center justify-center`}>
+                        <div 
+                          className={`${action.color} w-10 h-10 rounded-lg flex items-center justify-center`}
+                          style={{ boxShadow: premiumShadows.primaryGlow }}
+                        >
                           <Icon className="h-5 w-5 text-white" />
                         </div>
                         <div>
