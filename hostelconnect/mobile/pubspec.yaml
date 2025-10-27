@@ -29,8 +29,8 @@ dependencies:
   # QR Scanner (ENABLED for education pipeline)
   mobile_scanner: ^5.1.0
   
-  # Background Sync
-  workmanager: ^0.5.2
+  # Background Sync (Commented out - causing build issues)
+  # workmanager: ^0.5.2
   
   # Firebase (if using Firebase - add when ready)
   # firebase_core: ^2.24.0

@@ -1,8 +1,7 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Toaster } from "./components/ui/sonner";
 import { BottomNav } from "./components/BottomNav";
 import { QuickAccessMenu } from "./components/QuickAccessMenu";
-import { DemoRoleSwitcher } from "./components/DemoRoleSwitcher";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { GlobalSearch } from "./components/GlobalSearch";
 import { DataPrivacyNotice } from "./components/DataPrivacyNotice";
@@ -20,32 +19,39 @@ import { ChefBoard } from "./components/pages/ChefBoard";
 import { NoticesAndComplaints } from "./components/pages/NoticesAndComplaints";
 import { Profile } from "./components/pages/Profile";
 import { Settings } from "./components/pages/Settings";
+import { ChangePassword } from "./components/pages/ChangePassword";
+import { IDCard } from "./components/pages/IDCard";
+import { HelpCenter } from "./components/pages/HelpCenter";
+import GateSecurity from "./components/GateSecurity";
+import StudentInOutDashboard from "./components/StudentInOutDashboard";
+import AnalyticsDashboard from "./components/AnalyticsDashboardNew";
+import ManualGatePass from "./components/ManualGatePass";
+import EmergencyRequests from "./components/EmergencyRequests";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
-export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState<string>("student");
+function AppContent() {
   const [currentPage, setCurrentPage] = useState<string>("home");
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   const handleLogin = (role: string) => {
-    setUserRole(role);
-    setIsLoggedIn(true);
-    
     // Set appropriate landing page based on role
-    if (role === "student") {
+    if (role === "STUDENT") {
       setCurrentPage("home");
-    } else if (role === "warden") {
+    } else if (role === "WARDEN") {
       setCurrentPage("warden");
-    } else if (role === "warden-head") {
+    } else if (role === "WARDEN_HEAD") {
       setCurrentPage("warden-head");
-    } else if (role === "super-admin") {
+    } else if (role === "ADMIN") {
       setCurrentPage("super-admin");
-    } else if (role === "chef") {
+    } else if (role === "CHEF") {
       setCurrentPage("chef");
+    } else if (role === "SECURITY") {
+      setCurrentPage("gate-security");
     }
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await logout();
     setCurrentPage("home");
   };
 
@@ -54,21 +60,35 @@ export default function App() {
   };
 
   const handleBack = () => {
-    if (userRole === "student") {
+    if (user?.role === "STUDENT") {
       setCurrentPage("home");
-    } else if (userRole === "warden") {
+    } else if (user?.role === "WARDEN") {
       setCurrentPage("warden");
-    } else if (userRole === "warden-head") {
+    } else if (user?.role === "WARDEN_HEAD") {
       setCurrentPage("warden-head");
-    } else if (userRole === "super-admin") {
+    } else if (user?.role === "ADMIN") {
       setCurrentPage("super-admin");
-    } else if (userRole === "chef") {
+    } else if (user?.role === "CHEF") {
       setCurrentPage("chef");
+    } else if (user?.role === "SECURITY") {
+      setCurrentPage("gate-security");
     }
   };
 
-  // Show login if not logged in
-  if (!isLoggedIn) {
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login if not authenticated
+  if (!isAuthenticated || !user) {
     return (
       <>
         <Login onLogin={handleLogin} />
@@ -80,7 +100,7 @@ export default function App() {
   // Render appropriate page based on current page and role
   const renderPage = () => {
     // Student Pages
-    if (userRole === "student") {
+    if (user.role === "STUDENT") {
       switch (currentPage) {
         case "home":
           return <StudentHome onNavigate={handleNavigate} />;
@@ -95,15 +115,21 @@ export default function App() {
           return <NoticesAndComplaints onBack={handleBack} />;
         case "profile":
           return <Profile onBack={handleBack} onLogout={handleLogout} onNavigate={handleNavigate} />;
+        case "change-password":
+          return <ChangePassword onBack={handleBack} />;
+        case "id-card":
+          return <IDCard onBack={handleBack} />;
+        case "help-center":
+          return <HelpCenter onBack={handleBack} />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={userRole} />;
+          return <Settings onBack={handleBack} userRole={user.role} />;
         default:
           return <StudentHome onNavigate={handleNavigate} />;
       }
     }
 
     // Warden Pages
-    if (userRole === "warden") {
+    if (user.role === "WARDEN") {
       switch (currentPage) {
         case "warden":
           return <WardenDashboard onBack={handleLogout} />;
@@ -111,31 +137,47 @@ export default function App() {
           return <Rooms onBack={handleBack} />;
         case "attendance":
           return <Attendance onBack={handleBack} />;
+        case "student-records":
+          return <StudentInOutDashboard />;
+        case "analytics":
+          return <AnalyticsDashboard onBack={handleBack} />;
+        case "manual-gate-pass":
+          return <ManualGatePass />;
+        case "emergency-requests":
+          return <EmergencyRequests />;
         case "complaints":
           return <NoticesAndComplaints onBack={handleBack} />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={userRole} />;
+          return <Settings onBack={handleBack} userRole={user.role} />;
         default:
           return <WardenDashboard onBack={handleLogout} />;
       }
     }
 
     // Warden Head Pages
-    if (userRole === "warden-head") {
+    if (user.role === "WARDEN_HEAD") {
       switch (currentPage) {
         case "warden-head":
           return <WardenHeadDashboard onBack={handleLogout} />;
         case "rooms":
           return <Rooms onBack={handleBack} />;
+        case "student-records":
+          return <StudentInOutDashboard />;
+        case "analytics":
+          return <AnalyticsDashboard onBack={handleBack} />;
+        case "manual-gate-pass":
+          return <ManualGatePass />;
+        case "emergency-requests":
+          return <EmergencyRequests />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={userRole} />;
+          return <Settings onBack={handleBack} userRole={user.role} />;
         default:
           return <WardenHeadDashboard onBack={handleLogout} />;
       }
     }
 
     // Super Admin Pages
-    if (userRole === "super-admin") {
+    if (user.role === "ADMIN") {
       switch (currentPage) {
         case "super-admin":
           return <SuperAdminDashboard onBack={handleLogout} />;
@@ -145,22 +187,44 @@ export default function App() {
           return <WardenHeadDashboard onBack={handleBack} />;
         case "rooms":
           return <Rooms onBack={handleBack} />;
+        case "student-records":
+          return <StudentInOutDashboard />;
+        case "analytics":
+          return <AnalyticsDashboard onBack={handleBack} />;
+        case "manual-gate-pass":
+          return <ManualGatePass />;
+        case "emergency-requests":
+          return <EmergencyRequests />;
+        case "gate-security":
+          return <GateSecurity />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={userRole} />;
+          return <Settings onBack={handleBack} userRole={user.role} />;
         default:
           return <SuperAdminDashboard onBack={handleLogout} />;
       }
     }
 
     // Chef Pages
-    if (userRole === "chef") {
+    if (user.role === "CHEF") {
       switch (currentPage) {
         case "chef":
           return <ChefBoard onBack={handleLogout} />;
         case "settings":
-          return <Settings onBack={handleBack} userRole={userRole} />;
+          return <Settings onBack={handleBack} userRole={user.role} />;
         default:
           return <ChefBoard onBack={handleLogout} />;
+      }
+    }
+
+    // Security Pages
+    if (user.role === "SECURITY") {
+      switch (currentPage) {
+        case "gate-security":
+          return <GateSecurity />;
+        case "settings":
+          return <Settings onBack={handleBack} userRole={user.role} />;
+        default:
+          return <GateSecurity />;
       }
     }
 
@@ -177,13 +241,13 @@ export default function App() {
 
       {/* Global Search - Only show when logged in */}
       {currentPage !== "settings" && (
-        <GlobalSearch onNavigate={handleNavigate} userRole={userRole} />
+        <GlobalSearch onNavigate={handleNavigate} userRole={user.role} />
       )}
 
       {renderPage()}
       
       {/* Show bottom nav only for students and on specific pages */}
-      {userRole === "student" && currentPage !== "settings" && (
+      {user.role === "STUDENT" && currentPage !== "settings" && (
         <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
       )}
       
@@ -191,34 +255,23 @@ export default function App() {
       {currentPage !== "settings" && (
         <QuickAccessMenu 
           onNavigate={handleNavigate} 
-          userRole={userRole}
+          userRole={user.role}
         />
       )}
 
-      {/* Demo Role Switcher - For testing different user roles */}
-      <DemoRoleSwitcher 
-        currentRole={userRole}
-        onRoleChange={(role) => {
-          setUserRole(role);
-          // Navigate to appropriate landing page for the role
-          if (role === "student") {
-            setCurrentPage("home");
-          } else if (role === "warden") {
-            setCurrentPage("warden");
-          } else if (role === "warden-head") {
-            setCurrentPage("warden-head");
-          } else if (role === "super-admin") {
-            setCurrentPage("super-admin");
-          } else if (role === "chef") {
-            setCurrentPage("chef");
-          }
-        }}
-      />
 
       {/* Keyboard Shortcuts - Desktop only */}
       <KeyboardShortcuts />
       
       <Toaster position="top-center" />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
