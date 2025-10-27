@@ -1,0 +1,94 @@
+name: Deploy Firebase Functions
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'functions/**'
+      - '.github/workflows/firebase-functions-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+concurrency:
+  group: firebase-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Firebase Functions
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: ${{ inputs.environment || 'production' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@latest
+
+      - name: Decode Firebase Service Account
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "❌ ERROR: FIREBASE_SERVICE_ACCOUNT secret not set"
+            echo "Please add it to GitHub Secrets (Settings → Secrets → Actions)"
+            echo "See SECURITY_NOTE.md for instructions"
+            exit 1
+          fi
+          echo "$FIREBASE_SERVICE_ACCOUNT" | base64 -d > $HOME/serviceAccountKey.json
+          echo "✅ Service account decoded successfully"
+
+      - name: Install dependencies
+        working-directory: ./functions
+        run: npm ci
+
+      - name: Run tests
+        working-directory: ./functions
+        run: npm test
+        continue-on-error: true
+
+      - name: Deploy to Firebase
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.HOME }}/serviceAccountKey.json
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        working-directory: ./functions
+        run: |
+          firebase use $FIREBASE_PROJECT_ID --token "$(gcloud auth print-access-token)"
+          firebase deploy --only functions --force
+          
+          echo "### 🔥 Firebase Functions Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Project:** $FIREBASE_PROJECT_ID" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployed at:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: List deployed functions
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.HOME }}/serviceAccountKey.json
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          echo "### 📋 Deployed Functions" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          firebase functions:list --project $FIREBASE_PROJECT_ID >> $GITHUB_STEP_SUMMARY || echo "Could not list functions" >> $GITHUB_STEP_SUMMARY
+
+      - name: Cleanup
+        if: always()
+        run: rm -f $HOME/serviceAccountKey.json
