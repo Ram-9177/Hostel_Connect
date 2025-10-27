@@ -495,6 +495,10 @@ class _GatePassPageState extends State<GatePassPage> with TickerProviderStateMix
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.go('/student-home'),
+        ),
         title: Text('Gate Pass Management'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
@@ -759,6 +763,10 @@ class _AttendancePageState extends State<AttendancePage> with TickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.go('/student-home'),
+        ),
         title: Text('Attendance Management'),
         backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
@@ -972,6 +980,10 @@ class _MealsPageState extends State<MealsPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
         return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.go('/student-home'),
+        ),
         title: Text('Meal Management'),
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
@@ -1173,6 +1185,10 @@ class _NoticesPageState extends State<NoticesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.go('/student-home'),
+        ),
         title: Text('Notices & Updates'),
         backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
@@ -1314,6 +1330,10 @@ class _SchedulePageState extends State<SchedulePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.go('/student-home'),
+        ),
         title: Text('Schedule'),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
@@ -1415,6 +1435,10 @@ class _StudyRoomPageState extends State<StudyRoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.go('/student-home'),
+        ),
         title: Text('Study Room Booking'),
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
