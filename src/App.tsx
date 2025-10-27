@@ -22,6 +22,8 @@ import { Settings } from "./components/pages/Settings";
 import { ChangePassword } from "./components/pages/ChangePassword";
 import { IDCard } from "./components/pages/IDCard";
 import { HelpCenter } from "./components/pages/HelpCenter";
+import { Schedule } from "./components/pages/Schedule";
+import { StudyRoom } from "./components/pages/StudyRoom";
 import GateSecurity from "./components/GateSecurity";
 import StudentInOutDashboard from "./components/StudentInOutDashboard";
 import AnalyticsDashboard from "./components/AnalyticsDashboardNew";
@@ -110,6 +112,10 @@ function AppContent() {
           return <Attendance onBack={handleBack} />;
         case "meals":
           return <Meals onBack={handleBack} />;
+        case "schedule":
+          return <Schedule onBack={handleBack} />;
+        case "study":
+          return <StudyRoom onBack={handleBack} />;
         case "complaints":
         case "notices":
           return <NoticesAndComplaints onBack={handleBack} />;
