@@ -37,6 +37,10 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => StudentHomePage(),
     ),
     GoRoute(
+      path: '/warden-home',
+      builder: (context, state) => WardenHomePage(),
+    ),
+    GoRoute(
       path: '/warden-head-home',
       builder: (context, state) => WardenHeadHomePage(),
     ),
