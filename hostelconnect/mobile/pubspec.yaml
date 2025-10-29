@@ -46,8 +46,8 @@ dependencies:
   # workmanager: ^0.5.2
   
   # Firebase
-  firebase_core: ^2.24.0
-  firebase_messaging: ^14.7.0
+  firebase_core: ^4.2.0
+  firebase_messaging: ^16.0.3
 
   # Local notifications for actionable buttons
   flutter_local_notifications: ^17.2.3
