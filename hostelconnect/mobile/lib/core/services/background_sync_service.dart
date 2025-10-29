@@ -1,3 +1,50 @@
+// Background sync service (Workmanager)
+// NOTE: Dependency is currently commented out in pubspec.yaml to avoid build issues.
+// To enable: uncomment `workmanager` in pubspec.yaml, run `flutter pub get`,
+// then call `BackgroundSyncService.initialize()` early in main() before runApp.
+
+// ignore_for_file: unused_import
+
+import 'package:workmanager/workmanager.dart';
+
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    switch (task) {
+      case 'syncOfflineData':
+        // TODO: Implement actual sync logic
+        // 1. Check network connectivity
+        // 2. Get pending changes from SQLite
+        // 3. Upload to server
+        // 4. Clear local cache
+        return Future.value(true);
+      default:
+        return Future.value(false);
+    }
+  });
+}
+
+class BackgroundSyncService {
+  static Future<void> initialize() async {
+    await Workmanager().initialize(callbackDispatcher);
+
+    await Workmanager().registerPeriodicTask(
+      'sync-offline-data',
+      'syncOfflineData',
+      frequency: const Duration(minutes: 15),
+      constraints: const Constraints(
+        networkType: NetworkType.connected,
+      ),
+    );
+  }
+
+  static Future<void> syncNow() async {
+    await Workmanager().registerOneOffTask(
+      'sync-now',
+      'syncOfflineData',
+    );
+  }
+}
 import 'dart:async';
 import 'dart:ui';
 

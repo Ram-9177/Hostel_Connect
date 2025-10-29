@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return request.auth.token.role in ['admin', 'super_admin'];
+    }
+
+    // User media
+    match /media/{uid}/{postId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // CSV imports (admin only)
+    match /imports/{type}/{collegeId}/{fileName} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+  }
+}
