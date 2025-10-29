@@ -45,9 +45,9 @@ dependencies:
   # Background Sync (Commented out - causing build issues)
   # workmanager: ^0.5.2
   
-  # Firebase
-  firebase_core: ^2.24.0
-  firebase_messaging: ^14.7.0
+  # Firebase (Temporarily disabled for web compatibility)
+  # firebase_core: ^2.24.0
+  # firebase_messaging: ^14.7.0
 
   # Local notifications for actionable buttons
   flutter_local_notifications: ^17.2.3

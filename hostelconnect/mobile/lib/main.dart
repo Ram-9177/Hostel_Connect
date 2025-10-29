@@ -639,11 +639,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     }
   }
 }
-        _isLoading = false;
-      });
-    }
-  }
-  }
 
 class SignupPage extends StatefulWidget {
   @override
