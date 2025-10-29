@@ -11,6 +11,11 @@ import '../../features/admin/presentation/pages/admin_home_page.dart';
 import '../../features/chef/presentation/pages/chef_home_page.dart';
 import '../../features/gate_pass/presentation/pages/gate_scanner_page.dart';
 import '../../features/gate_pass/presentation/pages/gate_pass_request_page.dart';
+import '../../features/schedule/presentation/pages/schedule_page.dart';
+import '../../features/study_room/presentation/pages/study_room_page.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
+import '../../features/id_card/presentation/pages/id_card_page.dart';
+import '../../features/help/presentation/pages/help_center_page.dart';
 import '../../shared/widgets/ui/access_denied_page.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -59,6 +64,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/chef',
         builder: (context, state) => const ChefHomePage(),
       ),
+      GoRoute(
+        path: '/kitchen',
+        builder: (context, state) => const KitchenDashboardPage(),
+      ),
       
       // Gate Pass routes
       GoRoute(
@@ -68,6 +77,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/gate-pass/scanner',
         builder: (context, state) => const GateScannerPage(),
+      ),
+      
+      // Student Feature routes
+      GoRoute(
+        path: '/schedule',
+        builder: (context, state) => const SchedulePage(),
+      ),
+      GoRoute(
+        path: '/study-room',
+        builder: (context, state) => const StudyRoomPage(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/id-card',
+        builder: (context, state) => const IdCardPage(),
+      ),
+      GoRoute(
+        path: '/help',
+        builder: (context, state) => const HelpCenterPage(),
       ),
       
       // Access denied route
@@ -124,14 +155,16 @@ class RouteGuard {
   static bool canAccessRoute(String route, String userRole) {
     switch (route) {
       case '/gate-pass/scanner':
-        return ['warden', 'warden_head', 'super_admin'].contains(userRole.toLowerCase());
+        return ['warden', 'warden_head', 'gate_security', 'admin', 'super_admin'].contains(userRole.toLowerCase());
       case '/admin':
         return ['super_admin', 'admin'].contains(userRole.toLowerCase());
       case '/warden':
       case '/warden-head':
-        return ['warden', 'warden_head', 'super_admin'].contains(userRole.toLowerCase());
+        return ['warden', 'warden_head', 'admin', 'super_admin'].contains(userRole.toLowerCase());
       case '/chef':
-        return ['chef', 'super_admin'].contains(userRole.toLowerCase());
+        return ['chef', 'kitchen_incharge', 'super_admin'].contains(userRole.toLowerCase());
+      case '/kitchen':
+        return ['chef', 'kitchen_incharge', 'admin', 'super_admin'].contains(userRole.toLowerCase());
       case '/student':
       case '/gate-pass/request':
         return true; // All roles can access

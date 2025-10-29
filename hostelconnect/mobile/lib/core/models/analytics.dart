@@ -489,38 +489,5 @@ class IntegrityCheck {
   }
 }
 
-class DrillDownRequest {
-  final String category;
-  final String subCategory;
-  final Map<String, dynamic> filters;
-  final DateTime? startDate;
-  final DateTime? endDate;
-
-  const DrillDownRequest({
-    required this.category,
-    required this.subCategory,
-    required this.filters,
-    this.startDate,
-    this.endDate,
-  });
-
-  factory DrillDownRequest.fromJson(Map<String, dynamic> json) {
-    return DrillDownRequest(
-      category: json['category']?.toString() ?? '',
-      subCategory: json['subCategory']?.toString() ?? '',
-      filters: Map<String, dynamic>.from(json['filters'] ?? {}),
-      startDate: json['startDate'] != null ? DateTime.tryParse(json['startDate'].toString()) : null,
-      endDate: json['endDate'] != null ? DateTime.tryParse(json['endDate'].toString()) : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'category': category,
-      'subCategory': subCategory,
-      'filters': filters,
-      'startDate': startDate?.toIso8601String(),
-      'endDate': endDate?.toIso8601String(),
-    };
-  }
-}
+// DrillDownRequest is now in dashboard_models.dart to avoid duplicate
+// Export it from there if needed

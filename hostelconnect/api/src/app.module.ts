@@ -26,6 +26,7 @@ import { GateModule } from './gate/gate.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { FilesModule } from './files/files.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { DashboardsModule } from './dashboards/dashboards.module';
 
 // Database configuration
 import { dataSourceOptions } from './database/data-source';
@@ -61,11 +62,10 @@ import { dataSourceOptions } from './database/data-source';
     // Task scheduling
     ScheduleModule.forRoot(),
 
-    // Real-time features
-    SocketModule,
-    NotificationsModule,
-    FilesModule,
-    AnalyticsModule,
+  // Real-time features (optional in local dev to simplify boot)
+  ...(process.env.ENABLE_SOCKETS === 'true' ? [SocketModule, NotificationsModule] : []),
+  FilesModule,
+  ...(process.env.ENABLE_ANALYTICS === 'true' ? [AnalyticsModule, DashboardsModule] : []),
 
     // Feature modules (simplified for demo)
     AuthModule,
@@ -75,7 +75,7 @@ import { dataSourceOptions } from './database/data-source';
     RoomsModule,
     HostelsModule,
     StudentsModule,
-    GatePassModule,
+  ...(process.env.ENABLE_GATEPASS === 'true' ? [GatePassModule] : []),
     WardensModule,
     ChefsModule,
     AdminsModule,
@@ -86,8 +86,6 @@ import { dataSourceOptions } from './database/data-source';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthBypassMiddleware)
-      .forRoutes('*');
+    // Production: remove demo auth bypass
   }
 }

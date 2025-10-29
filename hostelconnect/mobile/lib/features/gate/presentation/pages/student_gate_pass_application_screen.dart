@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../../../core/config/environment.dart';
+import '../../../../core/network/api_config.dart';
 import '../../../../core/services/offline_storage_service.dart';
 import '../../../../core/services/sync_service.dart';
 
@@ -60,6 +61,9 @@ class _StudentGatePassApplicationScreenState extends State<StudentGatePassApplic
     _offlineDataCount = dataCount['syncQueue'] ?? 0;
     setState(() {});
   }
+
+  @override
+  void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
     _contactController.dispose();
@@ -101,7 +105,7 @@ class _StudentGatePassApplicationScreenState extends State<StudentGatePassApplic
         // Try online submission first
         try {
           final response = await http.post(
-            Uri.parse('${Environment.apiBaseUrl}/gate-pass-applications'),
+            Uri.parse('${ApiConfig.baseUrl}/gate-pass-applications'),
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode(application),
           );
@@ -247,6 +251,8 @@ class _StudentGatePassApplicationScreenState extends State<StudentGatePassApplic
       _isLoading = false;
     });
   }
+
+  void _resetForm() {
     _titleController.clear();
     _descriptionController.clear();
     _contactController.clear();
@@ -703,9 +709,6 @@ class _StudentGatePassApplicationScreenState extends State<StudentGatePassApplic
 }
 
 class Environment {
-  // For real Android device testing, replace with your computer's IP address
-  // Find your IP with: ifconfig (Mac/Linux) or ipconfig (Windows)
-  // Example: 'http://192.168.1.100:3000/api/v1'
-  static const String apiBaseUrl = 'http://10.17.134.33:3000/api/v1'; // Real device
-  // static const String apiBaseUrl = 'http://192.168.1.100:3000/api/v1'; // Real device
+  // Delegate to centralized API config
+  static String get apiBaseUrl => ApiConfig.baseUrl;
 }

@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EmailService } from '../common/email/email.service';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -29,7 +30,7 @@ import { Admin } from '../admins/entities/admin.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard, EmailService],
   exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}

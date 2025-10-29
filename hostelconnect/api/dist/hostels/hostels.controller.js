@@ -48,7 +48,10 @@ let HostelsController = class HostelsController {
     async deleteBlock(id) {
         return this.hostelsService.deleteBlock(id);
     }
-    async createRoom(blockId, createRoomDto) {
+    async createRoom(req, blockId, createRoomDto) {
+        if (req.user?.role === 'STUDENT') {
+            throw new common_1.ForbiddenException('Students cannot create rooms');
+        }
         return this.hostelsService.createRoom(blockId, createRoomDto);
     }
     async getRoomsByBlock(blockId) {
@@ -57,19 +60,34 @@ let HostelsController = class HostelsController {
     async getRoomsByHostel(hostelId) {
         return this.hostelsService.getRoomsByHostel(hostelId);
     }
-    async updateRoom(id, updateRoomDto) {
+    async updateRoom(req, id, updateRoomDto) {
+        if (req.user?.role === 'STUDENT') {
+            throw new common_1.ForbiddenException('Students cannot modify rooms');
+        }
         return this.hostelsService.updateRoom(id, updateRoomDto);
     }
-    async deleteRoom(id) {
+    async deleteRoom(req, id) {
+        if (req.user?.role === 'STUDENT') {
+            throw new common_1.ForbiddenException('Students cannot delete rooms');
+        }
         return this.hostelsService.deleteRoom(id);
     }
-    async allocateRoom(roomId, allocateDto) {
+    async allocateRoom(req, roomId, allocateDto) {
+        if (req.user?.role === 'STUDENT') {
+            throw new common_1.ForbiddenException('Students cannot allocate rooms');
+        }
         return this.hostelsService.allocateRoom(allocateDto.studentId, roomId, allocateDto.bedNumber);
     }
-    async transferStudent(studentId, transferDto) {
+    async transferStudent(req, studentId, transferDto) {
+        if (req.user?.role === 'STUDENT') {
+            throw new common_1.ForbiddenException('Students cannot transfer rooms');
+        }
         return this.hostelsService.transferStudent(studentId, transferDto.newRoomId, transferDto.bedNumber);
     }
-    async swapStudents(swapDto) {
+    async swapStudents(req, swapDto) {
+        if (req.user?.role === 'STUDENT') {
+            throw new common_1.ForbiddenException('Students cannot swap rooms');
+        }
         return this.hostelsService.swapStudents(swapDto.student1Id, swapDto.student2Id);
     }
     async getHostelAnalytics(hostelId) {
@@ -175,10 +193,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Create a new room in block' }),
     (0, swagger_1.ApiParam)({ name: 'blockId', description: 'Block ID' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Room created successfully' }),
-    __param(0, (0, common_1.Param)('blockId')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('blockId')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], HostelsController.prototype, "createRoom", null);
 __decorate([
@@ -206,10 +225,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update room' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'Room ID' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Room updated successfully' }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], HostelsController.prototype, "updateRoom", null);
 __decorate([
@@ -217,9 +237,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Delete room' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'Room ID' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Room deleted successfully' }),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], HostelsController.prototype, "deleteRoom", null);
 __decorate([
@@ -227,10 +248,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Allocate room to student' }),
     (0, swagger_1.ApiParam)({ name: 'roomId', description: 'Room ID' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Room allocated successfully' }),
-    __param(0, (0, common_1.Param)('roomId')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('roomId')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], HostelsController.prototype, "allocateRoom", null);
 __decorate([
@@ -238,19 +260,21 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Transfer student to different room' }),
     (0, swagger_1.ApiParam)({ name: 'studentId', description: 'Student ID' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Student transferred successfully' }),
-    __param(0, (0, common_1.Param)('studentId')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('studentId')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], HostelsController.prototype, "transferStudent", null);
 __decorate([
     (0, common_1.Post)('students/swap'),
     (0, swagger_1.ApiOperation)({ summary: 'Swap rooms between students' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Students swapped successfully' }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], HostelsController.prototype, "swapStudents", null);
 __decorate([

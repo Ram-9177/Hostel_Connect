@@ -75,9 +75,11 @@ class _BulkStudentUploadPageState extends ConsumerState<BulkStudentUploadPage> {
         final result = json.decode(response.body);
         setState(() => _uploadResult = result);
 
+        // Support both shapes: {created, errors} or {successCount}
+        final created = result['created'] ?? result['successCount'] ?? 0;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Upload complete! ${result['successCount']} students created'),
+            content: Text('Upload complete! $created students created'),
             backgroundColor: Colors.green,
           ),
         );
@@ -96,8 +98,8 @@ class _BulkStudentUploadPageState extends ConsumerState<BulkStudentUploadPage> {
   }
 
   void _downloadTemplate() {
-    // Template CSV content
-    const template = '''name,hallTicket,collegeCode,phoneNumber,hostelName
+    // Template CSV content (exact headers expected by backend)
+    const template = '''Name,Hall Ticket,College code,Number,Hostel Name
 John Doe,2024CS001,CSE,9876543210,Hostel A
 Jane Smith,2024EC002,ECE,9876543211,Hostel B''';
 
@@ -123,11 +125,11 @@ Jane Smith,2024EC002,ECE,9876543211,Hostel B''';
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text('• name (string)'),
-              const Text('• hallTicket (string, unique)'),
-              const Text('• collegeCode (string)'),
-              const Text('• phoneNumber (string, 10 digits)'),
-              const Text('• hostelName (string, must exist)'),
+              const Text('• Name (string)'),
+              const Text('• Hall Ticket (string, unique)'),
+              const Text('• College code (string)'),
+              const Text('• Number (string, 10-15 digits)'),
+              const Text('• Hostel Name (string, must exist)'),
               const SizedBox(height: 16),
               const Text(
                 'Example CSV:',
@@ -332,9 +334,9 @@ Jane Smith,2024EC002,ECE,9876543211,Hostel B''';
                     ),
                     const SizedBox(height: 16),
                     
-                    _buildResultRow('Total Processed', '${_uploadResult!['totalProcessed']}'),
-                    _buildResultRow('Successfully Created', '${_uploadResult!['successCount']}', Colors.green),
-                    _buildResultRow('Errors', '${_uploadResult!['errorCount']}', Colors.red),
+                    _buildResultRow('Successfully Created', '${_uploadResult!['created'] ?? _uploadResult!['successCount'] ?? 0}', Colors.green),
+                    if (_uploadResult!['errors'] != null)
+                      _buildResultRow('Errors', '${(_uploadResult!['errors'] as List).length}', Colors.red),
                     
                     if (_uploadResult!['errors'] != null && 
                         (_uploadResult!['errors'] as List).isNotEmpty) ...[

@@ -53,6 +53,8 @@ enum UserRole {
   STUDENT,
   WARDEN,
   WARDEN_HEAD,
+  GATE_SECURITY,
+  ADMIN,
   SUPER_ADMIN,
   CHEF,
 }

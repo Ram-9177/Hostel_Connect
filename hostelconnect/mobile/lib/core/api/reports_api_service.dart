@@ -4,6 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../network/http_client.dart';
 import '../models/dashboard_models.dart';
 import '../models/analytics.dart';
+import '../models/dashboard_drill_down.dart';
+import '../models/attendance_trends.dart';
+import '../models/gate_trends.dart';
+import '../models/meal_trends.dart';
+import '../models/occupancy_trends.dart';
+import '../models/integrity_trends.dart';
+import '../providers/dio_provider.dart';
 
 final reportsApiServiceProvider = Provider((ref) => ReportsApiService(ref.read(dioProvider)));
 

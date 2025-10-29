@@ -114,7 +114,7 @@ export class StudentsService {
 
         // Generate default password (hall ticket number)
         const defaultPassword = studentData.hallTicket;
-        const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+        const hashedPassword = bcrypt.hashSync(defaultPassword, 10);
 
         // Create user account first
         const user = this.userRepository.create({

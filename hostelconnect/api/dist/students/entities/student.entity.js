@@ -35,7 +35,7 @@ __decorate([
     __metadata("design:type", String)
 ], Student.prototype, "email", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Student.prototype, "phoneNumber", void 0);
 __decorate([
@@ -47,7 +47,7 @@ __decorate([
     __metadata("design:type", String)
 ], Student.prototype, "hostelId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Student.prototype, "roomNumber", void 0);
 __decorate([
@@ -59,25 +59,49 @@ __decorate([
     __metadata("design:type", Number)
 ], Student.prototype, "bedNumber", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Student.prototype, "course", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Student.prototype, "year", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Student.prototype, "emergencyContact", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Student.prototype, "emergencyPhone", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Boolean)
 ], Student.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Student.prototype, "isEmailVerified", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Student.prototype, "emailVerificationToken", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true, type: 'datetime' }),
+    __metadata("design:type", Date)
+], Student.prototype, "emailVerificationExpires", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true, type: 'datetime' }),
+    __metadata("design:type", Date)
+], Student.prototype, "lastLogin", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Student.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 'STUDENT' }),
+    __metadata("design:type", String)
+], Student.prototype, "role", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

@@ -14,28 +14,38 @@ import { Hostel } from '../hostels/entities/hostel.entity';
 import { Block } from '../hostels/entities/block.entity';
 import { Room } from '../rooms/entities/room.entity';
 import { Device } from '../devices/entities/device.entity';
+import { Warden } from '../wardens/entities/warden.entity';
+import { Chef } from '../chefs/entities/chef.entity';
+import { Admin } from '../admins/entities/admin.entity';
 
 config();
+
+const entities = [
+  Student,
+  User,
+  Warden,
+  Chef,
+  Admin,
+  AttendanceSession,
+  AttendanceCheck,
+  AttendanceRoster,
+  // Include GatePass entity always so relations (e.g., Hostel.gatePasses) resolve.
+  // Entity is SQLite-friendly (uses 'datetime'), while services can still be gated by env.
+  GatePass,
+  Ad,
+  AdEvent,
+  MealIntent,
+  MealOverride,
+  Hostel,
+  Block,
+  Room,
+  Device,
+];
 
 export const dataSourceOptions = {
   type: 'sqlite' as const,
   database: process.env.DB_DATABASE || 'hostelconnect.db',
-  entities: [
-    Student,
-    User,
-    AttendanceSession,
-    AttendanceCheck,
-    AttendanceRoster,
-    GatePass,
-    Ad,
-    AdEvent,
-    MealIntent,
-    MealOverride,
-    Hostel,
-    Block,
-    Room,
-    Device,
-  ],
+  entities,
   synchronize: true, // Enable for development
   logging: process.env.NODE_ENV === 'development',
 };

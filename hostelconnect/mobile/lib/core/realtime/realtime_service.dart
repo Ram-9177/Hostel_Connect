@@ -1,5 +1,6 @@
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io';
 import 'dart:convert';
 
 class RealtimeService {
@@ -11,7 +12,8 @@ class RealtimeService {
 
   static Future<void> connect(String token) async {
     try {
-      _socket = IO.io('http://localhost:3000/hostelconnect', {
+      final host = Platform.isAndroid ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
+      _socket = IO.io('$host/notifications', {
         'transports': ['websocket'],
         'autoConnect': false,
         'auth': {

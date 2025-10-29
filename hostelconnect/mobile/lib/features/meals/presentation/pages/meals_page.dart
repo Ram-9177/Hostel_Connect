@@ -8,6 +8,8 @@ import '../../../../shared/widgets/ui/ios_grade_components.dart';
 import '../widgets/daily_meal_prompt_widget.dart';
 import '../widgets/chef_board_widget.dart';
 import '../widgets/meal_override_widget.dart';
+import '../../../../core/services/meal_notification_controller.dart';
+import '../../../../core/services/meal_service.dart';
 
 class MealsPage extends ConsumerStatefulWidget {
   const MealsPage({super.key});
@@ -26,6 +28,18 @@ class _MealsPageState extends ConsumerState<MealsPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    // Listen for lunch notification events to respond inline
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = ref.read(mealNotificationControllerProvider);
+      controller.stream.listen((event) {
+        final type = event.mealType.toLowerCase();
+        if (type == 'lunch') {
+          _showMealQuickResponseSheet(MealType.lunch);
+        } else if (type == 'dinner') {
+          _showMealQuickResponseSheet(MealType.dinner);
+        }
+      });
+    });
   }
 
   @override
@@ -114,6 +128,111 @@ class _MealsPageState extends ConsumerState<MealsPage>
         ),
       ),
     );
+  }
+
+  void _showMealQuickResponseSheet(MealType mealType) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(mealType == MealType.lunch ? Icons.lunch_dining : Icons.dinner_dining),
+                  const SizedBox(width: 8),
+                  Text(
+                    mealType == MealType.lunch ? 'Lunch now — Will you eat?' : 'Dinner now — Will you eat?',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _submitMealIntentQuick(mealType, true),
+                      icon: const Icon(Icons.check_circle),
+                      label: const Text('Yes'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _submitMealIntentQuick(mealType, false),
+                      icon: const Icon(Icons.cancel),
+                      label: const Text('No'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton.icon(
+                  onPressed: () => _applySameAsYesterdayQuick(mealType),
+                  icon: const Icon(Icons.history),
+                  label: const Text('Same as Yesterday'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _submitMealIntentQuick(MealType mealType, bool willEat) async {
+    try {
+      final mealService = ref.read(mealServiceProvider);
+      await mealService.submitMealIntent(MealIntentRequest(
+        studentId: _selectedStudentId,
+        hostelId: _selectedHostelId,
+        date: DateTime.now(),
+        mealType: mealType,
+        willEat: willEat,
+      ));
+      if (mounted) Navigator.of(context).maybePop();
+      ref.invalidate(todayMealIntentsProvider(_selectedStudentId));
+      ref.invalidate(mealDashboardProvider(_selectedHostelId));
+    } catch (_) {
+      if (mounted) Navigator.of(context).maybePop();
+    }
+  }
+
+  Future<void> _applySameAsYesterdayQuick(MealType mealType) async {
+    try {
+      final mealService = ref.read(mealServiceProvider);
+      final result = await mealService.copyYesterdayIntents(
+        _selectedStudentId,
+        _selectedHostelId,
+        DateTime.now(),
+      );
+      if (result.state == LoadState.success && result.data != null) {
+        final matched = result.data!.firstWhere(
+          (i) => i.mealType == mealType,
+          orElse: () => MealIntent(
+            studentId: _selectedStudentId,
+            hostelId: _selectedHostelId,
+            date: DateTime.now(),
+            mealType: mealType,
+            willEat: false,
+          ),
+        );
+        await _submitMealIntentQuick(mealType, matched.willEat);
+      } else {
+        if (mounted) Navigator.of(context).maybePop();
+      }
+    } catch (_) {
+      if (mounted) Navigator.of(context).maybePop();
+    }
   }
 
   Widget _buildOverridesTab() {

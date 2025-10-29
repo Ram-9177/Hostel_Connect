@@ -21,14 +21,16 @@ const student_entity_1 = require("../students/entities/student.entity");
 const warden_entity_1 = require("../wardens/entities/warden.entity");
 const chef_entity_1 = require("../chefs/entities/chef.entity");
 const admin_entity_1 = require("../admins/entities/admin.entity");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
+const email_service_1 = require("../common/email/email.service");
 let AuthService = class AuthService {
-    constructor(studentRepository, wardenRepository, chefRepository, adminRepository, jwtService) {
+    constructor(studentRepository, wardenRepository, chefRepository, adminRepository, jwtService, emailService) {
         this.studentRepository = studentRepository;
         this.wardenRepository = wardenRepository;
         this.chefRepository = chefRepository;
         this.adminRepository = adminRepository;
         this.jwtService = jwtService;
+        this.emailService = emailService;
     }
     async register(registerDto) {
         const existingUser = await this.findUserByEmail(registerDto.email);
@@ -43,12 +45,18 @@ let AuthService = class AuthService {
                 throw new common_1.BadRequestException('Student ID already registered');
             }
         }
-        const hashedPassword = await bcrypt.hash(registerDto.password, 12);
+        const hashedPassword = bcrypt.hashSync(registerDto.password, 12);
+        const verificationToken = this.jwtService.sign({ email: registerDto.email, type: 'email_verification' }, { expiresIn: '24h' });
+        const verificationExpires = new Date();
+        verificationExpires.setHours(verificationExpires.getHours() + 24);
         let savedUser;
         const userData = {
             ...registerDto,
             password: hashedPassword,
             isActive: true,
+            isEmailVerified: false,
+            emailVerificationToken: verificationToken,
+            emailVerificationExpires: verificationExpires,
             createdAt: new Date(),
             updatedAt: new Date(),
         };
@@ -68,22 +76,40 @@ let AuthService = class AuthService {
             default:
                 throw new common_1.BadRequestException('Invalid role');
         }
-        const tokens = await this.generateTokens(savedUser);
+        const appUrl = process.env.APP_URL || 'https://app.hostelconnect.com';
+        const verificationLink = `${appUrl}/verify-email?token=${verificationToken}`;
+        try {
+            await this.emailService.sendEmail(savedUser.email, 'Verify your HostelConnect account', `<p>Hi ${savedUser.firstName},</p>
+         <p>Welcome to HostelConnect! Please verify your email address to complete your registration.</p>
+         <p><a href="${verificationLink}">Click here to verify your email</a></p>
+         <p>This link expires in 24 hours.</p>
+         <p>If you didn't create this account, you can ignore this email.</p>`);
+        }
+        catch (e) { }
         return {
             user: this.formatUserResponse(savedUser),
-            ...tokens,
-            message: 'Registration successful',
+            message: 'Registration successful. Please check your email to verify your account.',
         };
     }
     async login(loginDto) {
-        const user = await this.findUserByEmail(loginDto.email);
+        let user = await this.findUserByEmail(loginDto.email);
+        if (!user) {
+            const studentById = await this.studentRepository.findOne({ where: { studentId: loginDto.email } });
+            if (studentById) {
+                user = { ...studentById, role: 'STUDENT' };
+            }
+        }
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         if (!user.isActive) {
             throw new common_1.UnauthorizedException('Account is deactivated');
         }
-        const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+        const allowUnverifiedLogin = process.env.ALLOW_UNVERIFIED_LOGIN === 'true' && process.env.NODE_ENV !== 'production';
+        if (user.isEmailVerified === false && !allowUnverifiedLogin) {
+            throw new common_1.UnauthorizedException('Please verify your email before logging in. Check your inbox for the verification link.');
+        }
+        const isPasswordValid = bcrypt.compareSync(loginDto.password, user.password);
         if (!isPasswordValid) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
@@ -115,9 +141,15 @@ let AuthService = class AuthService {
             return { message: 'If the email exists, password reset instructions have been sent.' };
         }
         const resetToken = this.jwtService.sign({ sub: user.id, email: user.email, type: 'password_reset' }, { expiresIn: '1h' });
-        return {
-            message: 'Password reset instructions have been sent to your email.',
-        };
+        const appUrl = process.env.APP_URL || 'https://app.hostelconnect.com';
+        const resetLink = `${appUrl}/reset-password?token=${resetToken}`;
+        try {
+            await this.emailService.sendEmail(user.email, 'Reset your HostelConnect password', `<p>We received a request to reset your password.</p>
+         <p><a href="${resetLink}">Click here to reset your password</a>. This link expires in 1 hour.</p>
+         <p>If you did not request this, you can ignore this email.</p>`);
+        }
+        catch (e) { }
+        return { message: 'Password reset instructions have been sent to your email.' };
     }
     async resetPassword(token, newPassword) {
         try {
@@ -129,7 +161,7 @@ let AuthService = class AuthService {
             if (!user) {
                 throw new common_1.UnauthorizedException('User not found');
             }
-            const hashedPassword = await bcrypt.hash(newPassword, 12);
+            const hashedPassword = bcrypt.hashSync(newPassword, 12);
             await this.updatePassword(user.id, user.role, hashedPassword);
             return { message: 'Password has been reset successfully.' };
         }
@@ -146,6 +178,71 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('User not found');
         }
         return { user: this.formatUserResponse(user) };
+    }
+    async verifyEmail(token) {
+        try {
+            const payload = this.jwtService.verify(token);
+            if (payload.type !== 'email_verification') {
+                throw new common_1.UnauthorizedException('Invalid verification token');
+            }
+            const user = await this.findUserByEmail(payload.email);
+            if (!user) {
+                throw new common_1.UnauthorizedException('User not found');
+            }
+            if (user.isEmailVerified) {
+                return { message: 'Email already verified. You can now log in.' };
+            }
+            if (user.emailVerificationExpires && new Date() > new Date(user.emailVerificationExpires)) {
+                throw new common_1.UnauthorizedException('Verification token has expired. Please request a new one.');
+            }
+            if (user.emailVerificationToken !== token) {
+                throw new common_1.UnauthorizedException('Invalid verification token');
+            }
+            await this.updateEmailVerification(user.id, user.role, true);
+            return { message: 'Email verified successfully. You can now log in.' };
+        }
+        catch (error) {
+            if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
+                throw new common_1.UnauthorizedException('Invalid or expired verification token');
+            }
+            throw error;
+        }
+    }
+    async resendVerificationEmail(email) {
+        const user = await this.findUserByEmail(email);
+        if (!user) {
+            return { message: 'If the email exists, verification instructions have been sent.' };
+        }
+        if (user.isEmailVerified) {
+            return { message: 'Email is already verified. You can log in.' };
+        }
+        const verificationToken = this.jwtService.sign({ email: user.email, type: 'email_verification' }, { expiresIn: '24h' });
+        const verificationExpires = new Date();
+        verificationExpires.setHours(verificationExpires.getHours() + 24);
+        await this.updateVerificationToken(user.id, user.role, verificationToken, verificationExpires);
+        const appUrl = process.env.APP_URL || 'https://app.hostelconnect.com';
+        const verificationLink = `${appUrl}/verify-email?token=${verificationToken}`;
+        try {
+            await this.emailService.sendEmail(user.email, 'Verify your HostelConnect account', `<p>Hi ${user.firstName},</p>
+         <p>Please verify your email address to complete your registration.</p>
+         <p><a href="${verificationLink}">Click here to verify your email</a></p>
+         <p>This link expires in 24 hours.</p>`);
+        }
+        catch (e) { }
+        return { message: 'Verification email has been sent. Please check your inbox.' };
+    }
+    async changePassword(userId, role, currentPassword, newPassword) {
+        const user = await this.findUserById(userId, role);
+        if (!user) {
+            throw new common_1.UnauthorizedException('User not found');
+        }
+        const isPasswordValid = bcrypt.compareSync(currentPassword, user.password);
+        if (!isPasswordValid) {
+            throw new common_1.BadRequestException('Current password is incorrect');
+        }
+        const hashedPassword = bcrypt.hashSync(newPassword, 12);
+        await this.updatePassword(userId, role, hashedPassword);
+        return { message: 'Password changed successfully' };
     }
     async findUserByEmail(email) {
         const repositories = [
@@ -210,6 +307,49 @@ let AuthService = class AuthService {
                 break;
         }
     }
+    async updateEmailVerification(id, role, verified) {
+        const updateData = {
+            isEmailVerified: verified,
+            emailVerificationToken: null,
+            emailVerificationExpires: null,
+            updatedAt: new Date()
+        };
+        switch (role) {
+            case 'STUDENT':
+                await this.studentRepository.update(id, updateData);
+                break;
+            case 'WARDEN':
+                await this.wardenRepository.update(id, updateData);
+                break;
+            case 'CHEF':
+                await this.chefRepository.update(id, updateData);
+                break;
+            case 'ADMIN':
+                await this.adminRepository.update(id, updateData);
+                break;
+        }
+    }
+    async updateVerificationToken(id, role, token, expires) {
+        const updateData = {
+            emailVerificationToken: token,
+            emailVerificationExpires: expires,
+            updatedAt: new Date()
+        };
+        switch (role) {
+            case 'STUDENT':
+                await this.studentRepository.update(id, updateData);
+                break;
+            case 'WARDEN':
+                await this.wardenRepository.update(id, updateData);
+                break;
+            case 'CHEF':
+                await this.chefRepository.update(id, updateData);
+                break;
+            case 'ADMIN':
+                await this.adminRepository.update(id, updateData);
+                break;
+        }
+    }
     formatUserResponse(user) {
         return {
             id: user.id,
@@ -253,6 +393,7 @@ exports.AuthService = AuthService = __decorate([
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        email_service_1.EmailService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

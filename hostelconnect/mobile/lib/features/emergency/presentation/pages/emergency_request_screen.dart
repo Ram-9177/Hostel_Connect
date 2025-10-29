@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../../../../core/network/api_config.dart';
 import 'dart:convert';
 import '../../../../core/config/environment.dart';
 import '../../../../core/services/offline_storage_service.dart';
@@ -100,7 +101,7 @@ class _EmergencyRequestScreenState extends State<EmergencyRequestScreen> {
         // Try online submission first
         try {
           final response = await http.post(
-            Uri.parse('${Environment.apiBaseUrl}/emergency-requests'),
+            Uri.parse('${ApiConfig.baseUrl}/emergency-requests'),
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode(request),
           );

@@ -122,4 +122,8 @@ Advanced analytics with machine learning predictions for occupancy, attendance, 
     console.log(`📚 API Documentation: http://localhost:${port}/api`);
     console.log(`🔗 WebSocket Endpoint: ws://localhost:${port}/notifications`);
 }
+bootstrap().catch((err) => {
+    console.error('Failed to start HostelConnect API:', err);
+    process.exit(1);
+});
 //# sourceMappingURL=main.js.map

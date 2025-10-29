@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
 import 'package:go_router/go_router.dart';
+import 'core/network/api_config.dart';
+import 'features/auth/presentation/pages/check_email_page.dart';
+import 'shared/theme/app_theme.dart';
+
+final Dio _dio = Dio(BaseOptions(baseUrl: ApiConfig.baseUrl));
 
 void main() {
   runApp(
@@ -15,10 +21,7 @@ class HostelConnectApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       title: 'HostelConnect',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
     );
@@ -31,6 +34,17 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => LoginPage(),
+    ),
+    GoRoute(
+      path: '/signup',
+      builder: (context, state) => LoginPage(), // Integrated signup into login page
+    ),
+    GoRoute(
+      path: '/check-email',
+      builder: (context, state) {
+        final email = state.uri.queryParameters['email'] ?? '';
+        return CheckEmailPage(email: email);
+      },
     ),
     GoRoute(
       path: '/student-home',
@@ -84,10 +98,44 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _studentIdController = TextEditingController();
+  final _phoneController = TextEditingController();
   bool _isLoading = false;
+  String _errorMessage = '';
+  bool _isLoginTab = true;
+  String _selectedRole = 'STUDENT';
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (mounted) {
+        setState(() {
+          _isLoginTab = _tabController.index == 0;
+          _errorMessage = '';
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _studentIdController.dispose();
+    _phoneController.dispose();
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.blue[400]!, Colors.purple[600]!],
+            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFF6366F1)],
           ),
         ),
         child: SafeArea(
@@ -107,146 +155,111 @@ class _LoginPageState extends State<LoginPage> {
               child: Card(
                 elevation: 8,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(24),
                 ),
-                child: Padding(
+                child: Container(
+                  constraints: BoxConstraints(maxWidth: 500),
                   padding: EdgeInsets.all(32),
-        child: Column(
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
-          children: [
+                    children: [
                       // Logo
                       Container(
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-              color: Colors.blue,
-                          borderRadius: BorderRadius.circular(16),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xFF6366F1).withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: Center(
                           child: Text(
                             'HC',
-              style: TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 24),
-                      
-                      // Title
+                      SizedBox(height: 16),
                       Text(
                         'HostelConnect',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
-                        ),
+                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Complete Hostel Management Solution',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
+                        'Complete hostel management solution',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'హాస్టల్ నిర్వహణ వ్యవస్థ',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 32),
                       
-                      // Email Field
-            TextField(
-              controller: _emailController,
-                        decoration: InputDecoration(
-                labelText: 'Email',
-                prefixIcon: Icon(Icons.email),
-                          border: OutlineInputBorder(
+                      // Tabs
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: TabBar(
+                          controller: _tabController,
+                          indicator: BoxDecoration(
+                            gradient: LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)]),
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          labelColor: Colors.white,
+                          unselectedLabelColor: Colors.grey.shade700,
+                          tabs: [
+                            Tab(text: 'Login'),
+                            Tab(text: 'Register'),
+                          ],
                         ),
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      SizedBox(height: 16),
-                      
-                      // Password Field
-            TextField(
-              controller: _passwordController,
-                        decoration: InputDecoration(
-                labelText: 'Password',
-                prefixIcon: Icon(Icons.lock),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        obscureText: true,
                       ),
                       SizedBox(height: 24),
                       
-                      // Login Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                          onPressed: _isLoading ? null : _handleLogin,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                ),
-                child: _isLoading
-                              ? CircularProgressIndicator(color: Colors.white)
-                              : Text(
-                                  'Login',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                      // Form Content
+                      Container(
+                        height: _isLoginTab ? 300 : 550,
+                        child: TabBarView(
+                          controller: _tabController,
+                          physics: NeverScrollableScrollPhysics(),
+                          children: [
+                            _buildLoginForm(),
+                            _buildRegisterForm(),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 16),
                       
-                      // Demo Credentials
-                      Card(
-                        color: Colors.blue[50],
-                        child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Text(
-                                'Demo Credentials',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue[800],
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Student: testuser@example.com / testpass123',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              Text(
-                                'Warden: warden@demo.com / demo123',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              Text(
-                                'Warden Head: wardenhead@demo.com / demo123',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              Text(
-                                'Admin: admin@demo.com / demo123',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              Text(
-                                'Chef: chef@demo.com / demo123',
-                                style: TextStyle(fontSize: 12),
-                              ),
-          ],
-        ),
-      ),
+                      SizedBox(height: 16),
+                      Divider(),
+                      SizedBox(height: 8),
+                      Text(
+                        'Trusted by hostels across Andhra & Telangana',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '© 2025 HostelConnect. All rights reserved.',
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -259,42 +272,463 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _buildLoginForm() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Email
+          TextField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              labelText: 'Email',
+              prefixIcon: Icon(Icons.email_outlined),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          SizedBox(height: 16),
+          
+          // Password
+          TextField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              prefixIcon: Icon(Icons.lock_outline),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          
+          if (_errorMessage.isNotEmpty) ...[
+            SizedBox(height: 16),
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red.shade200),
+              ),
+              child: Text(
+                _errorMessage,
+                style: TextStyle(color: Colors.red.shade700, fontSize: 13),
+              ),
+            ),
+          ],
+          
+          SizedBox(height: 24),
+          
+          // Login Button
+          ElevatedButton(
+            onPressed: _isLoading ? null : _handleLogin,
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              backgroundColor: Color(0xFF6366F1),
+            ),
+            child: _isLoading
+                ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                    ],
+                  ),
+          ),
+          
+          SizedBox(height: 16),
+          
+          TextButton(
+            onPressed: () {},
+            child: Text('Forgot Password?'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRegisterForm() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Name Row
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _firstNameController,
+                  decoration: InputDecoration(
+                    labelText: 'First Name',
+                    prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: _lastNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Last Name',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+          
+          // Email
+          TextField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              labelText: 'Email',
+              prefixIcon: Icon(Icons.email_outlined),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          SizedBox(height: 16),
+          
+          // Password
+          TextField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              prefixIcon: Icon(Icons.lock_outline),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          SizedBox(height: 16),
+          
+          // Role
+          DropdownButtonFormField<String>(
+            value: _selectedRole,
+            decoration: InputDecoration(
+              labelText: 'Role',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            items: [
+              DropdownMenuItem(value: 'STUDENT', child: Text('Student')),
+              DropdownMenuItem(value: 'WARDEN', child: Text('Warden')),
+              DropdownMenuItem(value: 'CHEF', child: Text('Chef')),
+              DropdownMenuItem(value: 'ADMIN', child: Text('Admin')),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _selectedRole = value!;
+              });
+            },
+          ),
+          
+          if (_selectedRole == 'STUDENT') ...[
+            SizedBox(height: 16),
+            TextField(
+              controller: _studentIdController,
+              decoration: InputDecoration(
+                labelText: 'Student ID',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+          
+          SizedBox(height: 16),
+          
+          // Phone
+          TextField(
+            controller: _phoneController,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(
+              labelText: 'Phone (Optional)',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          
+          if (_errorMessage.isNotEmpty) ...[
+            SizedBox(height: 16),
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red.shade200),
+              ),
+              child: Text(
+                _errorMessage,
+                style: TextStyle(color: Colors.red.shade700, fontSize: 13),
+              ),
+            ),
+          ],
+          
+          SizedBox(height: 24),
+          
+          // Register Button
+          ElevatedButton(
+            onPressed: _isLoading ? null : _handleSignup,
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              backgroundColor: Color(0xFF6366F1),
+            ),
+            child: _isLoading
+                ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Create Account',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.person_add, color: Colors.white, size: 20),
+                    ],
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _handleLogin() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    // Simulate API call
-    await Future.delayed(Duration(seconds: 1));
-
-    String email = _emailController.text.toLowerCase();
-    String password = _passwordController.text;
-
-    // Demo authentication logic
-    if (email == 'testuser@example.com' && password == 'testpass123') {
-      context.go('/student-home');
-    } else if (email == 'warden@demo.com' && password == 'demo123') {
-      context.go('/warden-home');
-    } else if (email == 'wardenhead@demo.com' && password == 'demo123') {
-      context.go('/warden-head-home');
-    } else if (email == 'admin@demo.com' && password == 'demo123') {
-      context.go('/admin-home');
-    } else if (email == 'chef@demo.com' && password == 'demo123') {
-      context.go('/chef-home');
-      } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Invalid credentials'),
-          backgroundColor: Colors.red,
-        ),
-      );
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please fill in all fields';
+      });
+      return;
     }
 
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    String email = _emailController.text.trim().toLowerCase();
+    String password = _passwordController.text;
+
+    try {
+      final resp = await _dio.post('/auth/login', data: {'email': email, 'password': password});
+      
+      // Handle different response formats
+      final data = resp.data is Map && resp.data.containsKey('data') ? resp.data['data'] : resp.data;
+      final roleRaw = data?['user']?['role'] ?? data?['role'] ?? '';
+      final role = roleRaw.toString().toUpperCase();
+
+      if (role.contains('STUDENT')) {
+        context.go('/student-home');
+      } else if (role.contains('WARDEN_HEAD') || role.contains('WARDEN-HEAD') || role.contains('WARDENHEAD')) {
+        context.go('/warden-head-home');
+      } else if (role.contains('WARDEN')) {
+        context.go('/warden-home');
+      } else if (role.contains('ADMIN') || role.contains('SUPER')) {
+        context.go('/admin-home');
+      } else if (role.contains('CHEF')) {
+        context.go('/chef-home');
+      } else {
+        setState(() {
+          _errorMessage = 'Login succeeded but role is unknown';
+        });
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data != null && e.response!.data is Map && e.response!.data['message'] != null
+          ? e.response!.data['message']
+          : 'Login failed. Please check your credentials.';
       setState(() {
+        _errorMessage = message.toString();
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Login failed: ${e.toString()}';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _handleSignup() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty ||
+        _firstNameController.text.isEmpty || _lastNameController.text.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please fill in all required fields';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    final data = {
+      'email': _emailController.text.trim().toLowerCase(),
+      'password': _passwordController.text,
+      'firstName': _firstNameController.text.trim(),
+      'lastName': _lastNameController.text.trim(),
+      'role': _selectedRole,
+      if (_selectedRole == 'STUDENT' && _studentIdController.text.isNotEmpty)
+        'studentId': _studentIdController.text.trim(),
+      if (_phoneController.text.isNotEmpty) 'phone': _phoneController.text.trim(),
+    };
+
+    try {
+      final resp = await _dio.post('/auth/register', data: data);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Account created successfully! Please login.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      // Switch to login tab
+      _tabController.animateTo(0);
+      // Clear fields
+      _emailController.clear();
+      _passwordController.clear();
+      _firstNameController.clear();
+      _lastNameController.clear();
+      _studentIdController.clear();
+      _phoneController.clear();
+    } on DioException catch (e) {
+      final message = e.response?.data != null && e.response!.data is Map && e.response!.data['message'] != null
+          ? e.response!.data['message']
+          : 'Registration failed. Please try again.';
+      setState(() {
+        _errorMessage = message.toString();
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Registration failed: ${e.toString()}';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+}
         _isLoading = false;
       });
     }
   }
+  }
+
+class SignupPage extends StatefulWidget {
+  @override
+  _SignupPageState createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final _studentIdController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _roomIdController = TextEditingController();
+  final _hostelIdController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Sign up')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              TextField(controller: _studentIdController, decoration: InputDecoration(labelText: 'Student ID')),
+              SizedBox(height: 8),
+              TextField(controller: _firstNameController, decoration: InputDecoration(labelText: 'First name')),
+              SizedBox(height: 8),
+              TextField(controller: _lastNameController, decoration: InputDecoration(labelText: 'Last name')),
+              SizedBox(height: 8),
+              TextField(controller: _emailController, decoration: InputDecoration(labelText: 'Email')),
+              SizedBox(height: 8),
+              TextField(controller: _phoneController, decoration: InputDecoration(labelText: 'Phone')),
+              SizedBox(height: 8),
+              TextField(controller: _passwordController, decoration: InputDecoration(labelText: 'Password'), obscureText: true),
+              SizedBox(height: 8),
+              TextField(controller: _hostelIdController, decoration: InputDecoration(labelText: 'Hostel ID (optional)')),
+              SizedBox(height: 8),
+              TextField(controller: _roomIdController, decoration: InputDecoration(labelText: 'Room ID (optional)')),
+              SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _handleSignup,
+                  child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text('Create account'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleSignup() async {
+    setState(() => _isLoading = true);
+    try {
+      final data = {
+        'studentId': _studentIdController.text.trim(),
+        'firstName': _firstNameController.text.trim(),
+        'lastName': _lastNameController.text.trim(),
+        'email': _emailController.text.trim().toLowerCase(),
+        'phone': _phoneController.text.trim(),
+        'password': _passwordController.text,
+        'hostelId': _hostelIdController.text.trim().isEmpty ? null : _hostelIdController.text.trim(),
+        'roomId': _roomIdController.text.trim().isEmpty ? null : _roomIdController.text.trim(),
+      };
+
+      final resp = await _dio.post('/auth/register', data: data);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Account created. Please login.')));
+      context.go('/');
+    } on DioException catch (e) {
+      final message = e.response?.data != null && e.response!.data is Map && e.response!.data['message'] != null
+          ? e.response!.data['message']
+          : e.message;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message.toString()), backgroundColor: Colors.red));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Signup failed: $e'), backgroundColor: Colors.red));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+}
 
 class StudentHomePage extends StatelessWidget {
   @override
@@ -2032,8 +2466,8 @@ class _ChefHomePageState extends State<ChefHomePage> with TickerProviderStateMix
   Widget _buildOverviewTab() {
     return Padding(
       padding: EdgeInsets.all(16),
-      child: Column(
-        children: [
+        child: Column(
+          children: [
           // Meal Count Cards
           Text('Today\'s Meal Counts', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           SizedBox(height: 16),
@@ -2156,9 +2590,9 @@ class _ChefHomePageState extends State<ChefHomePage> with TickerProviderStateMix
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(request['status'], style: TextStyle(color: Colors.white, fontSize: 12)),
-              ),
-            ],
-          ),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: 8),
                         Text('Request: ${request['request']}'),
                         if (request['status'] == 'Pending') ...[
@@ -2511,9 +2945,9 @@ class _WardenHeadHomePageState extends State<WardenHeadHomePage> with TickerProv
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(policy['status'], style: TextStyle(color: Colors.white, fontSize: 12)),
-            ),
-          ],
-        ),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: 8),
                         Text(policy['description']),
                         SizedBox(height: 8),

@@ -57,5 +57,13 @@ export default defineConfig({
   server: {
     port: 5500,
     open: true,
+    proxy: {
+      // Forward frontend requests to backend during local dev
+      '/api': {
+        target: 'http://localhost:3007',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });

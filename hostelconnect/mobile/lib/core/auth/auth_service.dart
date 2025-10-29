@@ -213,7 +213,8 @@ class AuthService {
   // Check if user is authenticated
   static Future<bool> isAuthenticated() async {
     final accessToken = await _storage.read(key: _accessTokenKey);
-    return accessToken != null;
+    final refreshToken = await _storage.read(key: _refreshTokenKey);
+    return accessToken != null && refreshToken != null;
   }
 
   // Get current user

@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const gate_service_1 = require("./gate.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const scan_gate_pass_dto_1 = require("./dto/scan-gate-pass.dto");
+const manual_gate_dto_1 = require("./dto/manual-gate.dto");
 let GateController = class GateController {
     constructor(gateService) {
         this.gateService = gateService;
@@ -24,8 +25,14 @@ let GateController = class GateController {
     async scanGatePass(scanDto) {
         return this.gateService.scanGatePass(scanDto);
     }
+    async manualGate(dto) {
+        return this.gateService.manualGateEvent(dto);
+    }
     async getGateEvents() {
         return this.gateService.getGateEvents();
+    }
+    async getTodaySummary() {
+        return this.gateService.getTodaySummary();
     }
     async getTodayEvents() {
         return this.gateService.getTodayEvents();
@@ -51,12 +58,28 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GateController.prototype, "scanGatePass", null);
 __decorate([
+    (0, common_1.Post)('manual'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [manual_gate_dto_1.ManualGateDto]),
+    __metadata("design:returntype", Promise)
+], GateController.prototype, "manualGate", null);
+__decorate([
     (0, common_1.Get)('events'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], GateController.prototype, "getGateEvents", null);
+__decorate([
+    (0, common_1.Get)('stats/today'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], GateController.prototype, "getTodaySummary", null);
 __decorate([
     (0, common_1.Get)('events/today'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GatePass = exports.GatePassStatus = exports.GatePassType = void 0;
 const typeorm_1 = require("typeorm");
 const student_entity_1 = require("../../students/entities/student.entity");
+const hostel_entity_1 = require("../../hostels/entities/hostel.entity");
 var GatePassType;
 (function (GatePassType) {
     GatePassType["REGULAR"] = "REGULAR";
@@ -66,27 +67,19 @@ __decorate([
     __metadata("design:type", String)
 ], GatePass.prototype, "description", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp' }),
+    (0, typeorm_1.Column)({ type: 'datetime' }),
     __metadata("design:type", Date)
 ], GatePass.prototype, "startTime", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp' }),
+    (0, typeorm_1.Column)({ type: 'datetime' }),
     __metadata("design:type", Date)
 ], GatePass.prototype, "endTime", void 0);
 __decorate([
-    (0, typeorm_1.Column)({
-        type: 'enum',
-        enum: GatePassStatus,
-        default: GatePassStatus.PENDING
-    }),
+    (0, typeorm_1.Column)({ type: 'text', default: GatePassStatus.PENDING }),
     __metadata("design:type", String)
 ], GatePass.prototype, "status", void 0);
 __decorate([
-    (0, typeorm_1.Column)({
-        type: 'enum',
-        enum: GatePassType,
-        default: GatePassType.REGULAR
-    }),
+    (0, typeorm_1.Column)({ type: 'text', default: GatePassType.REGULAR }),
     __metadata("design:type", String)
 ], GatePass.prototype, "type", void 0);
 __decorate([
@@ -98,7 +91,7 @@ __decorate([
     __metadata("design:type", String)
 ], GatePass.prototype, "approvedByName", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'datetime', nullable: true }),
     __metadata("design:type", Date)
 ], GatePass.prototype, "approvedAt", void 0);
 __decorate([
@@ -110,7 +103,7 @@ __decorate([
     __metadata("design:type", String)
 ], GatePass.prototype, "rejectedByName", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'datetime', nullable: true }),
     __metadata("design:type", Date)
 ], GatePass.prototype, "rejectedAt", void 0);
 __decorate([
@@ -126,19 +119,19 @@ __decorate([
     __metadata("design:type", String)
 ], GatePass.prototype, "qrTokenHash", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'datetime', nullable: true }),
     __metadata("design:type", Date)
 ], GatePass.prototype, "qrTokenExpiresAt", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'datetime', nullable: true }),
     __metadata("design:type", Date)
 ], GatePass.prototype, "lastUsedAt", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'datetime', nullable: true }),
     __metadata("design:type", Date)
 ], GatePass.prototype, "completedAt", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'datetime', nullable: true }),
     __metadata("design:type", Date)
 ], GatePass.prototype, "expiredAt", void 0);
 __decorate([
@@ -150,7 +143,7 @@ __decorate([
     __metadata("design:type", String)
 ], GatePass.prototype, "decisionBy", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'datetime', nullable: true }),
     __metadata("design:type", Date)
 ], GatePass.prototype, "decisionAt", void 0);
 __decorate([
@@ -170,6 +163,11 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'studentId' }),
     __metadata("design:type", student_entity_1.Student)
 ], GatePass.prototype, "student", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => hostel_entity_1.Hostel, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'hostelId' }),
+    __metadata("design:type", hostel_entity_1.Hostel)
+], GatePass.prototype, "hostel", void 0);
 exports.GatePass = GatePass = __decorate([
     (0, typeorm_1.Entity)('gate_passes')
 ], GatePass);

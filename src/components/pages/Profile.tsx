@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { UpdatedTime } from "../UpdatedTime";
 import { LoadingState } from "../LoadingState";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface ProfileProps {
   onBack: () => void;
@@ -101,7 +101,7 @@ export function Profile({ onBack, onLogout, onNavigate }: ProfileProps) {
   };
 
   if (isLoading) {
-    return <LoadingState message="Loading your profile..." />;
+    return <LoadingState text="Loading your profile..." />;
   }
 
   return (

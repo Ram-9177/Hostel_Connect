@@ -4,7 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
-import { SocketModule } from './socket/socket.module';
+// Temporarily disable SocketModule to unblock API startup
+// import { SocketModule } from './socket/socket.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,9 +18,10 @@ import { NoticesModule } from './notices/notices.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { HostelsModule } from './hostels/hostels.module';
 import { StudentsModule } from './students/students.module';
-import { NotificationsModule } from './notifications/notifications.module';
+// import { NotificationsModule } from './notifications/notifications.module';
 import { FilesModule } from './files/files.module';
-import { AnalyticsModule } from './analytics/analytics.module';
+// import { AnalyticsModule } from './analytics/analytics.module';
+// import { DashboardsModule } from './dashboards/dashboards.module';
 
 // Database configuration
 import { dataSourceOptions } from './database/data-source';
@@ -55,11 +57,12 @@ import { dataSourceOptions } from './database/data-source';
     // Task scheduling
     ScheduleModule.forRoot(),
 
-    // Real-time features
-    SocketModule,
-    NotificationsModule,
-    FilesModule,
-    AnalyticsModule,
+  // Real-time features (disabled for now to resolve DI issues during local dev)
+  // SocketModule,
+  // NotificationsModule,
+  FilesModule,
+  // AnalyticsModule,
+  // DashboardsModule,
 
     // Feature modules (simplified for demo)
     AuthModule,

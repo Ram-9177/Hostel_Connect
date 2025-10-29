@@ -5,15 +5,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/notice_models.dart';
 import '../api/notice_api_service.dart';
 import '../cache/local_cache_service.dart';
+import '../services/gatepass_service.dart';
+import '../models/gatepass_models.dart';
+import 'meal_notification_controller.dart';
+import 'local_notification_service.dart';
 
-final fcmServiceProvider = Provider((ref) => FCMService(ref.read(noticeApiServiceProvider), ref.read(localCacheServiceProvider)));
+final fcmServiceProvider = Provider((ref) => FCMService(
+  ref,
+  ref.read(noticeApiServiceProvider),
+  ref.read(localCacheServiceProvider),
+  ref.read(gatepassServiceProvider),
+));
 
 class FCMService {
+  final Ref _ref;
   final NoticeApiService _apiService;
   final LocalCacheService _cacheService;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final GatePassService _gatePassService;
 
-  FCMService(this._apiService, this._cacheService);
+  FCMService(this._ref, this._apiService, this._cacheService, this._gatePassService);
 
   // Device Token Registration
   Future<String?> getDeviceToken() async {
@@ -90,6 +101,9 @@ class FCMService {
       if (initialMessage != null) {
         _handleTerminatedMessage(initialMessage);
       }
+
+      // Initialize local notifications (for actionable buttons)
+      await _ref.read(localNotificationServiceProvider).initialize();
     } catch (e) {
       debugPrint('Error initializing push notifications: $e');
     }
@@ -116,21 +130,63 @@ class FCMService {
     _processNotification(message);
   }
 
-  void _processNotification(RemoteMessage message) {
+  void _processNotification(RemoteMessage message) async {
     try {
       final data = message.data;
+
+      // Skip meal notifications if student is OUT
+      final category = data['category'] ?? data['type'] ?? '';
+      final mealType = (data['mealType'] ?? data['meal_type'] ?? '').toString().toLowerCase();
+      if (category.toString().toLowerCase() == 'meal' ||
+          category.toString().toLowerCase() == 'meals' ||
+          mealType.isNotEmpty) {
+        final userId = await _getCurrentUserId();
+        if (userId.isNotEmpty) {
+          final isOut = await _isStudentCurrentlyOut(userId);
+          if (isOut) {
+            debugPrint('Skipping meal notification as student is OUT');
+            return;
+          }
+          final normalized = (mealType.isNotEmpty ? mealType : category.toString()).toLowerCase();
+          if (normalized == 'lunch' || normalized == 'dinner') {
+            // In-app prompt
+            _ref.read(mealNotificationControllerProvider).notify(
+              MealNotificationEvent(mealType: normalized, date: DateTime.now()),
+            );
+            // System notification with actions
+            await _ref.read(localNotificationServiceProvider).showMealNotification(
+              mealType: normalized,
+              title: normalized == 'lunch' ? 'Lunch is being served' : 'Dinner time',
+              body: 'Will you eat ${normalized == 'lunch' ? 'lunch' : 'dinner'} today?',
+            );
+          }
+        }
+      }
+
       final noticeId = data['notice_id'];
-      
       if (noticeId != null) {
-        // Store notification for offline processing
-        _storeNotificationForOfflineProcessing(noticeId);
-        
-        // Update local cache
-        _updateLocalNoticeCache(noticeId);
+        await _storeNotificationForOfflineProcessing(noticeId);
+        await _updateLocalNoticeCache(noticeId);
       }
     } catch (e) {
       debugPrint('Error processing notification: $e');
     }
+  }
+
+  Future<bool> _isStudentCurrentlyOut(String studentId) async {
+    try {
+      final result = await _gatePassService.getStudentGatePasses(studentId);
+      if (result.state == LoadState.success && result.data != null) {
+        for (final gp in result.data!) {
+          final active = gp.status == GatePassStatus.active || gp.status == GatePassStatus.overdue;
+          final notReturned = gp.actualReturnTime == null;
+          if (active && notReturned) return true;
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to determine student out status: $e');
+    }
+    return false;
   }
 
   // Offline Queue Management

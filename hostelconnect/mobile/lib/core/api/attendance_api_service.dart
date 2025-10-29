@@ -3,6 +3,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../network/http_client.dart';
 import '../models/attendance_models.dart';
+import '../models/attendance_request.dart';
+import '../models/attendance_session_request.dart';
+import '../models/attendance_adjustment_request.dart';
+import '../providers/dio_provider.dart';
 
 final attendanceApiServiceProvider = Provider((ref) => AttendanceApiService(ref.read(dioProvider)));
 

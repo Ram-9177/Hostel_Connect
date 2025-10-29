@@ -126,3 +126,10 @@ Advanced analytics with machine learning predictions for occupancy, attendance, 
   console.log(`📚 API Documentation: http://localhost:${port}/api`);
   console.log(`🔗 WebSocket Endpoint: ws://localhost:${port}/notifications`);
 }
+
+// Bootstrap the NestJS application
+bootstrap().catch((err) => {
+  // eslint-disable-next-line no-console
+  console.error('Failed to start HostelConnect API', err);
+  process.exit(1);
+});

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards, Query, Post } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Query, Post, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { DashboardsService } from './dashboards.service';
@@ -66,5 +66,62 @@ export class DashboardsController {
   async refreshViews() {
     await this.dashboardsService.refreshMaterializedViews();
     return { message: 'Materialized views refreshed successfully' };
+  }
+
+  // Role-specific dashboard endpoints
+  @Get('student')
+  @ApiOperation({ summary: 'Get student dashboard data' })
+  @ApiResponse({ status: 200, description: 'Student dashboard data retrieved' })
+  async getStudentDashboard(@Request() req) {
+    return this.dashboardsService.getStudentDashboard(req.user?.id);
+  }
+
+  @Get('student/:id')
+  @ApiOperation({ summary: 'Get student dashboard data by ID' })
+  @ApiResponse({ status: 200, description: 'Student dashboard data retrieved' })
+  async getStudentDashboardById(@Param('id') id: string) {
+    return this.dashboardsService.getStudentDashboard(id);
+  }
+
+  @Get('warden')
+  @ApiOperation({ summary: 'Get warden dashboard data' })
+  @ApiResponse({ status: 200, description: 'Warden dashboard data retrieved' })
+  async getWardenDashboard(@Request() req) {
+    return this.dashboardsService.getWardenDashboard(req.user?.id);
+  }
+
+  @Get('warden-head')
+  @ApiOperation({ summary: 'Get warden-head dashboard data' })
+  @ApiResponse({ status: 200, description: 'Warden-head dashboard data retrieved' })
+  async getWardenHeadDashboard(@Request() req) {
+    return this.dashboardsService.getWardenHeadDashboard(req.user?.id);
+  }
+
+  @Get('admin')
+  @ApiOperation({ summary: 'Get admin dashboard data' })
+  @ApiResponse({ status: 200, description: 'Admin dashboard data retrieved' })
+  async getAdminDashboard(@Request() req) {
+    return this.dashboardsService.getAdminDashboard(req.user?.id);
+  }
+
+  @Get('chef')
+  @ApiOperation({ summary: 'Get chef dashboard data' })
+  @ApiResponse({ status: 200, description: 'Chef dashboard data retrieved' })
+  async getChefDashboard(@Request() req) {
+    return this.dashboardsService.getChefDashboard(req.user?.id);
+  }
+
+  @Get('security')
+  @ApiOperation({ summary: 'Get security dashboard data' })
+  @ApiResponse({ status: 200, description: 'Security dashboard data retrieved' })
+  async getSecurityDashboard(@Request() req) {
+    return this.dashboardsService.getSecurityDashboard(req.user?.id);
+  }
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Get global statistics' })
+  @ApiResponse({ status: 200, description: 'Global statistics retrieved' })
+  async getGlobalStats() {
+    return this.dashboardsService.getGlobalStats();
   }
 }

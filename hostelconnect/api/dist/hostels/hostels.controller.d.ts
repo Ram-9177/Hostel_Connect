@@ -15,24 +15,24 @@ export declare class HostelsController {
     deleteBlock(id: string): Promise<{
         message: string;
     }>;
-    createRoom(blockId: string, createRoomDto: any): Promise<import("../rooms/entities/room.entity").Room[]>;
+    createRoom(req: any, blockId: string, createRoomDto: any): Promise<import("../rooms/entities/room.entity").Room[]>;
     getRoomsByBlock(blockId: string): Promise<import("../rooms/entities/room.entity").Room[]>;
     getRoomsByHostel(hostelId: string): Promise<import("../rooms/entities/room.entity").Room[]>;
-    updateRoom(id: string, updateRoomDto: any): Promise<import("../rooms/entities/room.entity").Room>;
-    deleteRoom(id: string): Promise<{
+    updateRoom(req: any, id: string, updateRoomDto: any): Promise<import("../rooms/entities/room.entity").Room>;
+    deleteRoom(req: any, id: string): Promise<{
         message: string;
     }>;
-    allocateRoom(roomId: string, allocateDto: any): Promise<{
+    allocateRoom(req: any, roomId: string, allocateDto: any): Promise<{
         message: string;
         student: import("../students/entities/student.entity").Student;
         room: import("../rooms/entities/room.entity").Room;
     }>;
-    transferStudent(studentId: string, transferDto: any): Promise<{
+    transferStudent(req: any, studentId: string, transferDto: any): Promise<{
         message: string;
         student: import("../students/entities/student.entity").Student;
         newRoom: import("../rooms/entities/room.entity").Room;
     }>;
-    swapStudents(swapDto: any): Promise<{
+    swapStudents(req: any, swapDto: any): Promise<{
         message: string;
         student1: import("../students/entities/student.entity").Student;
         student2: import("../students/entities/student.entity").Student;

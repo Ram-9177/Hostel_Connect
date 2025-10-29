@@ -77,7 +77,7 @@ const GateSecurity: React.FC<GateSecurityProps> = ({ onNavigate }) => {
       // Validate gate pass
       const validationResult = await validateGatePass(passData);
       
-      if (validationResult.valid) {
+      if (validationResult.valid && validationResult.pass) {
         setCurrentPass(validationResult.pass);
         
         // Determine if this is IN or OUT
@@ -97,7 +97,7 @@ const GateSecurity: React.FC<GateSecurityProps> = ({ onNavigate }) => {
         }, 3000);
         
       } else {
-        setErrorMessage(validationResult.reason);
+        setErrorMessage(validationResult.reason || 'Invalid gate pass');
         setScanStatus('error');
         
         setTimeout(() => {
@@ -170,7 +170,7 @@ const GateSecurity: React.FC<GateSecurityProps> = ({ onNavigate }) => {
     const recentInEvent = recentEvents.find(
       event => event.studentId === pass.studentId && 
                event.eventType === 'IN' && 
-               event.timestamp > recentOutEvent?.timestamp
+               recentOutEvent?.timestamp && event.timestamp > recentOutEvent.timestamp
     );
 
     // If there's a recent OUT event without a corresponding IN event, this should be IN

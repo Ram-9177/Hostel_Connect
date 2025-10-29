@@ -2,6 +2,7 @@ import { Repository } from 'typeorm';
 import { GateEvent } from './entities/gate-event.entity';
 import { GatePass } from '../gatepass/entities/gate-pass.entity';
 import { ScanGatePassDto } from './dto/scan-gate-pass.dto';
+import { ManualGateDto } from './dto/manual-gate.dto';
 export declare class GateService {
     private readonly gateEventRepository;
     private readonly gatePassRepository;
@@ -24,6 +25,20 @@ export declare class GateService {
         error: any;
         event: GateEvent;
         gatePass?: undefined;
+    }>;
+    manualGateEvent(dto: ManualGateDto): Promise<{
+        success: boolean;
+        message: string;
+        event: GateEvent;
+        gatePass: GatePass;
+    }>;
+    getTodaySummary(): Promise<{
+        success: boolean;
+        date: string;
+        total: number;
+        outCount: number;
+        inCount: number;
+        lastUpdated: Date;
     }>;
     validateGatePass(qrCode: string): Promise<GatePass>;
     determineEventType(studentId: string): Promise<'IN' | 'OUT'>;

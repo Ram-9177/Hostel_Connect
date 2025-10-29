@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hostelconnect/core/models/user_management_models.dart';
+import 'package:hostelconnect/core/providers/auth_provider.dart';
 import 'package:hostelconnect/core/models/load_state.dart';
 import 'package:hostelconnect/core/providers/user_management_providers.dart';
 import 'package:hostelconnect/core/themes/ios_grade_theme.dart';
@@ -59,6 +60,9 @@ class _AdminUserManagementPageState extends ConsumerState<AdminUserManagementPag
 
   @override
   Widget build(BuildContext context) {
+    final auth = ref.watch(authProvider);
+    final role = auth.role?.toLowerCase() ?? 'student';
+    final canBulk = ['admin', 'warden_head', 'warden', 'super_admin'].contains(role);
     return Scaffold(
       backgroundColor: IOSGradeTheme.background,
       appBar: AppBar(
@@ -105,14 +109,15 @@ class _AdminUserManagementPageState extends ConsumerState<AdminUserManagementPag
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              const PopupMenuItem(
-                value: 'import_users',
-                child: ListTile(
-                  leading: Icon(Icons.upload),
-                  title: Text('Import Users'),
-                  contentPadding: EdgeInsets.zero,
+              if (canBulk)
+                const PopupMenuItem(
+                  value: 'import_users',
+                  child: ListTile(
+                    leading: Icon(Icons.upload),
+                    title: Text('Import Users (Bulk)'),
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ),
-              ),
             ],
           ),
         ],
@@ -149,7 +154,7 @@ class _AdminUserManagementPageState extends ConsumerState<AdminUserManagementPag
                   onFiltersChanged: _onFiltersChanged,
                 ),
                 // Bulk Operations
-                if (_selectedUsers.isNotEmpty)
+                if (_selectedUsers.isNotEmpty && canBulk)
                   BulkOperationsWidget(
                     selectedUsers: _selectedUsers,
                     onBulkOperation: _onBulkOperation,

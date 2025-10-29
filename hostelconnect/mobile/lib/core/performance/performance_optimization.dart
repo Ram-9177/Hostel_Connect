@@ -1,4 +1,8 @@
 import 'dart:async';
+import 'dart:collection';
+import 'package:flutter/foundation.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';t 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -87,7 +91,7 @@ class OfflineQueue {
   }
   
   static Future<void> processQueue() async {
-    final hasInternet = await InternetConnectionChecker().hasConnection;
+    final hasInternet = await InternetConnection().hasInternetAccess;
     if (!hasInternet) return;
     
     final queue = await getQueue();

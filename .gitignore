@@ -16,6 +16,9 @@ dist
 .env
 .env.local
 .env.*.local
+hostelconnect/api/.env
+hostelconnect/api/uploads/
+hostelconnect/api/coverage/
 
 # Secrets & Keys (NEVER COMMIT)
 *.keystore
@@ -69,6 +72,7 @@ Flutter/Flutter.podspec
 .pub-cache/
 .pub/
 pubspec.lock
+hostelconnect/mobile/build/
 
 # Database
 *.db

@@ -17,7 +17,7 @@ export class Student {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   phoneNumber: string;
 
   @Column()
@@ -26,7 +26,7 @@ export class Student {
   @Column()
   hostelId: string;
 
-  @Column()
+  @Column({ nullable: true })
   roomNumber: string;
 
   @Column({ nullable: true })
@@ -35,20 +35,38 @@ export class Student {
   @Column({ nullable: true })
   bedNumber: number;
 
-  @Column()
+  @Column({ nullable: true })
   course: string;
 
-  @Column()
+  @Column({ nullable: true })
   year: string;
 
-  @Column()
+  @Column({ nullable: true })
   emergencyContact: string;
 
-  @Column()
+  @Column({ nullable: true })
   emergencyPhone: string;
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ default: false })
+  isEmailVerified: boolean;
+
+  @Column({ nullable: true })
+  emailVerificationToken: string;
+
+  @Column({ nullable: true, type: 'datetime' })
+  emailVerificationExpires: Date;
+
+  @Column({ nullable: true, type: 'datetime' })
+  lastLogin: Date;
+
+  @Column()
+  password: string;
+
+  @Column({ default: 'STUDENT' })
+  role: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../../../../core/network/api_config.dart';
 import 'dart:convert';
 
 class StudentRecordsScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class _StudentRecordsScreenState extends State<StudentRecordsScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse('${Environment.apiBaseUrl}/gate/events'),
+        Uri.parse('${ApiConfig.baseUrl}/gate/events'),
       );
 
       if (response.statusCode == 200) {
@@ -389,10 +390,4 @@ class StudentRecord {
   }
 }
 
-class Environment {
-  // For real Android device testing, replace with your computer's IP address
-  // Find your IP with: ifconfig (Mac/Linux) or ipconfig (Windows)
-  // Example: 'http://192.168.1.100:3000/api/v1'
-  static const String apiBaseUrl = 'http://10.17.134.33:3000/api/v1'; // Real device
-  // static const String apiBaseUrl = 'http://10.0.2.2:3000/api/v1'; // Android emulator
-}
+class Environment {}

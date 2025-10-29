@@ -1,4 +1,5 @@
 import { Student } from '../../students/entities/student.entity';
+import { Hostel } from '../../hostels/entities/hostel.entity';
 export declare enum GatePassType {
     REGULAR = "REGULAR",
     EMERGENCY = "EMERGENCY",
@@ -48,4 +49,5 @@ export declare class GatePass {
     createdAt: Date;
     updatedAt: Date;
     student: Student;
+    hostel?: Hostel;
 }

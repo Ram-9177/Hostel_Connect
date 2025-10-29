@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Student } from '../../students/entities/student.entity';
+import { Hostel } from '../../hostels/entities/hostel.entity';
 
 export enum GatePassType {
   REGULAR = 'REGULAR',
@@ -45,24 +46,18 @@ export class GatePass {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ type: 'timestamp' })
+  // Use 'datetime' for SQLite compatibility in local dev
+  @Column({ type: 'datetime' })
   startTime: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'datetime' })
   endTime: Date;
 
-  @Column({
-    type: 'enum',
-    enum: GatePassStatus,
-    default: GatePassStatus.PENDING
-  })
+  // SQLite does not support enum, store as text and enforce values at application level
+  @Column({ type: 'text', default: GatePassStatus.PENDING })
   status: GatePassStatus;
 
-  @Column({
-    type: 'enum',
-    enum: GatePassType,
-    default: GatePassType.REGULAR
-  })
+  @Column({ type: 'text', default: GatePassType.REGULAR })
   type: GatePassType;
 
   @Column({ nullable: true })
@@ -71,7 +66,7 @@ export class GatePass {
   @Column({ nullable: true })
   approvedByName: string;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   approvedAt: Date;
 
   @Column({ nullable: true })
@@ -80,7 +75,7 @@ export class GatePass {
   @Column({ nullable: true })
   rejectedByName: string;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   rejectedAt: Date;
 
   @Column({ nullable: true })
@@ -92,16 +87,16 @@ export class GatePass {
   @Column({ nullable: true })
   qrTokenHash: string;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   qrTokenExpiresAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   lastUsedAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   completedAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   expiredAt: Date;
 
   @Column({ default: false })
@@ -110,7 +105,7 @@ export class GatePass {
   @Column({ nullable: true })
   decisionBy: string;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   decisionAt: Date;
 
   @Column({ type: 'text', nullable: true })
@@ -125,4 +120,9 @@ export class GatePass {
   @ManyToOne(() => Student)
   @JoinColumn({ name: 'studentId' })
   student: Student;
+
+  // Establish relation to Hostel for inverse side mapping from Hostel.gatePasses
+  @ManyToOne(() => Hostel, { nullable: true })
+  @JoinColumn({ name: 'hostelId' })
+  hostel?: Hostel;
 }

@@ -48,7 +48,7 @@ export const IDCard: React.FC<IDCardProps> = ({ onBack }) => {
           dark: "#000000",
           light: "#ffffff",
         },
-      }).then((url) => {
+      }).then((url: string) => {
         setQrCodeData(url);
       });
     }

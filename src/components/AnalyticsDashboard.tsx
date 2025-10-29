@@ -20,11 +20,13 @@ interface AnalyticsData {
     week: string;
     entries: number;
     exits: number;
+    total: number;
   }>;
   monthlyData: Array<{
     month: string;
     entries: number;
     exits: number;
+    total: number;
   }>;
   hostelDistribution: Array<{
     name: string;
@@ -143,10 +145,13 @@ const AnalyticsDashboard: React.FC = () => {
     const csvContent = [
       ['Period', 'Entries', 'Exits', 'Total'],
       ...getChartData().map(item => [
-        item.hour || item.date || item.week || item.month,
+        ('hour' in item ? item.hour : 
+         'date' in item ? item.date : 
+         'week' in item ? item.week : 
+         'month' in item ? item.month : ''),
         item.entries,
         item.exits,
-        item.total || (item.entries + item.exits)
+        ('total' in item ? item.total : (item.entries + item.exits))
       ])
     ].map(row => row.join(',')).join('\n');
 

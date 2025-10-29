@@ -2,10 +2,12 @@ import { Repository } from 'typeorm';
 import { GatePass } from './entities/gate-pass.entity';
 import { Student } from '../students/entities/student.entity';
 import { CreateGatePassDto, ApproveGatePassDto, RejectGatePassDto } from './dto/create-gate-pass.dto';
+import { SocketGateway } from '../socket/socket.gateway';
 export declare class GatePassService {
     private readonly gatePassRepository;
     private readonly studentRepository;
-    constructor(gatePassRepository: Repository<GatePass>, studentRepository: Repository<Student>);
+    private readonly socketGateway;
+    constructor(gatePassRepository: Repository<GatePass>, studentRepository: Repository<Student>, socketGateway: SocketGateway);
     createGatePass(createGatePassDto: CreateGatePassDto): Promise<GatePass>;
     getAllGatePasses(): Promise<GatePass[]>;
     getPendingGatePasses(): Promise<GatePass[]>;

@@ -34,4 +34,24 @@ export declare class AuthController {
     }): Promise<{
         message: string;
     }>;
+    logout(req: any): Promise<{
+        message: string;
+        timestamp: string;
+    }>;
+    verifyEmail(body: {
+        token: string;
+    }): Promise<{
+        message: string;
+    }>;
+    resendVerification(body: {
+        email: string;
+    }): Promise<{
+        message: string;
+    }>;
+    changePassword(req: any, body: {
+        currentPassword: string;
+        newPassword: string;
+    }): Promise<{
+        message: string;
+    }>;
 }

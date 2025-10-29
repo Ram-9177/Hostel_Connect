@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { GateEvent } from './entities/gate-event.entity';
 import { GatePass, GatePassStatus } from '../gatepass/entities/gate-pass.entity';
 import { ScanGatePassDto } from './dto/scan-gate-pass.dto';
+import { ManualGateDto } from './dto/manual-gate.dto';
 
 @Injectable()
 export class GateService {
@@ -89,6 +90,87 @@ export class GateService {
         event: failedEvent
       };
     }
+  }
+
+  async manualGateEvent(dto: ManualGateDto) {
+    // Accept studentId as hall ticket or internal studentId
+    const eventType = dto.action;
+
+    // Try to find an active or latest gate pass for the student
+    const gatePass = await this.gatePassRepository.findOne({
+      where: { studentId: dto.studentId },
+      order: { createdAt: 'DESC' as any }
+    });
+
+    const gateEvent = this.gateEventRepository.create({
+      gatePassId: gatePass?.id,
+      studentId: dto.studentId,
+      studentName: gatePass ? `${gatePass.firstName} ${gatePass.lastName}` : dto.studentId,
+      eventType: eventType as any,
+      timestamp: new Date(),
+      location: dto.location || 'Main Gate',
+      status: 'SUCCESS',
+      reason: dto.reason || 'Manual gate action',
+    });
+
+    const saved = await this.gateEventRepository.save(gateEvent);
+
+    if (gatePass) {
+      if (eventType === 'OUT') {
+        await this.gatePassRepository.update(gatePass.id, {
+          status: GatePassStatus.ACTIVE,
+          lastUsedAt: new Date(),
+        });
+      } else if (eventType === 'IN') {
+        await this.gatePassRepository.update(gatePass.id, {
+          status: GatePassStatus.COMPLETED,
+          completedAt: new Date(),
+        });
+      }
+    }
+
+    return {
+      success: true,
+      message: `Student ${eventType === 'OUT' ? 'exited' : 'entered'} successfully (manual)`,
+      event: saved,
+      gatePass: gatePass || null,
+    };
+  }
+
+  async getTodaySummary() {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+
+    const qb = this.gateEventRepository.createQueryBuilder('e')
+      .where('e.timestamp BETWEEN :start AND :end', { start, end });
+
+    const total = await qb.getCount();
+
+    const outCount = await this.gateEventRepository.createQueryBuilder('e')
+      .where('e.timestamp BETWEEN :start AND :end', { start, end })
+      .andWhere('e.eventType = :t', { t: 'OUT' })
+      .getCount();
+
+    const inCount = await this.gateEventRepository.createQueryBuilder('e')
+      .where('e.timestamp BETWEEN :start AND :end', { start, end })
+      .andWhere('e.eventType = :t', { t: 'IN' })
+      .getCount();
+
+    const lastEvent = await this.gateEventRepository.createQueryBuilder('e')
+      .where('e.timestamp BETWEEN :start AND :end', { start, end })
+      .orderBy('e.timestamp', 'DESC')
+      .getOne();
+
+    return {
+      success: true,
+      date: start.toISOString().slice(0, 10),
+      total,
+      outCount,
+      inCount,
+      lastUpdated: lastEvent?.timestamp || null,
+    };
   }
 
   async validateGatePass(qrCode: string) {

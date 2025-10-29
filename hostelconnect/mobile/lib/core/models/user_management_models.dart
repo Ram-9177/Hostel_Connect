@@ -90,8 +90,14 @@ enum UserRole {
   warden,
   @JsonValue('warden_head')
   wardenHead,
+  @JsonValue('gate_security')
+  gateSecurity,
+  @JsonValue('admin')
+  admin,
   @JsonValue('chef')
   chef,
+  @JsonValue('kitchen_incharge')
+  kitchenIncharge,
   @JsonValue('super_admin')
   superAdmin,
 }
@@ -105,8 +111,14 @@ extension UserRoleExtension on UserRole {
         return 'Warden';
       case UserRole.wardenHead:
         return 'Warden Head';
+      case UserRole.gateSecurity:
+        return 'Gate Security';
+      case UserRole.admin:
+        return 'Admin';
       case UserRole.chef:
         return 'Chef';
+      case UserRole.kitchenIncharge:
+        return 'Kitchen Incharge';
       case UserRole.superAdmin:
         return 'Super Admin';
     }
@@ -120,8 +132,14 @@ extension UserRoleExtension on UserRole {
         return 'Warden managing hostel operations';
       case UserRole.wardenHead:
         return 'Head warden with administrative privileges';
+      case UserRole.gateSecurity:
+        return 'Security staff handling gate entries and exits';
+      case UserRole.admin:
+        return 'Administrator with advanced management access';
       case UserRole.chef:
         return 'Chef managing meal operations';
+      case UserRole.kitchenIncharge:
+        return 'Kitchen incharge managing kitchen operations and reports';
       case UserRole.superAdmin:
         return 'Super administrator with full system access';
     }
@@ -509,6 +527,7 @@ extension UserRoleExtensions on UserRole {
       case UserRole.superAdmin:
         return [
           'users.create',
+          'users.bulk_create',
           'users.read',
           'users.update',
           'users.delete',
@@ -525,9 +544,28 @@ extension UserRoleExtensions on UserRole {
           'reports.view',
           'policies.manage',
         ];
+      case UserRole.admin:
+        return [
+          'users.create',
+          'users.bulk_create',
+          'users.read',
+          'users.update',
+          'users.assign_role',
+          'users.reset_password',
+          'users.activate',
+          'users.deactivate',
+          'attendance.manage',
+          'gatepass.approve',
+          'meals.manage',
+          'notices.create',
+          'reports.view',
+          'policies.view',
+        ];
       case UserRole.wardenHead:
         return [
           'users.read',
+          'users.create',
+          'users.bulk_create',
           'users.update',
           'attendance.manage',
           'gatepass.approve',
@@ -539,17 +577,32 @@ extension UserRoleExtensions on UserRole {
       case UserRole.warden:
         return [
           'users.read',
+          'users.bulk_create',
           'attendance.manage',
           'gatepass.approve',
           'meals.view',
           'notices.view',
           'reports.view',
         ];
+      case UserRole.gateSecurity:
+        return [
+          'gatepass.scan',
+          'gatepass.view',
+          'notices.view',
+        ];
       case UserRole.chef:
         return [
           'meals.view',
           'meals.forecast',
           'notices.view',
+          'reports.view',
+        ];
+      case UserRole.kitchenIncharge:
+        return [
+          'meals.view',
+          'meals.forecast',
+          'reports.view',
+          'reports.export',
         ];
       case UserRole.student:
         return [

@@ -134,6 +134,7 @@ class _CompleteWardenDashboardState extends ConsumerState<CompleteWardenDashboar
                 _buildReportsTab(),
               ],
             ),
+      floatingActionButton: const RoleQuickAccessButton(),
     );
   }
 

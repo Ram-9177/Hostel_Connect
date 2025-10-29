@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/auth/auth_service.dart';
+import '../../core/navigation/navigation_service.dart';
 import '../../shared/theme/ios_grade_theme.dart';
 import '../../shared/widgets/ui/ios_grade_components.dart';
 
@@ -103,7 +104,7 @@ class ForbiddenAccessPage extends StatelessWidget {
               
               // Back Button
               ElevatedButton.icon(
-                onPressed: () => NavigationService.navigateBack(context),
+                onPressed: () => NavigationService.goBack(),
                 icon: const Icon(Icons.arrow_back_ios_new),
                 label: const Text('Go Back'),
                 style: ElevatedButton.styleFrom(
@@ -123,7 +124,7 @@ class ForbiddenAccessPage extends StatelessWidget {
               
               // Contact Support Button
               OutlinedButton.icon(
-                onPressed: () => NavigationService.navigateToEmergencyContact(context),
+                onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.support_agent_outlined),
                 label: const Text('Contact Support'),
                 style: OutlinedButton.styleFrom(
@@ -165,7 +166,7 @@ class GlobalBackButton extends StatelessWidget {
         color: color ?? IOSGradeTheme.textPrimary,
         size: 20,
       ),
-      onPressed: onPressed ?? () => NavigationService.navigateBack(context),
+      onPressed: onPressed ?? () => NavigationService.goBack(),
     );
   }
 }

@@ -13,13 +13,15 @@ const gatepass_controller_1 = require("./gatepass.controller");
 const gatepass_service_1 = require("./gatepass.service");
 const gate_pass_entity_1 = require("./entities/gate-pass.entity");
 const student_entity_1 = require("../students/entities/student.entity");
+const socket_module_1 = require("../socket/socket.module");
 let GatePassModule = class GatePassModule {
 };
 exports.GatePassModule = GatePassModule;
 exports.GatePassModule = GatePassModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([gate_pass_entity_1.GatePass, student_entity_1.Student])
+            typeorm_1.TypeOrmModule.forFeature([gate_pass_entity_1.GatePass, student_entity_1.Student]),
+            ...(process.env.ENABLE_SOCKETS === 'true' ? [(0, common_1.forwardRef)(() => socket_module_1.SocketModule)] : []),
         ],
         controllers: [gatepass_controller_1.GatePassController],
         providers: [gatepass_service_1.GatePassService],

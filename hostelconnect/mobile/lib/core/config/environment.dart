@@ -1,14 +1,16 @@
 // lib/core/config/environment.dart
+import '../network/api_config.dart';
+
 class Environment {
   // Production-ready environment configuration
-  static const String _baseUrl = 'http://10.0.2.2:3000/api/v1'; // Android emulator localhost
+  static const String _baseUrl = 'http://10.0.2.2:3000/api/v1'; // kept for reference; use baseUrl getter
   static const String _apiKey = 'hc_prod_api_key_2024';
   static const int _timeoutSeconds = 30;
   static const int _maxRetries = 3;
   static const int _retryDelayMs = 1000;
 
   // API Configuration
-  static String get baseUrl => _baseUrl;
+  static String get baseUrl => ApiConfig.baseUrl;
   static String get apiKey => _apiKey;
   static Duration get timeout => Duration(seconds: _timeoutSeconds);
   static int get maxRetries => _maxRetries;

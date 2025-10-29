@@ -63,9 +63,11 @@ class RoleGuard extends ConsumerWidget {
   bool _checkRoleAccess(String userRole, List<String> allowedRoles) {
     // Role hierarchy for permission checking
     const roleHierarchy = {
-      'super_admin': 5,
+      'super_admin': 6,
+      'admin': 5,
       'warden_head': 4,
       'warden': 3,
+      'gate_security': 2,
       'chef': 2,
       'student': 1,
     };

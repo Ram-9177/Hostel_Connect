@@ -9,6 +9,7 @@ import '../../../gatepass/presentation/pages/gate_pass_list_page.dart';
 import '../../../meals/presentation/pages/meal_intent_page.dart';
 import '../../../attendance/presentation/pages/attendance_page.dart';
 import '../../../profile/presentation/pages/student_profile_page.dart';
+import '../../../../shared/widgets/navigation/role_quick_access_button.dart';
 
 class CompleteStudentDashboard extends ConsumerStatefulWidget {
   const CompleteStudentDashboard({super.key});
@@ -71,6 +72,7 @@ class _CompleteStudentDashboardState extends ConsumerState<CompleteStudentDashbo
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
+      floatingActionButton: const RoleQuickAccessButton(),
     );
   }
 

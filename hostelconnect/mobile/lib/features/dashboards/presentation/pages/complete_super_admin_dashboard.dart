@@ -79,6 +79,7 @@ class _CompleteSuperAdminDashboardState extends ConsumerState<CompleteSuperAdmin
           _buildSystemTab(),
         ],
       ),
+      floatingActionButton: const RoleQuickAccessButton(),
     );
   }
 

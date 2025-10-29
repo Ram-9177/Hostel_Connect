@@ -47,6 +47,30 @@ let DashboardsController = class DashboardsController {
         await this.dashboardsService.refreshMaterializedViews();
         return { message: 'Materialized views refreshed successfully' };
     }
+    async getStudentDashboard(req) {
+        return this.dashboardsService.getStudentDashboard(req.user?.id);
+    }
+    async getStudentDashboardById(id) {
+        return this.dashboardsService.getStudentDashboard(id);
+    }
+    async getWardenDashboard(req) {
+        return this.dashboardsService.getWardenDashboard(req.user?.id);
+    }
+    async getWardenHeadDashboard(req) {
+        return this.dashboardsService.getWardenHeadDashboard(req.user?.id);
+    }
+    async getAdminDashboard(req) {
+        return this.dashboardsService.getAdminDashboard(req.user?.id);
+    }
+    async getChefDashboard(req) {
+        return this.dashboardsService.getChefDashboard(req.user?.id);
+    }
+    async getSecurityDashboard(req) {
+        return this.dashboardsService.getSecurityDashboard(req.user?.id);
+    }
+    async getGlobalStats() {
+        return this.dashboardsService.getGlobalStats();
+    }
 };
 exports.DashboardsController = DashboardsController;
 __decorate([
@@ -122,6 +146,77 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], DashboardsController.prototype, "refreshViews", null);
+__decorate([
+    (0, common_1.Get)('student'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get student dashboard data' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Student dashboard data retrieved' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DashboardsController.prototype, "getStudentDashboard", null);
+__decorate([
+    (0, common_1.Get)('student/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get student dashboard data by ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Student dashboard data retrieved' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], DashboardsController.prototype, "getStudentDashboardById", null);
+__decorate([
+    (0, common_1.Get)('warden'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get warden dashboard data' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Warden dashboard data retrieved' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DashboardsController.prototype, "getWardenDashboard", null);
+__decorate([
+    (0, common_1.Get)('warden-head'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get warden-head dashboard data' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Warden-head dashboard data retrieved' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DashboardsController.prototype, "getWardenHeadDashboard", null);
+__decorate([
+    (0, common_1.Get)('admin'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get admin dashboard data' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Admin dashboard data retrieved' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DashboardsController.prototype, "getAdminDashboard", null);
+__decorate([
+    (0, common_1.Get)('chef'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get chef dashboard data' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Chef dashboard data retrieved' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DashboardsController.prototype, "getChefDashboard", null);
+__decorate([
+    (0, common_1.Get)('security'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get security dashboard data' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Security dashboard data retrieved' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DashboardsController.prototype, "getSecurityDashboard", null);
+__decorate([
+    (0, common_1.Get)('stats'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get global statistics' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Global statistics retrieved' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DashboardsController.prototype, "getGlobalStats", null);
 exports.DashboardsController = DashboardsController = __decorate([
     (0, swagger_1.ApiTags)('Dashboards'),
     (0, common_1.Controller)('dash'),

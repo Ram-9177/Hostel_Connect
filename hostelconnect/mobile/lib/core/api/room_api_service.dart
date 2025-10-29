@@ -5,6 +5,7 @@ import '../network/http_client.dart';
 import '../models/room_models.dart';
 import '../models/student.dart';
 import '../models/allocation_history.dart';
+import '../providers/dio_provider.dart';
 
 final roomApiServiceProvider = Provider((ref) => RoomApiService(ref.read(dioProvider)));
 
@@ -252,23 +253,8 @@ class RoomApiService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> getRoomMap() async {
-    final response = await _dio.get('/rooms/map');
-    return response.data;
-  }
-
   Future<Map<String, dynamic>> allocateRoom(Map<String, dynamic> allocationData) async {
     final response = await _dio.post('/rooms/allocate', data: allocationData);
-    return response.data;
-  }
-
-  Future<Map<String, dynamic>> transferStudent(Map<String, dynamic> transferData) async {
-    final response = await _dio.post('/rooms/transfer', data: transferData);
-    return response.data;
-  }
-
-  Future<Map<String, dynamic>> swapStudents(Map<String, dynamic> swapData) async {
-    final response = await _dio.post('/rooms/swap', data: swapData);
     return response.data;
   }
 }

@@ -6,6 +6,7 @@ import '../../../../core/providers/meal_providers.dart';
 import '../../../../shared/theme/ios_grade_theme.dart';
 import '../../../../shared/widgets/ui/ios_grade_components.dart';
 import '../../../../shared/widgets/ui/toast.dart';
+import '../../../../core/cache/local_cache_service.dart';
 
 class DailyMealPromptWidget extends ConsumerStatefulWidget {
   final String studentId;
@@ -115,6 +116,14 @@ class _DailyMealPromptWidgetState extends ConsumerState<DailyMealPromptWidget>
           _mealIntents[mealType] = willEat;
           _hasSubmittedToday = true;
         });
+        try {
+          final cache = ref.read(localCacheServiceProvider);
+          final toCache = <String, bool>{};
+          for (final entry in _mealIntents.entries) {
+            toCache[entry.key.name] = entry.value;
+          }
+          await cache.cacheData('daily_meal_preference', toCache);
+        } catch (_) {}
         
         Toast.showSuccess(context, '${mealType.displayName} intent submitted');
         widget.onIntentsSubmitted?.call();
@@ -153,6 +162,14 @@ class _DailyMealPromptWidgetState extends ConsumerState<DailyMealPromptWidget>
           _mealIntents = Map.from(intents);
           _hasSubmittedToday = true;
         });
+        try {
+          final cache = ref.read(localCacheServiceProvider);
+          final toCache = <String, bool>{};
+          for (final entry in _mealIntents.entries) {
+            toCache[entry.key.name] = entry.value;
+          }
+          await cache.cacheData('daily_meal_preference', toCache);
+        } catch (_) {}
         
         Toast.showSuccess(context, 'All meal intents submitted');
         widget.onIntentsSubmitted?.call();
@@ -217,6 +234,68 @@ class _DailyMealPromptWidgetState extends ConsumerState<DailyMealPromptWidget>
       }
     } catch (e) {
       Toast.showError(context, 'Error copying yesterday\'s intents: $e');
+    } finally {
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
+  }
+
+  Future<void> _applyLunchSameAsYesterday() async {
+    if (_isSubmitting) return;
+    setState(() {
+      _isSubmitting = true;
+    });
+    try {
+      final mealService = ref.read(mealServiceProvider);
+      final result = await mealService.copyYesterdayIntents(
+        widget.studentId,
+        widget.hostelId,
+        widget.date,
+      );
+
+      if (result.state == LoadState.success && result.data != null) {
+        final lunchIntent = result.data!
+            .firstWhere(
+              (i) => i.mealType == MealType.lunch,
+              orElse: () => MealIntent(
+                studentId: widget.studentId,
+                hostelId: widget.hostelId,
+                date: widget.date,
+                mealType: MealType.lunch,
+                willEat: false,
+              ),
+            )
+            .willEat;
+        await _submitMealIntent(MealType.lunch, lunchIntent);
+      } else {
+        Toast.showError(context, result.error ?? 'No lunch intent found for yesterday');
+      }
+    } catch (e) {
+      Toast.showError(context, 'Error applying lunch: $e');
+    } finally {
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
+  }
+
+  Future<void> _applyLunchSameAsDaily() async {
+    if (_isSubmitting) return;
+    setState(() {
+      _isSubmitting = true;
+    });
+    try {
+      final cache = ref.read(localCacheServiceProvider);
+      final cached = await cache.getCachedData<Map<String, dynamic>>('daily_meal_preference');
+      if (cached != null && cached.containsKey('lunch')) {
+        final willEat = cached['lunch'] == true;
+        await _submitMealIntent(MealType.lunch, willEat);
+      } else {
+        Toast.showError(context, 'No daily lunch preference set');
+      }
+    } catch (e) {
+      Toast.showError(context, 'Error applying daily lunch: $e');
     } finally {
       setState(() {
         _isSubmitting = false;
@@ -552,6 +631,26 @@ class _DailyMealPromptWidgetState extends ConsumerState<DailyMealPromptWidget>
                 ),
               ],
             ),
+            if (mealType == MealType.lunch) ...[
+              const SizedBox(width: 12),
+              Row(
+                children: [
+                  _buildIntentButton(
+                    'Same as Yesterday',
+                    willEat,
+                    IOSGradeTheme.info,
+                    _applyLunchSameAsYesterday,
+                  ),
+                  const SizedBox(width: 8),
+                  _buildIntentButton(
+                    'Same as Daily',
+                    willEat,
+                    IOSGradeTheme.primary,
+                    _applyLunchSameAsDaily,
+                  ),
+                ],
+              ),
+            ],
           ] else if (isSubmitted) ...[
             Container(
               padding: const EdgeInsets.symmetric(

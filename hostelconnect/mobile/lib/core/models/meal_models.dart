@@ -1,4 +1,5 @@
 // lib/core/models/meal_models.dart
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'meal_models.freezed.dart';
@@ -78,7 +79,7 @@ class MealPolicy with _$MealPolicy {
     required String id,
     required String hostelId,
     required MealType mealType,
-    required TimeOfDay cutoffTime,
+    required String cutoffTime, // Format: "HH:mm" e.g., "14:30"
     required double bufferPercentage,
     required bool isActive,
     required DateTime createdAt,
@@ -99,7 +100,9 @@ class ChefBoard with _$ChefBoard {
     required String hostelId,
     required DateTime date,
     required List<MealForecast> forecasts,
+    @JsonKey(fromJson: _mealTypeIntMapFromJson, toJson: _mealTypeIntMapToJson)
     required Map<MealType, int> lockedCounts,
+    @JsonKey(fromJson: _mealTypeIntMapFromJson, toJson: _mealTypeIntMapToJson)
     required Map<MealType, int> actualCounts,
     required DateTime lockedAt,
     required String lockedBy,
@@ -117,11 +120,14 @@ class DailyMealSummary with _$DailyMealSummary {
   const factory DailyMealSummary({
     required String hostelId,
     required DateTime date,
+    @JsonKey(fromJson: _mealTypeIntMapFromJson, toJson: _mealTypeIntMapToJson)
     required Map<MealType, int> intentCounts,
+    @JsonKey(fromJson: _mealTypeIntMapFromJson, toJson: _mealTypeIntMapToJson)
     required Map<MealType, int> forecastCounts,
+    @JsonKey(fromJson: _mealTypeIntMapFromJson, toJson: _mealTypeIntMapToJson)
     required Map<MealType, int> overrideCounts,
+    @JsonKey(fromJson: _mealTypeBoolMapFromJson, toJson: _mealTypeBoolMapToJson)
     required Map<MealType, bool> cutoffPassed,
-    required Map<MealType, TimeOfDay> cutoffTimes,
     required int totalStudents,
     required DateTime lastUpdated,
   }) = _DailyMealSummary;
@@ -432,4 +438,28 @@ extension TimeOfDayExtension on TimeOfDay {
     final cutoffDateTime = DateTime(now.year, now.month, now.day, hour, minute);
     return now.isAfter(cutoffDateTime);
   }
+}
+
+// JSON Converters for Map<MealType, T>
+
+Map<MealType, int> _mealTypeIntMapFromJson(Map<String, dynamic> json) {
+  return json.map((key, value) => MapEntry(
+    MealType.values.firstWhere((e) => e.name == key),
+    value as int,
+  ));
+}
+
+Map<String, dynamic> _mealTypeIntMapToJson(Map<MealType, int> map) {
+  return map.map((key, value) => MapEntry(key.name, value));
+}
+
+Map<MealType, bool> _mealTypeBoolMapFromJson(Map<String, dynamic> json) {
+  return json.map((key, value) => MapEntry(
+    MealType.values.firstWhere((e) => e.name == key),
+    value as bool,
+  ));
+}
+
+Map<String, dynamic> _mealTypeBoolMapToJson(Map<MealType, bool> map) {
+  return map.map((key, value) => MapEntry(key.name, value));
 }

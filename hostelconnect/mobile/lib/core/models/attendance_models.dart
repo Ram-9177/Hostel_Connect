@@ -26,7 +26,7 @@ enum AttendanceStatus {
   adjusted,
 }
 
-enum AttendanceSession {
+enum AttendanceSessionType {
   @JsonValue('MORNING')
   morning,
   @JsonValue('EVENING')
@@ -41,7 +41,7 @@ class AttendanceRecord with _$AttendanceRecord {
     required String id,
     required String studentId,
     required String sessionId,
-    required AttendanceSession session,
+    required AttendanceSessionType session,
     required DateTime date,
     required AttendanceStatus status,
     required DateTime recordedAt,
@@ -63,7 +63,7 @@ class AttendanceRecord with _$AttendanceRecord {
 class AttendanceSession with _$AttendanceSession {
   const factory AttendanceSession({
     required String id,
-    required AttendanceSession session,
+    required AttendanceSessionType session,
     required DateTime date,
     required AttendanceMode mode,
     required DateTime startTime,
@@ -104,7 +104,7 @@ class AttendanceStats with _$AttendanceStats {
     required int lateStudents,
     required int excusedStudents,
     required double overallPercentage,
-    required Map<AttendanceSession, int> sessionBreakdown,
+    required Map<AttendanceSessionType, int> sessionBreakdown,
   }) = _AttendanceStats;
 
   factory AttendanceStats.fromJson(Map<String, dynamic> json) => _$AttendanceStatsFromJson(json);

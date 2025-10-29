@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Query, Request, ForbiddenException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { HostelsService } from './hostels.service';
@@ -87,7 +87,10 @@ export class HostelsController {
   @ApiOperation({ summary: 'Create a new room in block' })
   @ApiParam({ name: 'blockId', description: 'Block ID' })
   @ApiResponse({ status: 201, description: 'Room created successfully' })
-  async createRoom(@Param('blockId') blockId: string, @Body() createRoomDto: any) {
+  async createRoom(@Request() req, @Param('blockId') blockId: string, @Body() createRoomDto: any) {
+    if (req.user?.role === 'STUDENT') {
+      throw new ForbiddenException('Students cannot create rooms');
+    }
     return this.hostelsService.createRoom(blockId, createRoomDto);
   }
 
@@ -111,7 +114,10 @@ export class HostelsController {
   @ApiOperation({ summary: 'Update room' })
   @ApiParam({ name: 'id', description: 'Room ID' })
   @ApiResponse({ status: 200, description: 'Room updated successfully' })
-  async updateRoom(@Param('id') id: string, @Body() updateRoomDto: any) {
+  async updateRoom(@Request() req, @Param('id') id: string, @Body() updateRoomDto: any) {
+    if (req.user?.role === 'STUDENT') {
+      throw new ForbiddenException('Students cannot modify rooms');
+    }
     return this.hostelsService.updateRoom(id, updateRoomDto);
   }
 
@@ -119,7 +125,10 @@ export class HostelsController {
   @ApiOperation({ summary: 'Delete room' })
   @ApiParam({ name: 'id', description: 'Room ID' })
   @ApiResponse({ status: 200, description: 'Room deleted successfully' })
-  async deleteRoom(@Param('id') id: string) {
+  async deleteRoom(@Request() req, @Param('id') id: string) {
+    if (req.user?.role === 'STUDENT') {
+      throw new ForbiddenException('Students cannot delete rooms');
+    }
     return this.hostelsService.deleteRoom(id);
   }
 
@@ -128,7 +137,10 @@ export class HostelsController {
   @ApiOperation({ summary: 'Allocate room to student' })
   @ApiParam({ name: 'roomId', description: 'Room ID' })
   @ApiResponse({ status: 201, description: 'Room allocated successfully' })
-  async allocateRoom(@Param('roomId') roomId: string, @Body() allocateDto: any) {
+  async allocateRoom(@Request() req, @Param('roomId') roomId: string, @Body() allocateDto: any) {
+    if (req.user?.role === 'STUDENT') {
+      throw new ForbiddenException('Students cannot allocate rooms');
+    }
     return this.hostelsService.allocateRoom(allocateDto.studentId, roomId, allocateDto.bedNumber);
   }
 
@@ -136,14 +148,20 @@ export class HostelsController {
   @ApiOperation({ summary: 'Transfer student to different room' })
   @ApiParam({ name: 'studentId', description: 'Student ID' })
   @ApiResponse({ status: 200, description: 'Student transferred successfully' })
-  async transferStudent(@Param('studentId') studentId: string, @Body() transferDto: any) {
+  async transferStudent(@Request() req, @Param('studentId') studentId: string, @Body() transferDto: any) {
+    if (req.user?.role === 'STUDENT') {
+      throw new ForbiddenException('Students cannot transfer rooms');
+    }
     return this.hostelsService.transferStudent(studentId, transferDto.newRoomId, transferDto.bedNumber);
   }
 
   @Post('students/swap')
   @ApiOperation({ summary: 'Swap rooms between students' })
   @ApiResponse({ status: 200, description: 'Students swapped successfully' })
-  async swapStudents(@Body() swapDto: any) {
+  async swapStudents(@Request() req, @Body() swapDto: any) {
+    if (req.user?.role === 'STUDENT') {
+      throw new ForbiddenException('Students cannot swap rooms');
+    }
     return this.hostelsService.swapStudents(swapDto.student1Id, swapDto.student2Id);
   }
 

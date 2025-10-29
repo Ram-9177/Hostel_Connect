@@ -318,4 +318,177 @@ export class DashboardsService {
       }
     }
   }
+
+  // Role-specific dashboard methods
+  async getStudentDashboard(studentId: string) {
+    return {
+      student: {
+        id: studentId,
+        name: 'Student Name',
+        studentId: 'STU001',
+        email: 'student@example.com',
+        hostel: 'Phoenix Hall',
+        room: '301-A',
+        floor: '3rd Floor',
+      },
+      attendance: {
+        percentage: 92,
+        present: 23,
+        total: 25,
+        lastMarked: new Date().toISOString(),
+        status: 'PRESENT',
+      },
+      gatePass: {
+        active: 0,
+        pending: 1,
+        approved: 5,
+        rejected: 0,
+      },
+      meals: {
+        today: { breakfast: true, lunch: true, dinner: true },
+        tomorrow: { breakfast: false, lunch: false, dinner: false },
+        lockTime: '23:00',
+      },
+      complaints: {
+        pending: 1,
+        resolved: 3,
+        total: 4,
+      },
+      notices: {
+        unread: 2,
+        total: 10,
+      },
+    };
+  }
+
+  async getWardenDashboard(wardenId: string) {
+    const hostelLive = await this.getHostelLive();
+    return {
+      hostel: hostelLive[0] || {},
+      gatePasses: {
+        pending: 5,
+        approved: 12,
+        rejected: 2,
+        activeNow: 8,
+      },
+      complaints: {
+        pending: 8,
+        inProgress: 3,
+        resolved: 25,
+      },
+      rooms: {
+        singleOccupancy: 10,
+        doubleOccupancy: 40,
+        tripleOccupancy: 10,
+        vacant: 2,
+      },
+    };
+  }
+
+  async getWardenHeadDashboard(wardenHeadId: string) {
+    const hostels = await this.getHostelLive();
+    return {
+      hostels: hostels.map(h => ({
+        name: h.hostelName,
+        students: h.totalStrength,
+        attendance: Math.round((h.scanPresent / h.totalStrength) * 100),
+        occupancy: 97,
+      })),
+      globalStats: {
+        totalStudents: hostels.reduce((acc, h) => acc + h.totalStrength, 0),
+        totalHostels: hostels.length,
+        averageAttendance: 88,
+        averageOccupancy: 97,
+      },
+      gatePasses: {
+        pending: 12,
+        approved: 45,
+        rejected: 5,
+        activeNow: 18,
+      },
+    };
+  }
+
+  async getAdminDashboard(adminId: string) {
+    const hostels = await this.getHostelLive();
+    return {
+      overview: {
+        totalStudents: hostels.reduce((acc, h) => acc + h.totalStrength, 0),
+        totalHostels: hostels.length,
+        totalWardens: 8,
+        totalStaff: 35,
+      },
+      hostels: hostels.map(h => ({
+        name: h.hostelName,
+        students: h.totalStrength,
+        attendance: Math.round((h.scanPresent / h.totalStrength) * 100),
+        occupancy: 97,
+      })),
+      systemHealth: {
+        apiStatus: 'OPERATIONAL',
+        databaseStatus: 'OPERATIONAL',
+        cacheStatus: 'OPERATIONAL',
+        uptime: '99.9%',
+      },
+    };
+  }
+
+  async getChefDashboard(chefId: string) {
+    const mealForecast = await this.getMealForecast();
+    return {
+      tomorrowForecast: {
+        date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+        isLocked: new Date().getHours() >= 23,
+        meals: [
+          { name: 'Breakfast', yes: 165, buffer: 17, total: 182 },
+          { name: 'Lunch', yes: 172, buffer: 18, total: 190 },
+          { name: 'Dinner', yes: 168, buffer: 17, total: 185 },
+        ],
+      },
+      dietarySplit: [
+        { name: 'Vegetarian', value: 520 },
+        { name: 'Non-Vegetarian', value: 127 },
+      ],
+      specialRequests: {
+        pending: 3,
+        approved: 15,
+        total: 18,
+      },
+    };
+  }
+
+  async getSecurityDashboard(securityId: string) {
+    const gateFunnel = await this.getGateFunnel();
+    return {
+      gateActivity: {
+        today: { entriesIn: 142, entriesOut: 138, activeOut: 4 },
+        lastHour: { in: 8, out: 5 },
+      },
+      activePasses: {
+        total: 12,
+        expiringSoon: 3,
+        overdue: 1,
+      },
+      alerts: {
+        total: 2,
+        high: 0,
+        medium: 1,
+        low: 1,
+      },
+    };
+  }
+
+  async getGlobalStats() {
+    const hostels = await this.getHostelLive();
+    return {
+      totalStudents: hostels.reduce((acc, h) => acc + h.totalStrength, 0),
+      totalHostels: hostels.length,
+      totalRooms: 227,
+      averageAttendance: 88,
+      averageOccupancy: 96,
+      activeGatePasses: 18,
+      pendingComplaints: 25,
+      lastUpdated: new Date().toISOString(),
+    };
+  }
 }

@@ -17,26 +17,33 @@ const hostel_entity_1 = require("../hostels/entities/hostel.entity");
 const block_entity_1 = require("../hostels/entities/block.entity");
 const room_entity_1 = require("../rooms/entities/room.entity");
 const device_entity_1 = require("../devices/entities/device.entity");
+const warden_entity_1 = require("../wardens/entities/warden.entity");
+const chef_entity_1 = require("../chefs/entities/chef.entity");
+const admin_entity_1 = require("../admins/entities/admin.entity");
 (0, dotenv_1.config)();
+const entities = [
+    student_entity_1.Student,
+    user_entity_1.User,
+    warden_entity_1.Warden,
+    chef_entity_1.Chef,
+    admin_entity_1.Admin,
+    attendance_session_entity_1.AttendanceSession,
+    attendance_check_entity_1.AttendanceCheck,
+    attendance_roster_entity_1.AttendanceRoster,
+    gate_pass_entity_1.GatePass,
+    ad_entity_1.Ad,
+    ad_event_entity_1.AdEvent,
+    meal_intent_entity_1.MealIntent,
+    meal_override_entity_1.MealOverride,
+    hostel_entity_1.Hostel,
+    block_entity_1.Block,
+    room_entity_1.Room,
+    device_entity_1.Device,
+];
 exports.dataSourceOptions = {
     type: 'sqlite',
     database: process.env.DB_DATABASE || 'hostelconnect.db',
-    entities: [
-        student_entity_1.Student,
-        user_entity_1.User,
-        attendance_session_entity_1.AttendanceSession,
-        attendance_check_entity_1.AttendanceCheck,
-        attendance_roster_entity_1.AttendanceRoster,
-        gate_pass_entity_1.GatePass,
-        ad_entity_1.Ad,
-        ad_event_entity_1.AdEvent,
-        meal_intent_entity_1.MealIntent,
-        meal_override_entity_1.MealOverride,
-        hostel_entity_1.Hostel,
-        block_entity_1.Block,
-        room_entity_1.Room,
-        device_entity_1.Device,
-    ],
+    entities,
     synchronize: true,
     logging: process.env.NODE_ENV === 'development',
 };

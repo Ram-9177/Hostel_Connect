@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../network/http_client.dart';
 import '../models/gate_pass_models.dart';
+import '../providers/dio_provider.dart';
 
 final gatePassApiServiceProvider = Provider((ref) => GatePassApiService(ref.read(dioProvider)));
 

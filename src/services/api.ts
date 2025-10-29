@@ -1,5 +1,6 @@
 // API Service for HostelConnect
-const API_BASE_URL = 'http://localhost:3007/api/v1';
+// Prefer Vite env var, fallback to local mock API
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3007/api/v1';
 
 export interface User {
   id: string;
@@ -54,9 +55,9 @@ class ApiService {
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (this.accessToken) {
@@ -65,7 +66,7 @@ class ApiService {
 
     const response = await fetch(url, {
       ...options,
-      headers,
+      headers: headers as HeadersInit,
     });
 
     if (!response.ok) {

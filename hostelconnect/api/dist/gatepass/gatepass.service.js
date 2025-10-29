@@ -18,11 +18,13 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const gate_pass_entity_1 = require("./entities/gate-pass.entity");
 const student_entity_1 = require("../students/entities/student.entity");
+const socket_gateway_1 = require("../socket/socket.gateway");
 const crypto = require("crypto");
 let GatePassService = class GatePassService {
-    constructor(gatePassRepository, studentRepository) {
+    constructor(gatePassRepository, studentRepository, socketGateway) {
         this.gatePassRepository = gatePassRepository;
         this.studentRepository = studentRepository;
+        this.socketGateway = socketGateway;
     }
     async createGatePass(createGatePassDto) {
         const student = await this.studentRepository.findOne({
@@ -41,7 +43,14 @@ let GatePassService = class GatePassService {
             isEmergency: createGatePassDto.isEmergency || false,
             status: gate_pass_entity_1.GatePassStatus.PENDING,
         });
-        return this.gatePassRepository.save(gatePass);
+        const savedGatePass = await this.gatePassRepository.save(gatePass);
+        await this.socketGateway.sendNotificationToRole('WARDEN', {
+            type: 'NEW_GATE_PASS_REQUEST',
+            title: 'New Gate Pass Request',
+            message: `${student.firstName} ${student.lastName} requested a gate pass`,
+            data: savedGatePass,
+        });
+        return savedGatePass;
     }
     async getAllGatePasses() {
         return this.gatePassRepository.find({
@@ -80,7 +89,15 @@ let GatePassService = class GatePassService {
             gatePass.qrTokenHash = qrToken;
             gatePass.qrTokenExpiresAt = new Date(Date.now() + 30 * 1000);
         }
-        return this.gatePassRepository.save(gatePass);
+        const savedGatePass = await this.gatePassRepository.save(gatePass);
+        await this.socketGateway.sendNotificationToUser(gatePass.studentId, {
+            type: 'GATE_PASS_APPROVED',
+            title: 'Gate Pass Approved',
+            message: 'Your gate pass request has been approved',
+            data: savedGatePass,
+        });
+        await this.socketGateway.broadcastGatePassUpdate(id, savedGatePass);
+        return savedGatePass;
     }
     async rejectGatePass(id, rejectDto) {
         const gatePass = await this.gatePassRepository.findOne({ where: { id } });
@@ -97,7 +114,14 @@ let GatePassService = class GatePassService {
         gatePass.rejectionReason = rejectDto.reason;
         gatePass.decisionBy = 'current-warden';
         gatePass.decisionAt = new Date();
-        return this.gatePassRepository.save(gatePass);
+        const savedGatePass = await this.gatePassRepository.save(gatePass);
+        await this.socketGateway.sendNotificationToUser(gatePass.studentId, {
+            type: 'GATE_PASS_REJECTED',
+            title: 'Gate Pass Rejected',
+            message: `Your gate pass request was rejected. Reason: ${rejectDto.reason}`,
+            data: savedGatePass,
+        });
+        return savedGatePass;
     }
     async generateQRCode(id) {
         const gatePass = await this.gatePassRepository.findOne({ where: { id } });
@@ -158,7 +182,9 @@ exports.GatePassService = GatePassService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(gate_pass_entity_1.GatePass)),
     __param(1, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
+    __param(2, (0, common_1.Inject)((0, common_1.forwardRef)(() => socket_gateway_1.SocketGateway))),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        socket_gateway_1.SocketGateway])
 ], GatePassService);
 //# sourceMappingURL=gatepass.service.js.map

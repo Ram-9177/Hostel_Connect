@@ -15,6 +15,12 @@ export declare class Student {
     emergencyContact: string;
     emergencyPhone: string;
     isActive: boolean;
+    isEmailVerified: boolean;
+    emailVerificationToken: string;
+    emailVerificationExpires: Date;
+    lastLogin: Date;
+    password: string;
+    role: string;
     createdAt: Date;
     updatedAt: Date;
 }

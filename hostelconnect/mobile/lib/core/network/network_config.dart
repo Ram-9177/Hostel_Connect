@@ -1,23 +1,24 @@
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 class NetworkConfig {
-  static const String _baseUrl = 'http://10.17.134.33:3000';
   static const String _apiVersion = '/api/v1';
   
-  static String get baseUrl => _baseUrl;
-  static String get apiUrl => '$_baseUrl$_apiVersion';
+  static String get baseUrl => Platform.isAndroid
+      ? 'http://10.0.2.2:3000'
+      : 'http://localhost:3000';
+  static String get apiUrl => '$baseUrl$_apiVersion';
   
   // Network connectivity
   static final Connectivity _connectivity = Connectivity();
-  static final InternetConnectionChecker _connectionChecker = InternetConnectionChecker();
+  static final InternetConnection _connectionChecker = InternetConnection();
   
   // Check if device has internet connection
   static Future<bool> hasInternetConnection() async {
     try {
-      final result = await _connectionChecker.hasConnection;
+      final result = await _connectionChecker.hasInternetAccess;
       return result;
     } catch (e) {
       return false;
@@ -25,11 +26,11 @@ class NetworkConfig {
   }
   
   // Check network connectivity type
-  static Future<ConnectivityResult> getConnectivityType() async {
+  static Future<List<ConnectivityResult>> getConnectivityType() async {
     try {
       return await _connectivity.checkConnectivity();
     } catch (e) {
-      return ConnectivityResult.none;
+      return [ConnectivityResult.none];
     }
   }
   

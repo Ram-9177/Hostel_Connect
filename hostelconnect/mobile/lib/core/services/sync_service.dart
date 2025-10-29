@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'offline_storage_service.dart';
+import '../network/api_config.dart';
 
 /// Lightweight sync service with optimized performance and error handling
 class SyncService {
-  static const String apiBaseUrl = 'http://10.17.134.33:3000/api/v1';
   
   // Cache for better performance
   static bool _isSyncing = false;
@@ -175,7 +175,7 @@ class SyncService {
       cleanData.remove('id'); // Let server generate new ID
       
       final response = await http.post(
-        Uri.parse('$apiBaseUrl/gate-pass-applications'),
+        Uri.parse('${ApiConfig.baseUrl}/gate-pass-applications'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -209,7 +209,7 @@ class SyncService {
       cleanData.remove('id'); // Let server generate new ID
       
       final response = await http.post(
-        Uri.parse('$apiBaseUrl/emergency-requests'),
+        Uri.parse('${ApiConfig.baseUrl}/emergency-requests'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

@@ -60,3 +60,41 @@ class DrillDownResult with _$DrillDownResult {
 
   factory DrillDownResult.fromJson(Map<String, dynamic> json) => _$DrillDownResultFromJson(json);
 }
+enum DashboardPeriod {
+  daily,
+  weekly,
+  monthly,
+  yearly,
+}
+
+@freezed
+class LiveDashboardTile with _$LiveDashboardTile {
+  const factory LiveDashboardTile({
+    required String id,
+    required String title,
+    required String value,
+    required String? subtitle,
+    required String icon,
+    required String trend,
+    required double? trendValue,
+    @Default(false) bool isAlert,
+  }) = _LiveDashboardTile;
+
+  factory LiveDashboardTile.fromJson(Map<String, dynamic> json) => _$LiveDashboardTileFromJson(json);
+}
+
+@freezed
+class MonthlyAnalytics with _$MonthlyAnalytics {
+  const factory MonthlyAnalytics({
+    required String hostelId,
+    required int month,
+    required int year,
+    required Map<String, dynamic> attendance,
+    required Map<String, dynamic> gatePasses,
+    required Map<String, dynamic> meals,
+    required Map<String, dynamic> occupancy,
+    required DateTime generatedAt,
+  }) = _MonthlyAnalytics;
+
+  factory MonthlyAnalytics.fromJson(Map<String, dynamic> json) => _$MonthlyAnalyticsFromJson(json);
+}
