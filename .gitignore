@@ -11,14 +11,17 @@ yarn-debug.log*
 yarn-error.log*
 
 # Production
-build
-dist
+build/
+dist/
 .env
 .env.local
 .env.*.local
 hostelconnect/api/.env
 hostelconnect/api/uploads/
 hostelconnect/api/coverage/
+hostelconnect/api/hostelconnect.db
+hostelconnect/api/hostelconnect.db-shm
+hostelconnect/api/hostelconnect.db-wal
 
 # Secrets & Keys (NEVER COMMIT)
 *.keystore
@@ -41,6 +44,26 @@ secrets/
 *~
 .DS_Store
 
+# Flutter/Dart
+hostelconnect/mobile/.dart_tool/
+hostelconnect/mobile/.flutter-plugins
+hostelconnect/mobile/.flutter-plugins-dependencies
+hostelconnect/mobile/.packages
+hostelconnect/mobile/build/
+hostelconnect/mobile/.pub-cache/
+hostelconnect/mobile/.pub/
+hostelconnect/mobile/ios/Pods/
+hostelconnect/mobile/ios/.symlinks/
+hostelconnect/mobile/ios/Flutter/
+hostelconnect/mobile/android/.gradle/
+hostelconnect/mobile/android/app/build/
+hostelconnect/mobile/android/.idea/
+hostelconnect/mobile/android/local.properties
+hostelconnect/mobile/android/gradle/
+hostelconnect/mobile/android/gradlew*
+hostelconnect/mobile/android/key.properties
+hostelconnect/mobile/pubspec.lock
+
 # Android
 *.apk
 *.aab
@@ -48,33 +71,26 @@ secrets/
 *.dex
 .gradle
 local.properties
-.navigation/
-captures/
-.externalNativeBuild
-.cxx
 
 # iOS
 *.ipa
 *.dSYM.zip
 *.dSYM
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
 Pods/
-Podfile.lock
-.symlinks/
-Flutter/App.framework
-Flutter/Flutter.framework
-Flutter/Flutter.podspec
 
-# Flutter
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-pubspec.lock
-hostelconnect/mobile/build/
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Web
+hostelconnect/mobile/web/.dart_tool/
+hostelconnect/mobile/web/build/
