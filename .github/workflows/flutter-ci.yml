@@ -86,7 +86,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-apk-debug-${{ github.sha }}
           path: hostelconnect/mobile/build/app/outputs/flutter-apk/app-debug.apk
@@ -94,7 +94,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-aab-release-${{ github.sha }}
           path: hostelconnect/mobile/build/app/outputs/bundle/release/app-release.aab
