@@ -1,25 +1,221 @@
 {
-  "name": "HostelConnect Codespace",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "name": "HostelConnect Full-Stack Development",
+  "dockerComposeFile": "../hostelconnect/docker-compose.yml",
+  "service": "api",
+  "workspaceFolder": "/workspace",
+  
   "features": {
-    "ghcr.io/devcontainers/features/node:1": { "version": "20" },
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/node:1": { 
+      "version": "20",
+      "nodeGypDependencies": true
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    }
   },
-  "forwardPorts": [3000, 5500],
+  
+  "forwardPorts": [
+    3000,    // API (NestJS)
+    5173,    // Web (Vite)
+    8080,    // Flutter Web
+    5432,    // PostgreSQL
+    6379,    // Redis
+    3001,    // Grafana
+    9090,    // Prometheus
+    9100     // DevTools
+  ],
+  
   "portsAttributes": {
-    "3000": { "label": "API (NestJS)" },
-    "5500": { "label": "Web (Vite)" }
+    "3000": { 
+      "label": "🚀 API (NestJS)",
+      "onAutoForward": "notify",
+      "protocol": "http"
+    },
+    "5173": { 
+      "label": "🌐 Web App (Vite)",
+      "onAutoForward": "openBrowser"
+    },
+    "8080": { 
+      "label": "📱 Flutter Web",
+      "onAutoForward": "notify"
+    },
+    "5432": { 
+      "label": "🐘 PostgreSQL",
+      "onAutoForward": "ignore"
+    },
+    "6379": { 
+      "label": "📦 Redis",
+      "onAutoForward": "ignore"
+    },
+    "3001": {
+      "label": "📊 Grafana",
+      "onAutoForward": "silent"
+    },
+    "9090": {
+      "label": "📈 Prometheus",
+      "onAutoForward": "silent"
+    }
   },
+  
   "customizations": {
     "vscode": {
       "extensions": [
+        // Essential
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "ms-azuretools.vscode-docker",
-        "github.vscode-github-actions"
-      ]
+        "github.vscode-github-actions",
+        
+        // TypeScript/JavaScript
+        "ms-vscode.vscode-typescript-next",
+        "pmndrs.vscode-tsconfig-json",
+        "yoavbls.pretty-ts-errors",
+        
+        // React/Frontend
+        "dsznajder.es7-react-js-snippets",
+        "bradlc.vscode-tailwindcss",
+        
+        // Flutter/Dart
+        "dart-code.dart-code",
+        "dart-code.flutter",
+        
+        // Database
+        "ckolkman.vscode-postgres",
+        "redis.redis-for-vscode",
+        
+        // API Development
+        "humao.rest-client",
+        "rangav.vscode-thunder-client",
+        
+        // Git
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        
+        // Productivity
+        "usernamehw.errorlens",
+        "streetsidesoftware.code-spell-checker",
+        "wayou.vscode-todo-highlight",
+        "gruntfuggly.todo-tree",
+        
+        // Testing
+        "orta.vscode-jest",
+        
+        // Documentation
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-mermaid"
+      ],
+      
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "explicit"
+        },
+        "editor.tabSize": 2,
+        "editor.detectIndentation": false,
+        "editor.rulers": [80, 120],
+        "editor.bracketPairColorization.enabled": true,
+        "editor.guides.bracketPairs": true,
+        "editor.inlineSuggest.enabled": true,
+        
+        "files.associations": {
+          "*.env.*": "dotenv",
+          "docker-compose*.yml": "dockercompose"
+        },
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/.dart_tool": true,
+          "**/build": true,
+          "**/.git": false
+        },
+        
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "javascript.updateImportsOnFileMove.enabled": "always",
+        
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
+        
+        "prettier.singleQuote": true,
+        "prettier.trailingComma": "all",
+        "prettier.semi": true,
+        
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[dart]": {
+          "editor.formatOnSave": true,
+          "editor.selectionHighlight": false,
+          "editor.suggest.snippetsPreventQuickSuggestions": false,
+          "editor.suggestSelection": "first",
+          "editor.tabCompletion": "onlySnippets",
+          "editor.wordBasedSuggestions": "off"
+        },
+        
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.fontSize": 13,
+        
+        "git.enableSmartCommit": true,
+        "git.confirmSync": false,
+        "git.autofetch": true,
+        
+        "workbench.colorTheme": "Default Dark Modern",
+        "workbench.iconTheme": "vs-seti",
+        
+        "todo-tree.general.tags": [
+          "BUG",
+          "HACK",
+          "FIXME",
+          "TODO",
+          "XXX",
+          "[ ]",
+          "[x]"
+        ],
+        
+        "errorLens.enabled": true,
+        "errorLens.fontSize": "12px"
+      }
     }
   },
-  "postCreateCommand": "npm ci && (cd hostelconnect/api && npm ci)",
-  "remoteUser": "node"
+  
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  
+  "postStartCommand": "bash .devcontainer/startup.sh",
+  
+  "remoteUser": "node",
+  
+  "mounts": [
+    "source=${localWorkspaceFolder}/.env,target=/workspace/.env,type=bind,consistency=cached"
+  ],
+  
+  "containerEnv": {
+    "NODE_ENV": "development",
+    "ALLOW_UNVERIFIED_LOGIN": "true"
+  },
+  
+  "runArgs": [
+    "--name=hostelconnect-codespace"
+  ]
 }
+
