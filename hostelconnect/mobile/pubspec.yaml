@@ -35,7 +35,7 @@ dependencies:
   
   # UI/Design
   google_fonts: ^6.1.0
-  file_picker: ^8.0.0+1
+  file_picker: ^10.3.3
   
   # Network & Connectivity
   connectivity_plus: ^6.0.5
