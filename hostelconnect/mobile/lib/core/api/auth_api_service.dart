@@ -8,6 +8,31 @@ class AuthApiService {
 
   AuthApiService(this._httpClient);
 
+  // Helpers
+  Map<String, dynamic> _ensureMap(dynamic data) {
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return Map<String, dynamic>.from(data as Map);
+    throw Exception('Unexpected response format');
+  }
+
+  // Unwrap common API envelope and surface backend-declared failures
+  Map<String, dynamic> _unwrapOrThrow(dynamic raw) {
+    final map = _ensureMap(raw);
+
+    // Some endpoints return { success, message, data }
+    if (map.containsKey('success') && map['success'] == false) {
+      final msg = (map['message'] ?? 'Request failed') as String;
+      throw Exception(msg);
+    }
+
+    // Prefer nested data when present
+    if (map.containsKey('data') && map['data'] is Map) {
+      return Map<String, dynamic>.from(map['data'] as Map);
+    }
+
+    return map;
+  }
+
   Future<Map<String, dynamic>> register(Map<String, dynamic> userData) async {
     try {
       // Normalize email
@@ -21,15 +46,7 @@ class AuthApiService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Handle different backend response formats
-        final data = response.data;
-        
-        // If the response has a 'data' wrapper, unwrap it
-        if (data is Map && data.containsKey('data')) {
-          return data['data'] as Map<String, dynamic>;
-        }
-        
-        return data as Map<String, dynamic>;
+        return _unwrapOrThrow(response.data);
       } else {
         // Extract error message from response
         final errorMsg = response.data is Map && response.data['message'] != null
@@ -58,15 +75,33 @@ class AuthApiService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Handle different backend response formats
-        final data = response.data;
-        
-        // If the response has a 'data' wrapper, unwrap it
-        if (data is Map && data.containsKey('data')) {
-          return data['data'] as Map<String, dynamic>;
+        final data = _unwrapOrThrow(response.data);
+
+        // Accept multiple token shapes
+        final Map<String, dynamic> tokens = {
+          'accessToken': data['accessToken'] ?? data['token'] ?? data['access_token'],
+          'refreshToken': data['refreshToken'] ?? data['refresh_token'],
+          'expiresIn': data['expiresIn'] ?? data['expires_in'],
+        };
+
+        // Some backends wrap tokens
+        if (tokens['accessToken'] == null && data['tokens'] is Map) {
+          final t = Map<String, dynamic>.from(data['tokens'] as Map);
+          tokens['accessToken'] = t['accessToken'] ?? t['token'] ?? t['access_token'];
+          tokens['refreshToken'] = t['refreshToken'] ?? t['refresh_token'];
+          tokens['expiresIn'] = t['expiresIn'] ?? t['expires_in'];
         }
-        
-        return data as Map<String, dynamic>;
+
+        if (tokens['accessToken'] == null) {
+          final msg = (data['message'] ?? 'Login failed. No access token returned.') as String;
+          throw Exception(msg);
+        }
+
+        // Merge original data and normalized tokens
+        return {
+          ...data,
+          ...tokens,
+        };
       } else {
         // Extract error message from response
         final errorMsg = response.data is Map && response.data['message'] != null
