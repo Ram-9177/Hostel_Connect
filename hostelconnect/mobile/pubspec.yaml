@@ -30,7 +30,7 @@ dependencies:
   mobile_scanner: ^5.1.0
   
   # Code Generation (Freezed annotations)
-  freezed_annotation: ^2.4.1
+  freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
   
   # UI/Design
@@ -63,9 +63,9 @@ dev_dependencies:
   flutter_lints: ^3.0.1
   
   # Code Generation
-  build_runner: ^2.4.6
-  freezed: ^2.4.5
-  json_serializable: ^6.7.1
+  build_runner: ^2.10.1
+  freezed: ^3.2.3
+  json_serializable: ^6.11.1
 
 flutter:
   uses-material-design: true
