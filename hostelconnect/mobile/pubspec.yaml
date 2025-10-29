@@ -50,7 +50,7 @@ dependencies:
   # firebase_messaging: ^14.7.0
 
   # Local notifications for actionable buttons
-  flutter_local_notifications: ^17.2.3
+  flutter_local_notifications: ^19.5.0
   csv: ^6.0.0
   share_plus: ^10.0.2
   path_provider: ^2.1.5
