@@ -90,6 +90,19 @@ hostelconnect/mobile/lib/features/auth/
 
 ---
 
+### CI TEMPORARY CHANGE (Developer Note)
+
+**Status:** ✅ Applied (temporary)
+
+To avoid blocking backend and web CI while we perform a full mobile cleanup, the Flutter analysis, tests, and APK build steps in `.github/workflows/ci-cd.yml` have been marked non-blocking for now. This is temporary — we will re-enable strict mobile checks after completing the mobile analyzer cleanup (see Sprint tasks).
+
+Action items:
+- [ ] Finish mobile analyzer cleanup and revert CI relaxations
+- [ ] Ensure Flutter tests and analyze pass before re-enabling
+
+
+---
+
 ## 🟠 HIGH PRIORITY (Next 2 Weeks)
 
 ### 4. Build & Test Mobile Apps

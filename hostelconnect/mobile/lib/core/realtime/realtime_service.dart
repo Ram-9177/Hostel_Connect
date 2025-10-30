@@ -13,7 +13,8 @@ class RealtimeService {
   static Future<void> connect(String token) async {
     try {
       final host = Platform.isAndroid ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
-      _socket = IO.io('$host/notifications', {
+      // Use the same namespace as the server gateway ('/hostelconnect')
+      _socket = IO.io('$host/hostelconnect', {
         'transports': ['websocket'],
         'autoConnect': false,
         'auth': {

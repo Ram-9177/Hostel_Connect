@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import '../api/auth_api_service.dart';
+import '../realtime/realtime_service.dart';
 import '../config/environment.dart';
 import '../state/app_state.dart';
 
@@ -59,6 +60,13 @@ class AuthService {
       await _storage.write(key: _accessTokenKey, value: tokens.accessToken);
       await _storage.write(key: _refreshTokenKey, value: tokens.refreshToken);
       await _storage.write(key: _userKey, value: jsonEncode(user.toJson()));
+      // Connect to real-time server using access token
+      try {
+        await RealtimeService.connect(tokens.accessToken);
+      } catch (e) {
+        // Non-blocking: connection failures should not break registration
+        print('Realtime connect failed after register: $e');
+      }
       
       return AuthResult.success(user);
     } catch (e) {
@@ -126,6 +134,12 @@ class AuthService {
       }
       
       await _storeAuthData(tokens, user, deviceId);
+      // Connect to real-time server after login
+      try {
+        await RealtimeService.connect(tokens.accessToken);
+      } catch (e) {
+        print('Realtime connect failed after login: $e');
+      }
       
       return AuthResult.success(user);
     } catch (e) {

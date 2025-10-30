@@ -9,6 +9,7 @@ import { Admin } from '../admins/entities/admin.entity';
 import * as bcrypt from 'bcryptjs';
 import { RegisterDto } from './dto/register.dto';
 import { EmailService } from '../common/email/email.service';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
@@ -24,6 +25,7 @@ export class AuthService {
     private readonly adminRepository: Repository<Admin>,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    private readonly realtimeGateway: RealtimeGateway,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<any> {
@@ -99,6 +101,25 @@ export class AuthService {
       );
     } catch (e) {}
 
+    // Emit real-time event: new user registered (notify wardens and hostel members)
+    try {
+      const formatted = this.formatUserResponse(savedUser);
+      if (formatted.hostelId) {
+        this.realtimeGateway.notifyHostel(formatted.hostelId, 'user_registered', {
+          user: formatted,
+          timestamp: new Date(),
+        });
+      }
+      // Notify wardens specifically
+      this.realtimeGateway.notifyRole('WARDEN', 'user_registered', {
+        user: formatted,
+        timestamp: new Date(),
+      });
+    } catch (e) {
+      // Non-blocking: real-time failures should not break registration
+      console.warn('Realtime notify failed for registration', e);
+    }
+
     return {
       user: this.formatUserResponse(savedUser),
       message: 'Registration successful. Please check your email to verify your account.',
@@ -140,11 +161,31 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Update last login
+  // Update last login
     await this.updateLastLogin(user.id, user.role);
 
     // Generate tokens
     const tokens = await this.generateTokens(user);
+
+    // Emit real-time event: user logged in
+    try {
+      const formatted = this.formatUserResponse(user);
+      // Notify the user (useful for multi-device sync)
+      this.realtimeGateway.notifyUser(user.id, 'user_logged_in', {
+        user: formatted,
+        timestamp: new Date(),
+      });
+      // Notify hostel/wardens that user is active
+      if (formatted.hostelId) {
+        this.realtimeGateway.notifyHostel(formatted.hostelId, 'user_logged_in', {
+          user: formatted,
+          timestamp: new Date(),
+        });
+      }
+    } catch (e) {
+      // Non-blocking
+      console.warn('Realtime notify failed for login', e);
+    }
 
     return {
       user: this.formatUserResponse(user),
