@@ -42,7 +42,7 @@ jobs:
         npm run build
         
     - name: Upload API build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: api-dist
         path: hostelconnect/api/dist/
@@ -77,7 +77,7 @@ jobs:
         flutter build apk --release
         
     - name: Upload Flutter APK
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: mobile-apk
         path: hostelconnect/mobile/build/app/outputs/flutter-apk/app-release.apk
